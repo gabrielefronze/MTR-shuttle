@@ -9,13 +9,10 @@
 #include <cstdlib>
 #include <string>
 
-class AlienUtils
+namespace AlienUtils
 {
-  private:
-    std::string checkTokenBashCommand = R"(if [[ "`alien-token-info | grep "still valid" `" != "" ]]; then echo "1"; else echo "0"; fi)";
-
-  public:
-    bool checkAlienToken() {
+    static bool checkAlienToken() {
+      std::string checkTokenBashCommand = R"(if [[ "`alien-token-info | grep "still valid" `" != "" ]]; then echo "1"; else echo "0"; fi)";
       bool returnValue = false;
       FILE * f = popen(checkTokenBashCommand.c_str(), "r");
       char buf[1];
