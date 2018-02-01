@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <TString.h>
 #include "MTRShuttle.h"
 
 void MTRShuttle::parseRunList(std::string path)
@@ -29,10 +30,39 @@ void MTRShuttle::parseRunList(std::string path)
 void MTRShuttle::parseOCDB(std::string path)
 {
 
+  if (path.find("alien") != std::string::npos) {
+    if (!checkAlienToken()) {
+      TString userName;
+      std::cerr << "Alien token is not valid" << std::endl;
+      std::cout << "Please enter your Alien username " << std::endl;
+      std::cin >> userName;
+      initAlienToken(userName);
+      if (!checkAlienToken()) {
+        std::cerr << "Alien token not valid even after reset. Proceed manually!" << std::endl;
+        return;
+      }
+    }
+
+    if (!blockMode) OCDBDataToCParserBlocks(-1);
+    else {
+      Int_t blockNumber = 0;
+      while (!OCDBDataToCParserBlocks(blockNumber++, blockSize));
+    }
+  } else {
+
+  }
 }
 
 void MTRShuttle::parseAMANDA(std::string path)
 {
+  int mts[23];
+  mts[11]=0;
+  mts[12]=1;
+  mts[21]=2;
+  mts[22]=3;
+
+  bool isZero=false;
+
   uint64_t dummyTimeStamp=0;
   double timeStamp=0;
   double current=0.;
@@ -58,12 +88,12 @@ void MTRShuttle::parseAMANDA(std::string path)
       sprintf(pattern,"%%lf;MTR_%sSIDE_MT%%d_RPC%%d_HV.actual.iMon;%%lf",(InsideOutside=='I'?"IN":"OUT"));
       sscanf(charbuffer,pattern,&timeStamp,&MT,&RPC,&current);
       bufferCurrent.setITot(current);
-      fAMANDACurrentsVect.push_back(bufferCurrent);
+      fAMANDACurrentsVect[mts[MT]][(InsideOutside=='I'?0:1)][RPC-1].push_back(bufferCurrent);
     }
     std::cout<<std::endl;
     fin.close();
   }
   else std::cout << "Unable to open file";
 
-  std::cout << "Loaded " << << "AMANDA values" << std::endl;
+  std::cout << "Loaded " << linesCounter << "AMANDA values" << std::endl;
 }
