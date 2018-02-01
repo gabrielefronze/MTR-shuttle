@@ -8,6 +8,8 @@ set(SOURCE_FILES
         RunObject.cxx
         AMANDAData.h
         AMANDAData.cxx
+        AMANDACurrent.h
+        AMANDACurrent.cxx
         )
 
 add_executable(alice_MTR_utils ${SOURCE_FILES})
