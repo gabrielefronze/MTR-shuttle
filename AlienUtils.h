@@ -25,7 +25,7 @@ class AlienUtils
       return returnValue;
     }
 
-    void initAlienToken(std::string userName){
+    static void initAlienToken(std::string userName){
       system("alien-token-init "+userName);
     }
 };
