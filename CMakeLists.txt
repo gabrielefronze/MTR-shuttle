@@ -12,6 +12,7 @@ set(SOURCE_FILES
         AMANDACurrent.cxx
         MTRShuttle.h
         MTRShuttle.cxx
+        Parameters.h
         )
 
 add_executable(alice_MTR_utils ${SOURCE_FILES})
