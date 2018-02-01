@@ -10,7 +10,7 @@
 class AMANDACurrent : AMANDAData
 {
   public:
-    AMANDACurrent(double fITot, double fIDark, bool fIsDark) = default;
+    AMANDACurrent(double fITot = 0., double fIDark = 0., bool fIsDark = false) = default;
 
     inline double getITot() const { return fITot; }
     inline void setITot(double fITot) { AMANDACurrent::fITot = fITot; }
