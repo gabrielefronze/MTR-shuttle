@@ -13,6 +13,9 @@ class RunObject{
               double fIntCharge=0., uint64_t fScalBending=0, uint64_t fScalNotBending=0,
               bool fIsDark=false) = default;
 
+    inline uint64_t getRunNumber() const { return fRunNumber; }
+    inline void setRunNumber(uint64_t fRunNumber) { RunObject::fRunNumber = fRunNumber; }
+
     inline uint64_t getSOR() const { return fSOR; }
     inline void setSOR(uint64_t fSOR) { RunObject::fSOR = fSOR; }
 
@@ -41,6 +44,7 @@ class RunObject{
     inline void setfIsDark(bool fIsDark) { RunObject::fIsDark = fIsDark; }
 
   private:
+    uint64_t fRunNumber;
     uint64_t fSOR;
     uint64_t fEOR;
     double fAvgHV;
