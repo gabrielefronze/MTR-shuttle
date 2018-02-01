@@ -21,6 +21,7 @@ class AMANDACurrent : AMANDAData
     inline double getINet() const { return fITot  - fIDark; }
 
     inline double getIsDark() const { return fIsDark; }
+    inline void setIsDark(bool fIsDark) { AMANDACurrent::fIsDark = fIsDark; }
 
   private:
     double fITot;
