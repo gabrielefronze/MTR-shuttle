@@ -270,5 +270,17 @@ void MTRShuttle::parseAMANDAiMon(std::string path)
   }
   else std::cout << "Unable to open file";
 
+  for (int plane=0; plane<kNPlanes; plane++) {
+    for (int side = 0; side < kNSides; side++) {
+      for (int RPC = 0; RPC < kNRPC; RPC++) {
+        std::sort(fAMANDACurrentsVect[plane][side][RPC].begin(),
+                  fAMANDACurrentsVect[plane][side][RPC].end(),
+                  [](const AMANDACurrent &a, const AMANDACurrent &b) -> bool {
+                    return a.getTimeStamp() > b.getTimeStamp();
+                  });
+      }
+    }
+  }
+
   std::cout << "Loaded " << linesCounter << "AMANDA values" << std::endl;
 }
