@@ -9,6 +9,7 @@
 #include <string>
 #include "RunObject.h"
 #include "AMANDACurrent.h"
+#include "Parameters.h"
 
 class MTRShuttle
 {
@@ -22,8 +23,8 @@ class MTRShuttle
 
   private:
     std::vector<int> fRunList;
-    std::vector<RunObject> fRunDataVect;
-    std::vector<AMANDACurrent> fAMANDACurrentsVect;
+    std::vector<RunObject> fRunDataVect[kNPlanes][kNSides][kNRPC];
+    std::vector<AMANDACurrent> fAMANDACurrentsVect[kNPlanes][kNSides][kNRPC];
 };
 
 #endif //MTR_SHUTTLE_MTRSHUTTLE_H
