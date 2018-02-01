@@ -7,7 +7,8 @@
 class RunObject{
   public:
     RunObject(uint64_t fSOR=0, uint64_t fEOR=0, double fAvgHV=0., double fAvgITot=0., double fAvgIDark=0.,
-              double fIntCharge=0., uint64_t fScalersBending=0, uint64_t fScalersNotBending=0) = default;
+              double fIntCharge=0., uint64_t fScalBending=0, uint64_t fScalNotBending=0,
+              bool fIsDark=false) = default;
 
     inline uint64_t getSOR() const { return fSOR; }
 
@@ -33,13 +34,17 @@ class RunObject{
 
     inline void setIntCharge(double fIntCharge) { RunObject::fIntCharge = fIntCharge; }
 
-    inline uint64_t getScalersBending() const { return fScalersBending; }
+    inline uint64_t getScalBending() const { return fScalBending; }
 
-    inline void setScalersBending(uint64_t fScalersBending) { RunObject::fScalersBending = fScalersBending; }
+    inline void setScalBending(uint64_t fScalBending) { RunObject::fScalBending = fScalBending; }
 
-    inline uint64_t getScalersNotBending() const { return fScalersNotBending; }
+    inline uint64_t getScalNotBending() const { return fScalNotBending; }
 
-    inline void setScalersNotBending(uint64_t fScalersNotBending) { RunObject::fScalersNotBending = fScalersNotBending; }
+    inline void setScalNotBending(uint64_t fScalNotBending) { RunObject::fScalNotBending = fScalNotBending; }
+
+    inline bool getfIsDark() const { return fIsDark; }
+
+    inline void setfIsDark(bool fIsDark) { RunObject::fIsDark = fIsDark; }
 
   private:
     uint64_t fSOR;
@@ -48,6 +53,7 @@ class RunObject{
     double fAvgITot;
     double fAvgIDark;
     double fIntCharge;
-    uint64_t fScalersBending;
-    uint64_t fScalersNotBending;
+    uint64_t fScalBending;
+    uint64_t fScalNotBending;
+    bool fIsDark;
 };
