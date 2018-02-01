@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD 11)
 set(SOURCE_FILES
         RunObject.h
         RunObject.cxx
+        AMANDAData.h
+        AMANDAData.cxx
         )
 
 add_executable(alice_MTR_utils ${SOURCE_FILES})
