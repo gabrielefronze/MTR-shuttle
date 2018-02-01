@@ -4,5 +4,5 @@
 
 #include "AMANDACurrent.h"
 
-AMANDACurrent::AMANDACurrent(double fITot, double fIDark, bool fIsDark) : fITot(fITot), fIDark(fIDark), fIsDark(fIsDark)
+AMANDACurrent::AMANDACurrent(double fITot, double fIDark, bool fIsDarkCurrent) : fITot(fITot), fIDark(fIDark), fIsDarkCurrent(fIsDarkCurrent)
 {}

@@ -10,7 +10,7 @@
 class AMANDACurrent : AMANDAData
 {
   public:
-    AMANDACurrent(double fITot = 0., double fIDark = 0., bool fIsDark = false) = default;
+    AMANDACurrent(double fITot = 0., double fIDark = 0., bool fIsDarkCurrent) = default;
 
     inline double getITot() const { return fITot; }
     inline void setITot(double fITot) { AMANDACurrent::fITot = fITot; }
@@ -20,13 +20,13 @@ class AMANDACurrent : AMANDAData
 
     inline double getINet() const { return fITot  - fIDark; }
 
-    inline double getIsDark() const { return fIsDark; }
-    inline void setIsDark(bool fIsDark) { AMANDACurrent::fIsDark = fIsDark; }
+    inline double isDark() const { return fIsDarkCurrent; }
+    inline void setIsDark(bool fIsDark) { AMANDACurrent::fIsDarkCurrent = fIsDark; }
 
   private:
     double fITot;
     double fIDark;
-    bool fIsDark;
+    bool fIsDarkCurrent;
 };
 
 #endif //MTR_SHUTTLE_AMANDACURRENT_H
