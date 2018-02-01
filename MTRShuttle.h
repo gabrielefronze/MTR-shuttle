@@ -18,7 +18,8 @@ class MTRShuttle
   private:
     void parseRunList(std::string path="");
     void parseOCDB(std::string path="");
-    void parseAMANDA(std::string path="");
+    void parseAMANDAiMon(std::string path = "");
+    void parseAMANDAVeff(std::string path = "");
     void setIDark();
 
   private:

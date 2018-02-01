@@ -228,7 +228,7 @@ void MTRShuttle::parseOCDB(std::string path)
 
 }
 
-void MTRShuttle::parseAMANDA(std::string path)
+void MTRShuttle::parseAMANDAiMon(std::string path)
 {
   int mts[23];
   mts[11]=0;
@@ -248,7 +248,7 @@ void MTRShuttle::parseAMANDA(std::string path)
   std::string line;
   std::ifstream fin (path);
   int linesCounter = 0;
-  AMANDACurrent bufferCurrent(0.,0.);
+  AMANDACurrent bufferCurrent(0., 0., false);
   if (fin.is_open())
   {
     while (! fin.eof() )
