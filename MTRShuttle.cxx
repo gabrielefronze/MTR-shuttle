@@ -217,6 +217,8 @@ void MTRShuttle::parseOCDB(std::string path)
           }
           runObjectBuffer[plane][side][RPC].setScalBending(values[0]);
           runObjectBuffer[plane][side][RPC].setScalNotBending(values[1]);
+
+          fRunDataVect[plane][side][RPC].emplace_back(runObjectBuffer[plane][side][RPC]);
         }
       }
     }
