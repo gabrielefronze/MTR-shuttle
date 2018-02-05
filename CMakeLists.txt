@@ -14,6 +14,8 @@ set(SOURCE_FILES
         MTRShuttle.cxx
         Parameters.h
         AlienUtils.h
+        CompileAll.c
+        testMTRShuttle.c
         )
 
 add_executable(alice_MTR_utils ${SOURCE_FILES})
