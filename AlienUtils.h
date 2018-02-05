@@ -23,7 +23,8 @@ namespace AlienUtils
     }
 
     static void initAlienToken(std::string userName){
-      system("alien-token-init "+userName);
+      std::string command = "alien-token-init "+userName;
+      system(command.c_str());
     }
 };
 
