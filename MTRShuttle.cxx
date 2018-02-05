@@ -445,6 +445,7 @@ void MTRShuttle::loadData(std::string path)
   int linesCounter = 0;
   int plane,side,RPC;
   RunObject runObjectBuffer;
+
   if (fin.is_open())
   {
     while (! fin.eof() )
@@ -459,5 +460,4 @@ void MTRShuttle::loadData(std::string path)
     fin.close();
   }
   else std::cout << "Unable to open file";
-
 }
