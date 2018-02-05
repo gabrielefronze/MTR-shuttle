@@ -315,7 +315,7 @@ void MTRShuttle::propagateAMANDA()
         for (const auto &runObjectIt: fRunDataVect[plane][side][RPC]) {
 
           // If run is not dark skip
-          if (!runObjectIt.getfIsDark()) continue;
+          if (!runObjectIt.isDark()) continue;
 
           // Load SOR and EOR values
           auto SOR = runObjectIt.getSOR();

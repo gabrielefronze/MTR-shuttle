@@ -43,7 +43,7 @@ class RunObject{
     inline double getScalNotBending() const { return fScalNotBending; }
     inline void setScalNotBending(double fScalNotBending) { RunObject::fScalNotBending = fScalNotBending; }
 
-    inline bool getfIsDark() const { return fIsDark; }
+    inline bool isDark() const { return fIsDark; }
     inline void setfIsDark(bool fIsDark) { RunObject::fIsDark = fIsDark; }
 
     std::ostream& operator<<(std::ostream& os, const RunObject& dt){
