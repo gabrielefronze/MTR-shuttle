@@ -14,7 +14,7 @@ class RunObject{
               double fIntCharge=0., uint64_t fScalBending=0, uint64_t fScalNotBending=0,
               bool fIsDark=false) = default;
 
-    RunObject(std::string csvLine);
+    RunObject(std::string csvLine, int &plane, int &side, int &RPC);
 
     inline uint64_t getRunNumber() const { return fRunNumber; }
     inline void setRunNumber(uint64_t fRunNumber) { RunObject::fRunNumber = fRunNumber; }
