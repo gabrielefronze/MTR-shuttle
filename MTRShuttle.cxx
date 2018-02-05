@@ -72,7 +72,6 @@ void MTRShuttle::parseOCDB(std::string path)
 
     int RunYear = runIterator[1];
 
-    //i manager puntano al run desiderato
     managerCDB->SetRun(runIterator[0]);
 
     AliCDBStorage *defStorage = managerCDB->GetDefaultStorage();
@@ -91,7 +90,6 @@ void MTRShuttle::parseOCDB(std::string path)
       }
     }
     if (!hasGRP) {
-      //printf("\n\nSkipping run %d\n\n",runIterator);
       continue;
     }
 
@@ -256,8 +254,6 @@ void MTRShuttle::parseAMANDAiMon(std::string path)
   mts[12]=1;
   mts[21]=2;
   mts[22]=3;
-
-  bool isZero=false;
 
   uint64_t dummyTimeStamp=0;
   double timeStamp=0;
