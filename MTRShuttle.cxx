@@ -132,7 +132,7 @@ void MTRShuttle::parseOCDB(std::string path)
           //creazione di un pointer all'elemento della mappa delle tensioni
           TObjArray *dataArrayVoltage;
           dataArrayVoltage = (TObjArray *) (mapDCS->GetValue(
-            Form("MTR_%s_MT%d_RPC%d_HV.vEff", kSides[side], kPlanes[plane], RPC + 1)));
+            Form("MTR_%s_MT%d_RPC%d_HV.vEff", kSides[side].c_str(), kPlanes[plane], RPC + 1)));
 
           if (!dataArrayVoltage) {
             printf(" Problems getting dataArrayVoltage\n");
