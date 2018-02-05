@@ -141,8 +141,7 @@ void MTRShuttle::parseOCDB(std::string path)
 
             auto HV = value->GetFloat();
 
-            if (HV < 8500.) { //TODO: minHV
-//              isVoltageOk=kFALSE;
+            if (HV < kMinWorkHV) {
               break;
             } else {
               avgHV += HV;
