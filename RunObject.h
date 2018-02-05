@@ -46,11 +46,6 @@ class RunObject{
     inline bool isDark() const { return fIsDark; }
     inline void setfIsDark(bool fIsDark) { RunObject::fIsDark = fIsDark; }
 
-    std::ostream& operator<<(std::ostream& os, const RunObject& dt){
-      return os << fRunNumber << ',' << fSOR << ',' << fEOR << ',' << fAvgHV << ',' << fAvgITot << ',' << fAvgIDark
-                << ',' << fIntCharge << ',' << fScalBending << ',' << fScalNotBending << ',' << (int)fIsDark;
-    }
-
   private:
     uint64_t fRunNumber;
     uint64_t fSOR;
@@ -63,5 +58,11 @@ class RunObject{
     double fScalNotBending;
     bool fIsDark;
 };
+
+std::ostream& operator<<(std::ostream& os, const RunObject& obj){
+  return os << obj.getRunNumber() << ',' << obj.getSOR() << ',' << obj.getEOR() << ',' << obj.getAvgHV()
+            << ',' << obj.getAvgITot() << ',' << obj.getAvgIDark() << ',' << obj.getIntCharge()
+            << ',' << obj.fScalBending << ',' << obj.getScalNotBending() << ',' << (int) obj.isDark();
+}
 
 #endif //MTR_SHUTTLE_RUNOBJECT_H
