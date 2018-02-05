@@ -46,7 +46,7 @@ class RunObject{
 
     std::ostream& operator<<(std::ostream& os, const RunObject& dt){
       return os << fRunNumber << ',' << fSOR << ',' << fEOR << ',' << fAvgHV << ',' << fAvgITot << ',' << fAvgIDark
-                << ',' << fIntCharge << ',' << fScalBending << ',' << fScalNotBending << ',' << fIsDark;
+                << ',' << fIntCharge << ',' << fScalBending << ',' << fScalNotBending << ',' << (int)fIsDark;
     }
 
   private:
