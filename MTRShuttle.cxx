@@ -333,8 +333,8 @@ void MTRShuttle::setIDark()
             double m = getM(*lastDarkIt,*darkCurrentIt);
             double q = getQ(*lastDarkIt,*darkCurrentIt);
 
-            // Assigning dark current values from interpolation
-            std::for_each(lastDarkIt,darkCurrentIt,[m,q](AMANDACurrent reading){
+            // Assigning dark current values from interpolation to the not-dark readings
+            std::for_each(lastDarkIt+1,darkCurrentIt-1,[m,q](AMANDACurrent reading){
               reading.setIDark(m*reading.getTimeStamp()+q);
               return;
             });
