@@ -34,11 +34,11 @@ class RunObject{
     inline double getIntCharge() const { return fIntCharge; }
     inline void setIntCharge(double fIntCharge) { RunObject::fIntCharge = fIntCharge; }
 
-    inline uint64_t getScalBending() const { return fScalBending; }
-    inline void setScalBending(uint64_t fScalBending) { RunObject::fScalBending = fScalBending; }
+    inline double getScalBending() const { return fScalBending; }
+    inline void setScalBending(double fScalBending) { RunObject::fScalBending = fScalBending; }
 
-    inline uint64_t getScalNotBending() const { return fScalNotBending; }
-    inline void setScalNotBending(uint64_t fScalNotBending) { RunObject::fScalNotBending = fScalNotBending; }
+    inline double getScalNotBending() const { return fScalNotBending; }
+    inline void setScalNotBending(double fScalNotBending) { RunObject::fScalNotBending = fScalNotBending; }
 
     inline bool getfIsDark() const { return fIsDark; }
     inline void setfIsDark(bool fIsDark) { RunObject::fIsDark = fIsDark; }
@@ -51,8 +51,8 @@ class RunObject{
     double fAvgITot;
     double fAvgIDark;
     double fIntCharge;
-    uint64_t fScalBending;
-    uint64_t fScalNotBending;
+    double fScalBending;
+    double fScalNotBending;
     bool fIsDark;
 };
 
