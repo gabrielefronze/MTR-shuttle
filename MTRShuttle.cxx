@@ -425,7 +425,7 @@ void MTRShuttle::saveData(std::string path)
   for (int plane=0; plane<kNPlanes; plane++) {
     for (int side = 0; side < kNSides; side++) {
       for (int RPC = 0; RPC < kNRPC; RPC++) {
-        for (const auto &dataIt : fRunDataVect) {
+        for (const auto &dataIt : fRunDataVect[plane][side][RPC]) {
           outputFile << plane << ',' << side << ',' << RPC << ',' << dataIt << "\n";
         }
       }
