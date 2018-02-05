@@ -62,7 +62,7 @@ class RunObject{
 std::ostream& operator<<(std::ostream& os, const RunObject& obj){
   return os << obj.getRunNumber() << ',' << obj.getSOR() << ',' << obj.getEOR() << ',' << obj.getAvgHV()
             << ',' << obj.getAvgITot() << ',' << obj.getAvgIDark() << ',' << obj.getIntCharge()
-            << ',' << obj.fScalBending << ',' << obj.getScalNotBending() << ',' << (int) obj.isDark();
+            << ',' << obj.getScalBending() << ',' << obj.getScalNotBending() << ',' << (int) obj.isDark();
 }
 
 #endif //MTR_SHUTTLE_RUNOBJECT_H
