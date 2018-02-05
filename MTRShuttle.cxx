@@ -331,7 +331,7 @@ void MTRShuttle::propagateAMANDA()
             if ( TS < SOR ) continue;
             // If the timestamp is after the EOR rewind once and break the loop (aka pass to the following run)
             else if ( TS > EOR ){
-              setIsDarkIt--;
+              if (setIsDarkIt!=fAMANDACurrentsVect[plane][side][RPC].begin()) setIsDarkIt--;
               break;
             // If SOR<TS<EOR then set IDark
             } else {
@@ -396,7 +396,7 @@ void MTRShuttle::propagateAMANDA()
             if ( TS < SOR ) continue;
               // If the timestamp is after the EOR rewind once and break the loop (aka pass to the following run)
             else if ( TS > EOR ){
-              currentIt--;
+              if (currentIt!=fAMANDACurrentsVect[plane][side][RPC].begin()) currentIt--;
               break;
               // If SOR<TS<EOR then set IDark
             } else {
