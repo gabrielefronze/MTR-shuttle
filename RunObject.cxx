@@ -15,3 +15,24 @@ RunObject::RunObject(uint64_t fSOR, uint64_t fEOR, double fAvgHV, double fAvgITo
                                                                               fScalNotBending(fScalNotBending),
                                                                               fIsDark(fIsDark)
 {}
+
+RunObject::RunObject(std::string csvLine)
+{
+  int plane,side,MT;
+  int ifDarkBuffer = 0;
+  sscanf(csvLine.c_str(),"%d,%d,%d,%llu,%llu,%llu,%lf,%lf,%lf,%lf,%lf,%lf,%d",
+         &plane,
+         &side,
+         &MT,
+         &fRunNumber,
+         &fSOR,
+         &fSOR,
+         &fAvgHV,
+         &fAvgITot,
+         &fAvgIDark,
+         &fIntCharge,
+         &fScalBending,
+         &fScalNotBending,
+         &ifDarkBuffer);
+  fIsDark = (ifDarkBuffer == 1);
+}
