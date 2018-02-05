@@ -437,3 +437,27 @@ void MTRShuttle::saveData(std::string path)
   }
   outputFile.close();
 }
+
+void MTRShuttle::loadData(std::string path)
+{
+  std::string line;
+  std::ifstream fin (path);
+  int linesCounter = 0;
+  int plane,side,RPC;
+  RunObject runObjectBuffer;
+  if (fin.is_open())
+  {
+    while (! fin.eof() )
+    {
+      getline (fin,line);
+      if (fin.eof()) break;
+      std::cout<<linesCounter++<<"\r";
+      runObjectBuffer = RunObject(line,plane,side,RPC);
+      fRunDataVect[plane][side][RPC].emplace_back(runObjectBuffer);
+    }
+    std::cout<<std::endl;
+    fin.close();
+  }
+  else std::cout << "Unable to open file";
+
+}

@@ -22,6 +22,7 @@ class MTRShuttle
     void parseAMANDAVeff(std::string path = "");
     void propagateAMANDA();
     void saveData(std::string path = "MTRShuttle.csv");
+    void loadData(std::string path = "MTRShuttle.csv");
 
   private:
     std::vector<int[2]> fRunList;
