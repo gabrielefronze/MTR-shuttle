@@ -9,16 +9,19 @@
 #include <string>
 #include <Rtypes.h>
 
+// Geometry and segmentation
 static const int kNSides=2;
 static const int kNPlanes=4;
 static const int kNRPC=9;
 static const int kNLocalBoards=234;
-static const uint64_t kFullScale=65535;
 static const int kNCathodes=2;
-static const std::string *kSides;
-static const int *kPlanes;
-static const std::string *kCathodes;
-//array per la conversione di iRPC={0,17} in iRPC={1,9}x{inside,outside}
+
+// Naming arrays to read AMANDA and create plot titles
+static const std::string kSides[]={"INSIDE","OUTSIDE"};
+static const int kPlanes[]={11,12,21,22};
+static const std::string kCathodes[]={"BENDING","NOT BENDING"};
+
+// Arrays to convert iRPC={0,17} into iRPC={1,9}x{inside,outside}
 static const int kRPCIndexes[] = {5,6,7,8,9,9,8,7,6,5,4,3,2,1,1,2,3,4};
 static const int kRPCSides[] = {0,0,0,0,0,1,1,1,1,1,1,1,1,1,0,0,0,0};
 static const int kLBToRPC[][3] = {{1,1,0},{2,2,0},{3,2,0},{4,3,0},{5,3,0},{6,4,0},{7,4,0},{8,4,0},{9,6,0},{10,6,0},{11,6,0},
@@ -46,6 +49,11 @@ static const int kLBToRPC[][3] = {{1,1,0},{2,2,0},{3,2,0},{4,3,0},{5,3,0},{6,4,0
                                {210,1,1},{211,2,1},{212,2,1},{213,3,1},{214,3,1},{215,4,1},{216,4,1},{217,5,1},{218,5,1},
                                {219,6,1},{220,6,1},{221,7,1},{222,7,1},{223,8,1},{224,8,1},{225,9,1},{226,1,1},{227,2,1},
                                {228,3,1},{229,4,1},{230,5,1},{231,6,1},{232,7,1},{233,8,1},{234,9,1}};
+
+// Detector parameters
+static const double kMinWorkHV=8500.;
+static const uint64_t kFullScale=65535;
+
 //double fRPCAreas[kNRPC][kNPlanes];
 //double fLBAreas[kNLocalBoards][kNPlanes];
 //double fTinyArea[kNPlanes];
