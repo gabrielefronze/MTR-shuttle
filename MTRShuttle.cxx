@@ -236,7 +236,17 @@ void MTRShuttle::parseOCDB(std::string path)
     printf("scalers reading complete.\n");
   }
 
-
+  for (int plane=0; plane<kNPlanes; plane++) {
+    for (int side = 0; side < kNSides; side++) {
+      for (int RPC = 0; RPC < kNRPC; RPC++) {
+        std::sort(fRunDataVect[plane][side][RPC].begin(),
+                  fRunDataVect[plane][side][RPC].end(),
+                  [](const RunObject &a, const RunObject &b) -> bool {
+                    return a.getRunNumber() > b.getRunNumber();
+                  });
+      }
+    }
+  }
 }
 
 void MTRShuttle::parseAMANDAiMon(std::string path)
