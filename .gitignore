@@ -30,3 +30,7 @@
 \.idea/
 
 cmake-build-debug/
+
+*.d
+
+*.pcm
