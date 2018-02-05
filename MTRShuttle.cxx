@@ -283,3 +283,66 @@ void MTRShuttle::parseAMANDAiMon(std::string path)
 
   std::cout << "Loaded " << linesCounter << "AMANDA values" << std::endl;
 }
+
+void MTRShuttle::setIDark()
+{
+  for (int plane=0; plane<kNPlanes; plane++) {
+    for (int side = 0; side < kNSides; side++) {
+      for (int RPC = 0; RPC < kNRPC; RPC++) {
+
+        auto setIsDarkIt= fAMANDACurrentsVect[plane][side][RPC].begin();
+
+        for (const auto &runObjectIt: fRunDataVect[plane][side][RPC]) {
+
+          if (!runObjectIt.getfIsDark()) continue;
+
+          auto SOR = runObjectIt.getSOR();
+          auto EOR = runObjectIt.getEOR();
+
+          for ( setIsDarkIt; setIsDarkIt!=fAMANDACurrentsVect[plane][side][RPC].end(); setIsDarkIt++) {
+
+            auto TS = setIsDarkIt->getTimeStamp();
+
+            if ( TS < SOR ) continue;
+            else if ( TS > EOR ){
+              setIsDarkIt--;
+              break;
+            } else {
+              setIsDarkIt->setIDark(setIsDarkIt->getITot());
+              setIsDarkIt->setIsDark(true);
+            }
+          }
+        }
+
+        // Iterator to point to the last dark current reading
+        auto lastDarkIt = fAMANDACurrentsVect[plane][side][RPC].begin();
+        bool wasPrevDark = lastDarkIt->isDark();
+
+        // Loop over the current readings
+        for (auto darkCurrentIt=fAMANDACurrentsVect[plane][side][RPC].begin();
+             darkCurrentIt!=fAMANDACurrentsVect[plane][side][RPC].end();
+             darkCurrentIt++) {
+
+          // If previous reading and current one are dark update last dark
+          if ( wasPrevDark && darkCurrentIt->isDark() ) lastDarkIt = darkCurrentIt;
+
+          // If previous reading wasn't dark, while current one yes, set dark currents
+          else if ( !wasPrevDark && darkCurrentIt->isDark()) {
+
+            // Computing the parameters for the "dumb interpolation"
+            double m = getM(*lastDarkIt,*darkCurrentIt);
+            double q = getQ(*lastDarkIt,*darkCurrentIt);
+
+            // Assigning dark current values from interpolation
+            std::for_each(lastDarkIt,darkCurrentIt,[m,q](AMANDACurrent reading){
+              reading.setIDark(m*reading.getTimeStamp()+q);
+              return;
+            });
+          }
+
+          wasPrevDark = darkCurrentIt->isDark();
+        }
+      }
+    }
+  }
+}
