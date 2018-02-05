@@ -421,3 +421,12 @@ void MTRShuttle::propagateAMANDA()
     }
   }
 }
+
+void MTRShuttle::saveData(std::string path)
+{
+  std::ofstream outputFile(path.c_str());
+  for( const auto &dataIt : fRunDataVect ){
+    outputFile << dataIt << "\n";
+  }
+  outputFile.close();
+}
