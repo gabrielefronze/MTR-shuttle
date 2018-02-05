@@ -7,7 +7,7 @@
 
 #include "AMANDAData.h"
 
-class AMANDACurrent : AMANDAData
+class AMANDACurrent : public AMANDAData
 {
   public:
     AMANDACurrent(double fITot = 0., double fIDark = 0., bool fIsDarkCurrent = false);
