@@ -18,7 +18,10 @@ class AMANDACurrent : AMANDAData
     inline double getIDark() const { return fIDark; }
     inline void setIDark(double fIDark) { AMANDACurrent::fIDark = fIDark; }
 
-    inline double getINet() const { return fITot  - fIDark; }
+    inline double getINet() const {
+      auto iNet = fITot  - fIDark;
+      return (iNet>0.)?iNet:0.;
+    }
 
     inline bool isDark() const { return fIsDarkCurrent; }
     inline void setIsDark(bool fIsDark) { AMANDACurrent::fIsDarkCurrent = fIsDark; }
