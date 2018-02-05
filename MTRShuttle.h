@@ -25,7 +25,7 @@ class MTRShuttle
     void loadData(std::string path = "MTRShuttle.csv");
 
   private:
-    std::vector<int[2]> fRunList;
+    std::vector<std::pair<int,int>> fRunList;
     std::vector<RunObject> fRunDataVect[kNPlanes][kNSides][kNRPC];
     std::vector<AMANDACurrent> fAMANDACurrentsVect[kNPlanes][kNSides][kNRPC];
 

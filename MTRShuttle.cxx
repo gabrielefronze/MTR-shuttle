@@ -32,7 +32,7 @@ void MTRShuttle::parseRunList(std::string path)
 
     fin >> runBuffer;
     if(fin.eof()) break;
-    fRunList.push_back({runBuffer,2017});
+    fRunList.emplace_back(std::make_pair(runBuffer,2017));
   }
   fin.close();
 
@@ -70,14 +70,14 @@ void MTRShuttle::parseOCDB(std::string path)
   for (const auto &runIterator : fRunList) {
     AliCDBManager *managerYearCheck = managerCDB;
 
-    int RunYear = runIterator[1];
+    int RunYear = runIterator.second;
 
-    managerCDB->SetRun(runIterator[0]);
+    managerCDB->SetRun(runIterator.first);
 
     AliCDBStorage *defStorage = managerCDB->GetDefaultStorage();
     if (!defStorage) continue;
 
-    defStorage->QueryCDB(runIterator[0]);
+    defStorage->QueryCDB(runIterator.first);
     TObjArray *arrCDBID = defStorage->GetQueryCDBList();
     if (!arrCDBID) continue;
     TIter nxt(arrCDBID);
@@ -158,7 +158,7 @@ void MTRShuttle::parseOCDB(std::string path)
           }
 
           runObjectBuffer[plane][side][RPC].setfIsDark(!(isBeamPresent));
-          runObjectBuffer[plane][side][RPC].setRunNumber((uint64_t) runIterator);
+          runObjectBuffer[plane][side][RPC].setRunNumber((uint64_t)runIterator.first);
           runObjectBuffer[plane][side][RPC].setSOR(SOR);
           runObjectBuffer[plane][side][RPC].setEOR(EOR);
           runObjectBuffer[plane][side][RPC].setAvgHV((counterHV != 0) ? avgHV / counterHV : 0.);
