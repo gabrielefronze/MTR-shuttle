@@ -290,23 +290,31 @@ void MTRShuttle::setIDark()
     for (int side = 0; side < kNSides; side++) {
       for (int RPC = 0; RPC < kNRPC; RPC++) {
 
+        // The instance of the iterator is external to the loop to avoid always starting from the first element
         auto setIsDarkIt= fAMANDACurrentsVect[plane][side][RPC].begin();
 
+        // Loop over run objects to retreve SOR and EOR values
         for (const auto &runObjectIt: fRunDataVect[plane][side][RPC]) {
 
+          // If run is not dark skip
           if (!runObjectIt.getfIsDark()) continue;
 
+          // Load SOR and EOR values
           auto SOR = runObjectIt.getSOR();
           auto EOR = runObjectIt.getEOR();
 
+          // Loop over the current readings
           for ( setIsDarkIt; setIsDarkIt!=fAMANDACurrentsVect[plane][side][RPC].end(); setIsDarkIt++) {
 
             auto TS = setIsDarkIt->getTimeStamp();
 
+            // If the timestamp is before the SOR skip
             if ( TS < SOR ) continue;
+            // If the timestamp is after the EOR rewind once and break the loop (aka pass to the following run)
             else if ( TS > EOR ){
               setIsDarkIt--;
               break;
+            // If SOR<TS<EOR then set IDark
             } else {
               setIsDarkIt->setIDark(setIsDarkIt->getITot());
               setIsDarkIt->setIsDark(true);
