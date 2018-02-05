@@ -6,6 +6,7 @@
 #define MTR_SHUTTLE_RUNOBJECT_H
 
 #include <cstdint>
+#include <fstream>
 
 class RunObject{
   public:
@@ -42,6 +43,11 @@ class RunObject{
 
     inline bool getfIsDark() const { return fIsDark; }
     inline void setfIsDark(bool fIsDark) { RunObject::fIsDark = fIsDark; }
+
+    std::ostream& operator<<(std::ostream& os, const RunObject& dt){
+      return os << fRunNumber << ',' << fSOR << ',' << fEOR << ',' << fAvgHV << ',' << fAvgITot << ',' << fAvgIDark
+                << ',' << fIntCharge << ',' << fScalBending << ',' << fScalNotBending << ',' << fIsDark;
+    }
 
   private:
     uint64_t fRunNumber;
