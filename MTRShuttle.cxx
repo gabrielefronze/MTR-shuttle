@@ -32,7 +32,7 @@ void MTRShuttle::parseRunList(std::string path)
 
     fin >> runBuffer;
     if(fin.eof()) break;
-    fRunList.push_back(runBuffer);
+    fRunList.push_back({runBuffer,2017});
   }
   fin.close();
 
@@ -70,15 +70,15 @@ void MTRShuttle::parseOCDB(std::string path)
   for (const auto &runIterator : fRunList) {
     AliCDBManager *managerYearCheck = managerCDB;
 
-    int RunYear = 2017;
+    int RunYear = runIterator[1];
 
     //i manager puntano al run desiderato
-    managerCDB->SetRun(runIterator);
+    managerCDB->SetRun(runIterator[0]);
 
     AliCDBStorage *defStorage = managerCDB->GetDefaultStorage();
     if (!defStorage) continue;
 
-    defStorage->QueryCDB(runIterator);
+    defStorage->QueryCDB(runIterator[0]);
     TObjArray *arrCDBID = defStorage->GetQueryCDBList();
     if (!arrCDBID) continue;
     TIter nxt(arrCDBID);

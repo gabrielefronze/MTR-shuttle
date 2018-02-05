@@ -23,7 +23,7 @@ class MTRShuttle
     void setIDark();
 
   private:
-    std::vector<int> fRunList;
+    std::vector<int[2]> fRunList;
     std::vector<RunObject> fRunDataVect[kNPlanes][kNSides][kNRPC];
     std::vector<AMANDACurrent> fAMANDACurrentsVect[kNPlanes][kNSides][kNRPC];
 
