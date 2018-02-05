@@ -35,6 +35,16 @@ void MTRShuttle::parseRunList(std::string path)
     fRunList.push_back(runBuffer);
   }
   fin.close();
+
+  auto nOfRuns = fRunList.size();
+
+  for (int plane=0; plane<kNPlanes; plane++) {
+    for (int side=0; side<kNSides; side++) {
+      for (int RPC=0; RPC<kNRPC; RPC++) {
+        fRunDataVect[plane][side][RPC].reserve(nOfRuns);
+      }
+    }
+  }
 }
 
 void MTRShuttle::parseOCDB(std::string path)
@@ -264,7 +274,7 @@ void MTRShuttle::parseAMANDAiMon(std::string path)
       sprintf(pattern,"%%lf;MTR_%sSIDE_MT%%d_RPC%%d_HV.actual.iMon;%%lf",(InsideOutside=='I'?"IN":"OUT"));
       sscanf(charbuffer,pattern,&timeStamp,&MT,&RPC,&current);
       bufferCurrent.setITot(current);
-      fAMANDACurrentsVect[mts[MT]][(InsideOutside=='I'?0:1)][RPC-1].push_back(bufferCurrent);
+      fAMANDACurrentsVect[mts[MT]][(InsideOutside=='I'?0:1)][RPC-1].emplace_back(bufferCurrent);
     }
     std::cout<<std::endl;
     fin.close();
