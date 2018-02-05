@@ -340,8 +340,8 @@ void MTRShuttle::setIDark()
           else if ( !wasPrevDark && darkCurrentIt->isDark()) {
 
             // Computing the parameters for the "dumb interpolation"
-            double m = getM(*lastDarkIt,*darkCurrentIt);
-            double q = getQ(*lastDarkIt,*darkCurrentIt);
+            const double m = getM(*lastDarkIt,*darkCurrentIt);
+            const double q = getQ(*lastDarkIt,*darkCurrentIt);
 
             // Assigning dark current values from interpolation to the not-dark readings
             std::for_each(lastDarkIt+1,darkCurrentIt-1,[m,q](AMANDACurrent reading){
