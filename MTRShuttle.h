@@ -26,6 +26,14 @@ class MTRShuttle
     std::vector<int> fRunList;
     std::vector<RunObject> fRunDataVect[kNPlanes][kNSides][kNRPC];
     std::vector<AMANDACurrent> fAMANDACurrentsVect[kNPlanes][kNSides][kNRPC];
+
+    inline double getM(AMANDACurrent iStart, AMANDACurrent iStop) {
+      return (iStop.getIDark()-iStart.getIDark())/(iStop.getTimeStamp()-iStart.getTimeStamp());
+    };
+
+    inline double getQ(AMANDACurrent iStart, AMANDACurrent iStop) {
+      return iStart.getIDark();
+    };
 };
 
 #endif //MTR_SHUTTLE_MTRSHUTTLE_H
