@@ -372,6 +372,51 @@ void MTRShuttle::setIDark()
 
           wasPrevDark = darkCurrentIt->isDark();
         }
+
+        auto currentIt= fAMANDACurrentsVect[plane][side][RPC].begin();
+
+        for (auto &runObjectIt: fRunDataVect[plane][side][RPC]) {
+
+          // Load SOR and EOR values
+          auto SOR = runObjectIt.getSOR();
+          auto EOR = runObjectIt.getEOR();
+
+          double iDarkCumulus = 0.;
+          double iDarkCounter = 0;
+
+          double iTotCumulus = 0.;
+          double iTotCounter = 0;
+
+          double integratedCharge = 0;
+          uint64_t previousTS = currentIt->getTimeStamp();
+
+          // Loop over the current readings
+          for ( currentIt; currentIt!=fAMANDACurrentsVect[plane][side][RPC].end(); currentIt++) {
+
+            auto TS = currentIt->getTimeStamp();
+
+            // If the timestamp is before the SOR skip
+            if ( TS < SOR ) continue;
+              // If the timestamp is after the EOR rewind once and break the loop (aka pass to the following run)
+            else if ( TS > EOR ){
+              currentIt--;
+              break;
+              // If SOR<TS<EOR then set IDark
+            } else {
+              iDarkCumulus+=currentIt->getIDark();
+              iDarkCounter++;
+
+              iTotCumulus+=currentIt->getITot();
+              iTotCounter++;
+
+              integratedCharge+=currentIt->getINet()*(currentIt->getTimeStamp()-previousTS);
+            }
+          }
+
+          runObjectIt.setAvgIDark(iDarkCumulus/(double)iDarkCounter);
+          runObjectIt.setAvgITot(iTotCumulus/(double)iTotCounter);
+          runObjectIt.setIntCharge(integratedCharge);
+        }
       }
     }
   }
