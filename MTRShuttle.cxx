@@ -306,7 +306,7 @@ void MTRShuttle::parseAMANDAiMon(std::string path)
   std::cout << "Loaded " << linesCounter << "AMANDA values" << std::endl;
 }
 
-void MTRShuttle::setIDark()
+void MTRShuttle::propagateAMANDA()
 {
   for (int plane=0; plane<kNPlanes; plane++) {
     for (int side = 0; side < kNSides; side++) {
