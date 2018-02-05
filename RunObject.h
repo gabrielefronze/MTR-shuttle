@@ -12,7 +12,7 @@ class RunObject{
   public:
     RunObject(uint64_t fSOR=0, uint64_t fEOR=0, double fAvgHV=0., double fAvgITot=0., double fAvgIDark=0.,
               double fIntCharge=0., uint64_t fScalBending=0, uint64_t fScalNotBending=0,
-              bool fIsDark=false) = default;
+              bool fIsDark=false);
 
     RunObject(std::string csvLine, int &plane, int &side, int &RPC);
 
