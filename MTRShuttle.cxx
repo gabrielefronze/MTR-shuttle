@@ -399,7 +399,10 @@ void MTRShuttle::propagateAMANDA()
             auto TS = currentIt->getTimeStamp();
 
             // If the timestamp is before the SOR skip
-            if ( TS < SOR ) continue;
+            if ( TS < SOR ) {
+              previousTS=TS;
+              continue;
+            }
               // If the timestamp is after the EOR break the loop (aka pass to the following run)
             else if ( TS > EOR ){
               if (currentIt!=fAMANDACurrentsVect[plane][side][RPC].begin()) currentIt--;
@@ -413,6 +416,8 @@ void MTRShuttle::propagateAMANDA()
               iTotCounter++;
 
               integratedCharge+=currentIt->getINet()*(currentIt->getTimeStamp()-previousTS);
+
+              previousTS = TS;
             }
           }
 
