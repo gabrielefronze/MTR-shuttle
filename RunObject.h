@@ -46,6 +46,8 @@ class RunObject{
     inline bool isDark() const { return fIsDark; }
     inline void setfIsDark(bool fIsDark) { RunObject::fIsDark = fIsDark; }
 
+    friend std::ostream& operator<<(std::ostream& os, const RunObject& dt);
+
   private:
     uint64_t fRunNumber;
     uint64_t fSOR;
