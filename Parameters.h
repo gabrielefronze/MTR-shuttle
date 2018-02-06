@@ -54,6 +54,10 @@ static const int kLBToRPC[][3] = {{1,1,0},{2,2,0},{3,2,0},{4,3,0},{5,3,0},{6,4,0
 static const double kMinWorkHV=8500.;
 static const uint64_t kFullScale=65535;
 
+//Graph maquillage vectors
+static const Color_t kColors[] = {kBlack,kRed,kGreen,kBlue,kViolet+7,kMagenta,kCyan,kGray,kOrange};
+static const Style_t kMarkers[]={20,24,21,25};
+
 //double fRPCAreas[kNRPC][kNPlanes];
 //double fLBAreas[kNLocalBoards][kNPlanes];
 //double fTinyArea[kNPlanes];
@@ -69,7 +73,7 @@ static const uint64_t kFullScale=65535;
 //static const std::string fCathodes_[] = {"BENDING","NOT BENDING"};
 //const std::string *fCathodes = fCathodes_;
 //
-//static const int fColors_[] = {kBlack,kRed,kGreen,kBlue,kViolet+7,kMagenta,kCyan,kGray,kOrange};
+//
 //const int *fColors = fColors_;
 //static const int fStyles_[]={20,24,21,25};
 //const int *fStyles = fStyles_;
