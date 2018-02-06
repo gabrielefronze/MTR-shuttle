@@ -19,7 +19,7 @@ RunObject::RunObject(uint64_t fSOR, uint64_t fEOR, double fAvgHV, double fAvgITo
 RunObject::RunObject(std::string csvLine, int &plane, int &side, int &RPC)
 {
   int ifDarkBuffer = 0;
-  sscanf(csvLine.c_str(),"%d\t%d\t%d\t%llu\t%llu\t%llu\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%d",
+  sscanf(csvLine.c_str(),"%d;%d;%d;%llu;%llu;%llu;%lf;%lf;%lf;%lf;%lf;%lf;%d",
          &plane,
          &side,
          &RPC,
