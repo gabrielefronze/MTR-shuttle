@@ -279,7 +279,7 @@ void MTRShuttle::parseAMANDAiMon(std::string path)
       char pattern[200];
       sprintf(pattern,"%%lf;MTR_%sSIDE_MT%%d_RPC%%d_HV.actual.iMon;%%lf",(InsideOutside=='I'?"IN":"OUT"));
       sscanf(charbuffer,pattern,&timeStamp,&MT,&RPC,&current);
-      bufferCurrent.setTimeStamp(timeStamp);
+      bufferCurrent.setTimeStamp(static_cast<uint64_t>(timeStamp));
       bufferCurrent.setITot(current);
       fAMANDACurrentsVect[mts[MT]][(InsideOutside=='I'?0:1)][RPC-1].emplace_back(bufferCurrent);
     }
