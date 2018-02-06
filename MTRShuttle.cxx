@@ -309,6 +309,8 @@ void MTRShuttle::propagateAMANDA()
     for (int side = 0; side < kNSides; side++) {
       for (int RPC = 0; RPC < kNRPC; RPC++) {
 
+        printf("MT%d %s RPC%d... Setting isDark... ",kPlanes[plane],kSides[side].c_str(),RPC);
+
         // The instance of the iterator is external to the loop to avoid always starting from the first element
         auto setIsDarkIt= fAMANDACurrentsVect[plane][side][RPC].begin();
 
@@ -345,6 +347,8 @@ void MTRShuttle::propagateAMANDA()
         auto lastDarkIt = fAMANDACurrentsVect[plane][side][RPC].begin();
         bool wasPrevDark = lastDarkIt->isDark();
 
+        printf("Setting iDark... ");
+
         // Loop over the current readings
         for (auto darkCurrentIt=fAMANDACurrentsVect[plane][side][RPC].begin();
              darkCurrentIt!=fAMANDACurrentsVect[plane][side][RPC].end();
@@ -371,6 +375,8 @@ void MTRShuttle::propagateAMANDA()
         }
 
         auto currentIt= fAMANDACurrentsVect[plane][side][RPC].begin();
+
+        printf("Interpolating and averaging...\n");
 
         for (auto &runObjectIt: fRunDataVect[plane][side][RPC]) {
 
