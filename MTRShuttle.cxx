@@ -421,8 +421,8 @@ void MTRShuttle::propagateAMANDA()
             }
           }
 
-          runObjectIt.setAvgIDark(iDarkCumulus/(double)iDarkCounter);
-          runObjectIt.setAvgITot(iTotCumulus/(double)iTotCounter);
+          runObjectIt.setAvgIDark((iDarkCounter>0)?iDarkCumulus/(double)iDarkCounter:0.);
+          runObjectIt.setAvgITot((iTotCounter>0)?iTotCumulus/(double)iTotCounter:0.);
           runObjectIt.setIntCharge(integratedCharge);
         }
       }
