@@ -363,11 +363,11 @@ void MTRShuttle::propagateAMANDA()
             // Computing the parameters for the "dumb interpolation"
             const double m = getM(*lastDarkIt,*darkCurrentIt);
             const double q = getQ(*lastDarkIt,*darkCurrentIt);
+            const double TS0 = lastDarkIt->getTimeStamp();
 
             // Assigning dark current values from interpolation to the not-dark readings
-            std::for_each(lastDarkIt+1,darkCurrentIt-1,[&m,&q](AMANDACurrent reading){
-              reading.setIDark(m*reading.getTimeStamp()+q);
-              return;
+            std::for_each(lastDarkIt+1,darkCurrentIt-1,[&m,&q,&TS0](AMANDACurrent &reading){
+              reading.setIDark(m*(reading.getTimeStamp()-TS0)+q);
             });
           }
 
