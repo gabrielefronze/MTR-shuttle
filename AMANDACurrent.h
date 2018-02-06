@@ -13,10 +13,10 @@ class AMANDACurrent : public AMANDAData
     AMANDACurrent(double fITot = 0., double fIDark = 0., bool fIsDarkCurrent = false);
 
     inline double getITot() const { return fITot; }
-    inline void setITot(double fITot) { AMANDACurrent::fITot = fITot; }
+    inline void setITot(double iTot) { fITot = iTot; }
 
     inline double getIDark() const { return fIDark; }
-    inline void setIDark(double fIDark) { AMANDACurrent::fIDark = fIDark; }
+    inline void setIDark(double iDark) { fIDark = iDark; }
 
     inline double getINet() const {
       auto iNet = fITot  - fIDark;
@@ -24,7 +24,7 @@ class AMANDACurrent : public AMANDAData
     }
 
     inline bool isDark() const { return fIsDarkCurrent; }
-    inline void setIsDark(bool fIsDark) { AMANDACurrent::fIsDarkCurrent = fIsDark; }
+    inline void setIsDark(bool isDark) { fIsDarkCurrent = isDark; }
 
   private:
     double fITot;
