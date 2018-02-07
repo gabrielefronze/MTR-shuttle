@@ -5,12 +5,13 @@
 #ifndef MTR_SHUTTLE_RUNOBJECT_H
 #define MTR_SHUTTLE_RUNOBJECT_H
 
+
 #include <cstdint>
 #include <fstream>
 
 class RunObject{
   public:
-    RunObject(uint64_t fSOR=0, uint64_t fEOR=0, double fAvgHV=0., double fAvgITot=0., double fAvgIDark=0.,
+    explicit RunObject(uint64_t fSOR=0, uint64_t fEOR=0, double fAvgHV=0., double fAvgITot=0., double fAvgIDark=0.,
               double fIntCharge=0., uint64_t fScalBending=0, uint64_t fScalNotBending=0,
               bool fIsDark=false);
 
