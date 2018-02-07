@@ -497,12 +497,13 @@ template<typename XType, typename YType> TGraph *MTRShuttle::drawCorrelation(int
 
   int counter = 0;
 
-  YType yCumulus = (YType)0;
+  auto yCumulus = (YType)0;
 
   for( auto const &dataIt : fRunDataVect[plane][side][RPC]){
 
     XType x = (dataIt.*getX)();
     YType y = (dataIt.*getY)();
+    if ( y==(YType)0 ) continue;
     returnedGraph->SetPoint(counter++,(double)x,(double)((accumulate)?(yCumulus+=y):y)); //TODO: normalize to area
   }
 
