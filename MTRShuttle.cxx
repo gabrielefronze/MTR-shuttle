@@ -488,7 +488,8 @@ template<typename XType, typename YType> TGraph *MTRShuttle::drawCorrelation(int
                                                                              int RPC,
                                                                              XType(RunObject::*getX)() const,
                                                                              YType(RunObject::*getY)() const,
-                                                                             bool normalizeToArea,
+                                                                             bool normalizeToAreaX,
+                                                                             bool normalizeToAreaY,
                                                                              bool accumulate)
 {
   auto *returnedGraph = new TGraph();
@@ -503,6 +504,8 @@ template<typename XType, typename YType> TGraph *MTRShuttle::drawCorrelation(int
 
     XType x = (dataIt.*getX)();
     YType y = (dataIt.*getY)();
+    if (normalizeToAreaX) x=x/kAreas[plane][side][RPC];
+    if (normalizeToAreaY) y=y/kAreas[plane][side][RPC];
     if ( y==(YType)0 ) continue;
     returnedGraph->SetPoint(counter++,(double)x,(double)((accumulate)?(yCumulus+=y):y)); //TODO: normalize to area
   }
@@ -512,7 +515,8 @@ template<typename XType, typename YType> TGraph *MTRShuttle::drawCorrelation(int
 
 template<typename XType, typename YType> TMultiGraph *MTRShuttle::drawCorrelation(XType(RunObject::*getX)() const,
                                                                                   YType(RunObject::*getY)() const,
-                                                                                  bool normalizeToArea,
+                                                                                  bool normalizeToAreaX,
+                                                                                  bool normalizeToAreaY,
                                                                                   bool accumulate)
 {
   auto *returnedMultiGraph = new TMultiGraph();
@@ -520,7 +524,7 @@ template<typename XType, typename YType> TMultiGraph *MTRShuttle::drawCorrelatio
   for (int plane=0; plane<kNPlanes; plane++) {
     for (int side = 0; side < kNSides; side++) {
       for (int RPC = 0; RPC < kNRPC; RPC++) {
-        returnedMultiGraph->Add(drawCorrelation(plane,side,RPC,getX,getY,normalizeToArea,accumulate));
+        returnedMultiGraph->Add(drawCorrelation(plane,side,RPC,getX,getY,normalizeToAreaX,normalizeToAreaY,accumulate));
       }
     }
   }
@@ -535,7 +539,7 @@ template<typename YType> TGraph *MTRShuttle::drawTrend(int plane,
                                                        bool normalizeToArea,
                                                        bool accumulate)
 {
-  return drawCorrelation(plane,side,RPC,&RunObject::getSOR,getY,normalizeToArea,accumulate);
+  return drawCorrelation(plane,side,RPC,&RunObject::getSOR,getY,false,normalizeToArea,accumulate);
 }
 
 template<typename YType>TMultiGraph *MTRShuttle::drawTrend(YType(RunObject::*getY)() const,

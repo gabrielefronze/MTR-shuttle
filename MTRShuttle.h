@@ -27,12 +27,14 @@ class MTRShuttle
     template<typename XType, typename YType> TGraph* drawCorrelation(int plane, int side, int RPC,
                                                                      XType(RunObject::*getX)() const,
                                                                      YType(RunObject::*getY)() const,
-                                                                     bool normalizeToArea=false,
+                                                                     bool normalizeToAreaX,
+                                                                     bool normalizeToAreaY,
                                                                      bool accumulate=false);
     template<typename XType, typename YType> TMultiGraph* drawCorrelation(XType(RunObject::*getX)() const,
-                                                                          YType(RunObject::*getY)() const,
-                                                                          bool normalizeToArea=false,
-                                                                          bool accumulate=false);
+                                               YType(RunObject::*getY)() const,
+                                               bool normalizeToAreaX,
+                                               bool normalizeToAreaY,
+                                               bool accumulate=false);
     template<typename YType>  TGraph* drawTrend(int plane, int side, int RPC,
                                                 YType(RunObject::*getY)() const,
                                                 bool normalizeToArea=false,
