@@ -250,44 +250,43 @@ void MTRShuttle::parseOCDB(std::string path)
 
 void MTRShuttle::parseAMANDAiMon(std::string path)
 {
-  int mts[23];
-  mts[11]=0;
-  mts[12]=1;
-  mts[21]=2;
-  mts[22]=3;
-
-  uint64_t dummyTimeStamp=0;
-  double timeStamp=0;
-  double current=0.;
-  int MT=0;
-  int RPC=0;
-  char InsideOutside='I';
-
-  std::string line;
-  std::ifstream fin (path);
   int linesCounter = 0;
-  AMANDACurrent bufferCurrent(0., 0., false);
-  if (fin.is_open())
   {
-    while (! fin.eof() )
-    {
-      getline (fin,line);
-      if (fin.eof()) break;
-      std::cout<<linesCounter++<<"\r";
-      const char *charbuffer = (char*)line.c_str();
-      if (!charbuffer) continue;
-      sscanf(charbuffer,"%llu;MTR_%c",&dummyTimeStamp,&InsideOutside);
-      char pattern[200];
-      sprintf(pattern,"%%lf;MTR_%sSIDE_MT%%d_RPC%%d_HV.actual.iMon;%%lf",(InsideOutside=='I'?"IN":"OUT"));
-      sscanf(charbuffer,pattern,&timeStamp,&MT,&RPC,&current);
-      bufferCurrent.setTimeStamp(static_cast<uint64_t>(timeStamp));
-      bufferCurrent.setITot(current);
-      fAMANDACurrentsVect[mts[MT]][(InsideOutside=='I'?0:1)][RPC-1].emplace_back(bufferCurrent);
-    }
-    std::cout<<std::endl;
-    fin.close();
+    uint64_t dummyTimeStamp = 0;
+    double timeStamp = 0;
+    double current = 0.;
+    int MT = 0;
+    int RPC = 0;
+    char InsideOutside = 'I';
+    
+    int mts[23];
+    mts[11]=0;
+    mts[12]=1;
+    mts[21]=2;
+    mts[22]=3;
+
+    std::string line;
+    std::ifstream fin(path);
+    AMANDACurrent bufferCurrent(0., 0., false);
+    if (fin.is_open()) {
+      while (!fin.eof()) {
+        getline(fin, line);
+        if (fin.eof()) break;
+        std::cout << linesCounter++ << "\r";
+        const char *charbuffer = (char *) line.c_str();
+        if (!charbuffer) continue;
+        sscanf(charbuffer, "%llu;MTR_%c", &dummyTimeStamp, &InsideOutside);
+        char pattern[200];
+        sprintf(pattern, "%%lf;MTR_%sSIDE_MT%%d_RPC%%d_HV.actual.iMon;%%lf", (InsideOutside == 'I' ? "IN" : "OUT"));
+        sscanf(charbuffer, pattern, &timeStamp, &MT, &RPC, &current);
+        bufferCurrent.setTimeStamp(static_cast<uint64_t>(timeStamp));
+        bufferCurrent.setITot(current);
+        fAMANDACurrentsVect[mts[MT]][(InsideOutside == 'I' ? 0 : 1)][RPC - 1].emplace_back(bufferCurrent);
+      }
+      std::cout << std::endl;
+      fin.close();
+    } else std::cout << "Unable to open file";
   }
-  else std::cout << "Unable to open file";
 
   for (int plane=0; plane<kNPlanes; plane++) {
     for (int side = 0; side < kNSides; side++) {
