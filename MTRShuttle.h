@@ -24,19 +24,18 @@ class MTRShuttle
     void saveData(std::string path = "MTRShuttle.csv");
     void loadData(std::string path = "MTRShuttle.csv");
 
-    template<typename T> TMultiGraph* drawTrend(T (RunObject::*funky)() const,
-                                                bool normalizeToArea);
-    template<typename T> TGraph* drawTrend(int plane, int side, int RPC,
-                                           T (RunObject::*funky)() const,
-                                           bool normalizeToArea);
-
-    template<typename T1, typename T2> TMultiGraph* drawCorrelation(T1 (RunObject::*funky1)() const,
-                                                                    T2 (RunObject::*funky2)() const,
-                                                                    bool normalizeToArea);
-    template<typename T1, typename T2> TGraph* drawCorrelation(int plane, int side, int RPC,
-                                                               T1 (RunObject::*funky1)() const,
-                                                               T2 (RunObject::*funky2)() const,
+    template<typename XType, typename YType> TGraph* drawCorrelation(int plane, int side, int RPC,
+                                                               XType(RunObject::*getX)() const,
+                                                               YType(RunObject::*getY)() const,
                                                                bool normalizeToArea);
+    template<typename XType, typename YType> TMultiGraph* drawCorrelation(XType(RunObject::*getX)() const,
+                                                                          YType(RunObject::*getY)() const,
+                                                                    bool normalizeToArea);
+    template<typename YType>  TGraph* drawTrend(int plane, int side, int RPC,
+                                                YType(RunObject::*getY)() const,
+                                                bool normalizeToArea);
+    template<typename YType> TMultiGraph* drawTrend(YType(RunObject::*getY)() const,
+                                                    bool normalizeToArea);
 
   public:
     std::vector<std::pair<int,int>> fRunList;

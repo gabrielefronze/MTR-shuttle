@@ -16,6 +16,7 @@
 #include <TClonesArray.h>
 #include "MTRShuttle.h"
 #include "AlienUtils.h"
+#include "RunObject.h"
 
 void MTRShuttle::parseRunList(std::string path)
 {
@@ -473,9 +474,20 @@ void MTRShuttle::loadData(std::string path)
   else std::cout << "Unable to open file";
 }
 
-template<typename T1, typename T2>
-TGraph *MTRShuttle::drawCorrelation(int plane, int side, int RPC, T1 (*funky1)() const, T2 (*funky2)() const,
-                                    bool normalizeToArea)
+void MTRShuttle::graphMaquillage(int plane, int side, int RPC, TGraph *graph)
+{
+  graph->SetLineColor(kColors[RPC]);
+  graph->SetMarkerColor(kColors[RPC]);
+  graph->SetMarkerStyle(kMarkers[plane]);
+  graph->SetLineStyle((Style_t)((side==0)?1:9));
+}
+
+template<typename XType, typename YType> TGraph *MTRShuttle::drawCorrelation(int plane,
+                                                                             int side,
+                                                                             int RPC,
+                                                                             XType(RunObject::*getX)() const,
+                                                                             YType(RunObject::*getY)() const,
+                                                                             bool normalizeToArea)
 {
   auto *returnedGraph = new TGraph();
   returnedGraph->SetNameTitle(Form("%d_%d_%d",plane,side,RPC),Form("MT%d %s RPC:%d",kPlanes[plane],kSides[side].c_str(),RPC));
@@ -484,27 +496,25 @@ TGraph *MTRShuttle::drawCorrelation(int plane, int side, int RPC, T1 (*funky1)()
   int counter = 0;
 
   for( auto const &dataIt : fRunDataVect[plane][side][RPC]){
-    returnedGraph->SetPoint(counter++,dataIt.*funky1(),dataIt.*funky2()); //TODO: normalize to area
+
+    XType x = (dataIt.*getX)();
+    YType y = (dataIt.*getY)();
+    returnedGraph->SetPoint(counter++,(double)x,(double)y); //TODO: normalize to area
   }
 
-  return nullptr;
+  return returnedGraph;
 }
 
-template<typename T>
-TGraph *MTRShuttle::drawTrend(int plane, int side, int RPC, T (*funky)() const, bool normalizeToArea)
-{
-  return drawCorrelation(plane,side,RPC,&RunObject::getSOR,*funky, normalizeToArea);
-}
-
-template<typename T>
-TMultiGraph *MTRShuttle::drawTrend(T (*funky)() const, bool normalizeToArea)
+template<typename XType, typename YType> TMultiGraph *MTRShuttle::drawCorrelation(XType(RunObject::*getX)() const,
+                                                                                  YType(RunObject::*getY)() const,
+                                                                                  bool normalizeToArea)
 {
   auto *returnedMultiGraph = new TMultiGraph();
 
   for (int plane=0; plane<kNPlanes; plane++) {
     for (int side = 0; side < kNSides; side++) {
       for (int RPC = 0; RPC < kNRPC; RPC++) {
-        returnedMultiGraph->Add(drawTrend(plane,side,RPC,*funky,normalizeToArea));
+        returnedMultiGraph->Add(drawCorrelation(plane,side,RPC,getX,getY,normalizeToArea));
       }
     }
   }
@@ -512,26 +522,27 @@ TMultiGraph *MTRShuttle::drawTrend(T (*funky)() const, bool normalizeToArea)
   return returnedMultiGraph;
 }
 
-template<typename T1, typename T2>
-TMultiGraph *MTRShuttle::drawCorrelation(T1 (*funky1)() const, T2 (*funky2)() const, bool normalizeToArea)
+template<typename YType> TGraph *MTRShuttle::drawTrend(int plane,
+                                                       int side,
+                                                       int RPC,
+                                                       YType(RunObject::*getY)() const,
+                                                       bool normalizeToArea)
+{
+  return drawCorrelation(plane,side,RPC,&RunObject::getSOR,getY,normalizeToArea);
+}
+
+template<typename YType>TMultiGraph *MTRShuttle::drawTrend(YType(RunObject::*getY)() const,
+                                                           bool normalizeToArea)
 {
   auto *returnedMultiGraph = new TMultiGraph();
 
   for (int plane=0; plane<kNPlanes; plane++) {
     for (int side = 0; side < kNSides; side++) {
       for (int RPC = 0; RPC < kNRPC; RPC++) {
-        returnedMultiGraph->Add(drawCorrelation(plane,side,RPC,*funky1,*funky2,normalizeToArea));
+        returnedMultiGraph->Add(drawTrend(plane,side,RPC,getY,normalizeToArea));
       }
     }
   }
 
   return returnedMultiGraph;
-}
-
-void MTRShuttle::graphMaquillage(int plane, int side, int RPC, TGraph *graph)
-{
-  graph->SetLineColor(kColors[RPC]);
-  graph->SetMarkerColor(kColors[RPC]);
-  graph->SetMarkerStyle(kMarkers[plane]);
-  graph->SetLineStyle((Style_t)((side==0)?1:9));
 }
