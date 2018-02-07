@@ -554,3 +554,45 @@ template<typename YType>TMultiGraph *MTRShuttle::drawTrend(YType(RunObject::*get
 
   return returnedMultiGraph;
 }
+
+//bool MTRShuttle::computeAreas(std::string path)
+//{
+//  AliCDBManager *managerCDB = AliCDBManager::Instance();
+//  managerCDB->SetDefaultStorage(path.c_str());
+//
+//  managerCDB->SetRun(0);
+//
+//  AliCDBStorage *defStorage = managerCDB->GetDefaultStorage();
+//  if (!defStorage) return false;
+//
+//  if (!AliMpCDB::LoadDDLStore()) return false;
+//  AliMpDDLStore *ddlStore = AliMpDDLStore::Instance();
+//
+//  for ( Int_t plane=0; plane<4; plane++) {
+//    for (Int_t LB = 1; LB <= 234; LB++) {
+//      int ElemID = AliMpDDLStore::Instance()->GetDEfromLocalBoard(LB, 10 + plane);
+//      int RPC017 = ElemID % 100;
+//      int RPC09 = kRPCIndexes[RPC017] - 1;
+//      int Side = kRPCSides[RPC017];
+//
+//      const AliMpVSegmentation *seg =
+//        AliMpSegmentation::Instance()->GetMpSegmentation(ElemID, AliMp::CathodType::kCath0);
+//      double x1 = 0., x2 = 0., y1 = 0., y2 = 0.;
+//      // loop over strips
+//      for (Int_t ibitxy = 0; ibitxy < 16; ibitxy += 15) {
+//        AliMpPad pad = seg->PadByLocation(LB, ibitxy, kFALSE);
+//        if (!pad.IsValid()) continue;
+//        if (ibitxy == 0) {
+//          x1 = pad.GetPositionX() - pad.GetDimensionX();
+//          y1 = pad.GetPositionY() - pad.GetDimensionY();
+//        }
+//        x2 = pad.GetPositionX() + pad.GetDimensionX();
+//        y2 = pad.GetPositionY() + pad.GetDimensionY();
+//      }
+//
+//      fAreas[plane][Side][RPC09] += (x2 - x1) * (y2 - y1);
+//    }
+//  }
+//
+//  return true;
+//}
