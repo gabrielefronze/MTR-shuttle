@@ -541,7 +541,7 @@ template<typename YType> TGraph *MTRShuttle::drawTrend(int plane,
   gStyle->SetTimeOffset(0);
   auto returnedGraph = drawCorrelation(plane,side,RPC,&RunObject::getSOR,getY,false,normalizeToArea,accumulate);
   returnedGraph->GetXaxis()->SetTimeDisplay(1);
-  returnedGraph->GetXaxis()->SetTimeFormat("%d\/%m\/%Y");
+  returnedGraph->GetXaxis()->SetTimeFormat("%d\/%m\/%y");
   returnedGraph->GetXaxis()->SetLabelSize(0.03);
   return returnedGraph;
 }
