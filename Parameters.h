@@ -63,7 +63,7 @@ static const double kMinWorkHV=8500.;
 static const uint64_t kFullScale=65535;
 
 //Graph maquillage vectors
-static const Color_t kColors[] ={kBlack,kRed,kGreen,kBlue,kViolet+7,kMagenta,kCyan,kGray,kOrange};
+static const Color_t kColors[] ={kBlue+2,kRed,kGreen,kBlue,kViolet+7,kMagenta,kCyan,kGray,kOrange};
 static const Style_t kMarkers[]={20,24,21,25};
 
 //double fRPCAreas[kNRPC][kNPlanes];
