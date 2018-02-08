@@ -60,12 +60,12 @@ class MTRShuttle
       return iStart.getIDark();
     };
 
-    inline template<typename Type> bool compareFunctions(Type(RunObject::*getX)() const, Type(RunObject::*getY)() const){
+    template<typename Type> inline bool compareFunctions(Type(RunObject::*getX)() const, Type(RunObject::*getY)() const){
       return (getX == getY);
     };
 
-    inline template<typename XType, typename YType>
-    typename std::enable_if<!(std::is_same<XType,YType>::value),bool>::type
+    template<typename XType, typename YType>
+    inline typename std::enable_if<!(std::is_same<XType,YType>::value),bool>::type
     compareFunctions(XType(RunObject::*getX)() const, YType(RunObject::*getY)() const){
       return false;
     };
