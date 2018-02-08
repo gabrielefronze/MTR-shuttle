@@ -495,6 +495,20 @@ template<typename XType, typename YType> TGraph *MTRShuttle::drawCorrelation(int
   returnedGraph->SetNameTitle(Form("%d_%d_%d",plane,side,RPC),Form("MT%d %s RPC:%d",kPlanes[plane],kSides[side].c_str(),RPC));
   graphMaquillage(plane,side,RPC,returnedGraph);
 
+  if (compareFunctions(getX,&RunObject::getSOR) || compareFunctions(getX,&RunObject::getEOR)){
+    gStyle->SetTimeOffset(0);
+    returnedGraph->GetXaxis()->SetTimeDisplay(1);
+    returnedGraph->GetXaxis()->SetTimeFormat("%d\/%m\/%Y");
+    returnedGraph->GetXaxis()->SetLabelSize(0.03);
+  }
+
+  if (compareFunctions(getY,&RunObject::getSOR) || compareFunctions(getY,&RunObject::getEOR)){
+    gStyle->SetTimeOffset(0);
+    returnedGraph->GetYaxis()->SetTimeDisplay(1);
+    returnedGraph->GetYaxis()->SetTimeFormat("%d\/%m\/%Y");
+    returnedGraph->GetYaxis()->SetLabelSize(0.03);
+  }
+
   int counter = 0;
 
   auto yCumulus = (YType)0;
@@ -541,11 +555,7 @@ template<typename YType> TGraph *MTRShuttle::drawTrend(int plane,
   //This time offset is NEEDED to correctly display data from timestamp!
   gStyle->SetTimeOffset(0);
 
-  auto returnedGraph = drawCorrelation(plane,side,RPC,&RunObject::getSOR,getY,false,normalizeToArea,accumulate);
-  returnedGraph->GetXaxis()->SetTimeDisplay(1);
-  returnedGraph->GetXaxis()->SetTimeFormat("%d\/%m\/%y");
-  returnedGraph->GetXaxis()->SetLabelSize(0.03);
-  return returnedGraph;
+  return drawCorrelation(plane,side,RPC,&RunObject::getSOR,getY,false,normalizeToArea,accumulate);
 }
 
 template<typename YType>TMultiGraph *MTRShuttle::drawTrend(YType(RunObject::*getY)() const,
