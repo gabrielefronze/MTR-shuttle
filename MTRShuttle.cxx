@@ -501,7 +501,7 @@ void MTRShuttle::loadData(std::string path)
     {
       getline (fin,line);
       if (fin.eof()) break;
-      std::cout<<linesCounter++<<"\r";
+      std::cout<<"Loaded lines: "<<linesCounter++<<"\r";
       runObjectBuffer = RunObject(line,plane,side,RPC);
       fRunDataVect[plane][side][RPC].emplace_back(runObjectBuffer);
     }
