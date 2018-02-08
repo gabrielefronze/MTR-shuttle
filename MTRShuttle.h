@@ -25,24 +25,45 @@ class MTRShuttle
     void loadData(std::string path = "MTRShuttle.csv");
     void computeAverage();
 
-    template<typename XType, typename YType> TGraph* drawCorrelation(int plane, int side, int RPC,
-                                                                     XType(RunObject::*getX)() const,
-                                                                     YType(RunObject::*getY)() const,
-                                                                     bool normalizeToAreaX,
-                                                                     bool normalizeToAreaY,
-                                                                     bool accumulate=false);
-    template<typename XType, typename YType> TMultiGraph* drawCorrelation(XType(RunObject::*getX)() const,
-                                               YType(RunObject::*getY)() const,
-                                               bool normalizeToAreaX,
-                                               bool normalizeToAreaY,
-                                               bool accumulate=false);
-    template<typename YType>  TGraph* drawTrend(int plane, int side, int RPC,
-                                                YType(RunObject::*getY)() const,
-                                                bool normalizeToArea=false,
-                                                bool accumulate=false);
-    template<typename YType> TMultiGraph* drawTrend(YType(RunObject::*getY)() const,
-                                                    bool normalizeToArea=false,
-                                                    bool accumulate=false);
+    template<typename XType, typename YType>
+    TGraph *drawCorrelation(XType (RunObject::*getX)() const,
+                            YType (RunObject::*getY)() const,
+                            bool normalizeToAreaX=false,
+                            bool normalizeToAreaY=false,
+                            bool accumulate=false,
+                            bool plotAverage=true,
+                            int plane=-1,
+                            int side=-1,
+                            int RPC=-1,
+                            bool (RunObject::*condition)() const=&RunObject::getTrue,
+                            bool negateCondition=false);
+
+    template<typename XType, typename YType>
+    TMultiGraph* drawCorrelations(XType(RunObject::*getX)() const,
+                                  YType(RunObject::*getY)() const,
+                                  bool normalizeToAreaX=false,
+                                  bool normalizeToAreaY=false,
+                                  bool accumulate=false,
+                                  bool plotAverage=true,
+                                  bool (RunObject::*condition)() const=&RunObject::getTrue,
+                                  bool negateCondition=false);
+    template<typename YType>
+    TGraph *drawTrend(YType (RunObject::*getY)() const,
+                      bool normalizeToArea=false,
+                      bool accumulate=false,
+                      bool plotAverage=true,
+                      int plane=-1,
+                      int side=-1,
+                      int RPC=-1,
+                      bool (RunObject::*condition)() const=&RunObject::getTrue,
+                      bool negateCondition=false);
+
+    template<typename YType> TMultiGraph* drawTrends(YType(RunObject::*getY)() const,
+                                                     bool normalizeToArea=false,
+                                                     bool accumulate=false,
+                                                     bool plotAverage=false,
+                                                     bool (RunObject::*condition)() const=&RunObject::getTrue,
+                                                     bool negateCondition=false);
 
   public:
     std::vector<std::pair<int,int>> fRunList;
@@ -70,7 +91,7 @@ class MTRShuttle
       return false;
     };
 
-    void graphMaquillage(int plane, int side, int RPC, TGraph* graph);
+    void graphMaquillage(int plane, int side, int RPC, TGraph* graph, bool isAvgGraph=false);
 };
 
 #endif //MTR_SHUTTLE_MTRSHUTTLE_H

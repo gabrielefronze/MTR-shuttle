@@ -437,7 +437,9 @@ void MTRShuttle::computeAverage()
 {
   auto nOfRuns = fRunDataVect[0][0][0].size();
   fRunDataVectAvg.reserve(nOfRuns);
-  
+
+  auto nOfRPC = kNPlanes*kNSides*kNRPC;
+
   for(int iRun = 0; iRun < nOfRuns; iRun++){
 
     RunObject runData;
@@ -459,12 +461,12 @@ void MTRShuttle::computeAverage()
       }
     }
 
-    runData.setAvgHV(runData.getAvgHV()/(double)nOfRuns);
-    runData.setAvgIDark(runData.getAvgIDark()/(double)nOfRuns);
-    runData.setAvgITot(runData.getAvgITot()/(double)nOfRuns);
-    runData.setIntCharge(runData.getIntCharge()/(double)nOfRuns);
-    runData.setScalBending(runData.getScalBending()/(double)nOfRuns);
-    runData.setScalNotBending(runData.getScalNotBending()/(double)nOfRuns);
+    runData.setAvgHV(runData.getAvgHV()/(double)nOfRPC);
+    runData.setAvgIDark(runData.getAvgIDark()/(double)nOfRPC);
+    runData.setAvgITot(runData.getAvgITot()/(double)nOfRPC);
+    runData.setIntCharge(runData.getIntCharge()/(double)nOfRPC);
+    runData.setScalBending(runData.getScalBending()/(double)nOfRPC);
+    runData.setScalNotBending(runData.getScalNotBending()/(double)nOfRPC);
 
     fRunDataVectAvg.emplace_back(runData);
   }
@@ -511,29 +513,48 @@ void MTRShuttle::loadData(std::string path)
   else std::cout << "Unable to open file";
 }
 
-void MTRShuttle::graphMaquillage(int plane, int side, int RPC, TGraph *graph)
+void MTRShuttle::graphMaquillage(int plane, int side, int RPC, TGraph *graph, bool isAvgGraph)
 {
-  graph->SetLineColor(kColors[RPC]);
-  graph->SetMarkerColor(kColors[RPC]);
-  graph->SetMarkerStyle(kMarkers[plane]);
-  graph->SetMarkerSize(0.1);
-  graph->SetLineStyle((Style_t)((side==0)?1:9));
+  if(!isAvgGraph){
+    graph->SetLineColor(kColors[RPC]);
+    graph->SetMarkerColor(kColors[RPC]);
+    graph->SetMarkerStyle(kMarkers[plane]);
+    graph->SetMarkerSize(0.1);
+    graph->SetLineStyle((Style_t)(4));
+  } else {
+    graph->SetLineColor(kBlack);
+    graph->SetMarkerColor(kBlack);
+    graph->SetMarkerStyle(29);
+    graph->SetMarkerSize(0.2);
+    graph->SetLineStyle((Style_t)(1));
+    graph->SetLineWidth(5);
+  }
 }
 
-template<typename XType, typename YType> TGraph *MTRShuttle::drawCorrelation(int plane,
-                                                                             int side,
-                                                                             int RPC,
-                                                                             XType(RunObject::*getX)() const,
-                                                                             YType(RunObject::*getY)() const,
-                                                                             bool normalizeToAreaX,
-                                                                             bool normalizeToAreaY,
-                                                                             bool accumulate)
+template<typename XType, typename YType>
+TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
+                                    YType (RunObject::*getY)() const,
+                                    bool normalizeToAreaX,
+                                    bool normalizeToAreaY,
+                                    bool accumulate,
+                                    bool plotAverage,
+                                    int plane,
+                                    int side,
+                                    int RPC,
+                                    bool (RunObject::*condition)() const,
+                                    bool negateCondition)
 {
   auto *returnedGraph = new TGraph();
-  returnedGraph->SetNameTitle(Form("%d_%d_%d",plane,side,RPC),Form("MT%d %s RPC:%d",kPlanes[plane],kSides[side].c_str(),RPC));
-  graphMaquillage(plane,side,RPC,returnedGraph);
+  if(!plotAverage){
+    returnedGraph->SetNameTitle(Form("%d_%d_%d",plane,side,RPC),Form("MT%d %s RPC:%d",kPlanes[plane],kSides[side].c_str(),RPC));
+    graphMaquillage(plane,side,RPC,returnedGraph,plotAverage);
+  } else {
+    returnedGraph->SetNameTitle("avg","Average");
+    graphMaquillage(plane,side,RPC,returnedGraph,plotAverage);
+  }
 
   if (compareFunctions(getX,&RunObject::getSOR) || compareFunctions(getX,&RunObject::getEOR)){
+    //This time offset is NEEDED to correctly display data from timestamp!
     gStyle->SetTimeOffset(0);
     returnedGraph->GetXaxis()->SetTimeDisplay(1);
     returnedGraph->GetXaxis()->SetTimeFormat("%d\/%m\/%Y");
@@ -541,6 +562,7 @@ template<typename XType, typename YType> TGraph *MTRShuttle::drawCorrelation(int
   }
 
   if (compareFunctions(getY,&RunObject::getSOR) || compareFunctions(getY,&RunObject::getEOR)){
+    //This time offset is NEEDED to correctly display data from timestamp!
     gStyle->SetTimeOffset(0);
     returnedGraph->GetYaxis()->SetTimeDisplay(1);
     returnedGraph->GetYaxis()->SetTimeFormat("%d\/%m\/%Y");
@@ -551,12 +573,20 @@ template<typename XType, typename YType> TGraph *MTRShuttle::drawCorrelation(int
 
   auto yCumulus = (YType)0;
 
-  for( auto const &dataIt : fRunDataVect[plane][side][RPC]){
+  auto dataVector = (!plotAverage)?fRunDataVect[plane][side][RPC]:fRunDataVectAvg;
 
+  for( auto const &dataIt : dataVector){
+    if ((dataIt.*condition)()==negateCondition) continue;
     XType x = (dataIt.*getX)();
     YType y = (dataIt.*getY)();
-    if (normalizeToAreaX) x=x/kAreas[plane][side][RPC];
-    if (normalizeToAreaY) y=y/kAreas[plane][side][RPC];
+    if (normalizeToAreaX){
+      if(!plotAverage) x=x/kAreas[plane][side][RPC];
+      else x=x/kAreas[0][0][0];
+    }
+    if (normalizeToAreaY){
+      if(!plotAverage) y=y/kAreas[plane][side][RPC];
+      else y=y/kAreas[0][0][0];
+    }
     if ( y==(YType)0 ) continue;
     returnedGraph->SetPoint(counter++,(double)x,(double)((accumulate)?(yCumulus+=y):y)); //TODO: normalize to area
   }
@@ -564,53 +594,93 @@ template<typename XType, typename YType> TGraph *MTRShuttle::drawCorrelation(int
   return returnedGraph;
 }
 
-template<typename XType, typename YType> TMultiGraph *MTRShuttle::drawCorrelation(XType(RunObject::*getX)() const,
-                                                                                  YType(RunObject::*getY)() const,
-                                                                                  bool normalizeToAreaX,
-                                                                                  bool normalizeToAreaY,
-                                                                                  bool accumulate)
+template<typename XType, typename YType> TMultiGraph *MTRShuttle::drawCorrelations(XType(RunObject::*getX)() const,
+                                                                                   YType(RunObject::*getY)() const,
+                                                                                   bool normalizeToAreaX,
+                                                                                   bool normalizeToAreaY,
+                                                                                   bool accumulate,
+                                                                                   bool plotAverage,
+                                                                                   bool (RunObject::*condition)() const,
+                                                                                   bool negateCondition)
 {
   auto *returnedMultiGraph = new TMultiGraph();
 
   for (int plane=0; plane<kNPlanes; plane++) {
     for (int side = 0; side < kNSides; side++) {
       for (int RPC = 0; RPC < kNRPC; RPC++) {
-        returnedMultiGraph->Add(drawCorrelation(plane,side,RPC,getX,getY,normalizeToAreaX,normalizeToAreaY,accumulate));
+        returnedMultiGraph->Add(
+          drawCorrelation(getX,
+                          getY,
+                          normalizeToAreaX,
+                          normalizeToAreaY,
+                          accumulate,
+                          false,
+                          plane,
+                          side,
+                          RPC,
+                          condition,
+                          negateCondition));
       }
     }
+  }
+
+  if (plotAverage) {
+    returnedMultiGraph->Add(
+      drawCorrelation(getX,
+                      getY,
+                      normalizeToAreaX,
+                      normalizeToAreaY,
+                      accumulate,
+                      plotAverage,
+                      -1,
+                      -1,
+                      -1,
+                      condition,
+                      negateCondition));
   }
 
   return returnedMultiGraph;
 }
 
-template<typename YType> TGraph *MTRShuttle::drawTrend(int plane,
-                                                       int side,
-                                                       int RPC,
-                                                       YType(RunObject::*getY)() const,
-                                                       bool normalizeToArea,
-                                                       bool accumulate)
+template<typename YType>
+TGraph *MTRShuttle::drawTrend(YType (RunObject::*getY)() const,
+                              bool normalizeToArea,
+                              bool accumulate,
+                              bool plotAverage,
+                              int plane,
+                              int side,
+                              int RPC,
+                              bool (RunObject::*condition)() const,
+                              bool negateCondition)
 {
-  //This time offset is NEEDED to correctly display data from timestamp!
-  gStyle->SetTimeOffset(0);
-
-  return drawCorrelation(plane,side,RPC,&RunObject::getSOR,getY,false,normalizeToArea,accumulate);
+  return drawCorrelation(&RunObject::getSOR,
+                         getY,
+                         false,
+                         normalizeToArea,
+                         accumulate,
+                         plotAverage,
+                         plane,
+                         side,
+                         RPC,
+                         condition,
+                         negateCondition);
 }
 
-template<typename YType>TMultiGraph *MTRShuttle::drawTrend(YType(RunObject::*getY)() const,
-                                                           bool normalizeToArea,
-                                                           bool accumulate)
+template<typename YType>TMultiGraph *MTRShuttle::drawTrends(YType(RunObject::*getY)() const,
+                                                            bool normalizeToArea,
+                                                            bool accumulate,
+                                                            bool plotAverage,
+                                                            bool (RunObject::*condition)() const,
+                                                            bool negateCondition)
 {
-  auto *returnedMultiGraph = new TMultiGraph();
-
-  for (int plane=0; plane<kNPlanes; plane++) {
-    for (int side = 0; side < kNSides; side++) {
-      for (int RPC = 0; RPC < kNRPC; RPC++) {
-        returnedMultiGraph->Add(drawTrend(plane,side,RPC,getY,normalizeToArea,accumulate));
-      }
-    }
-  }
-
-  return returnedMultiGraph;
+  return drawCorrelations(&RunObject::getSOR,
+                          getY,
+                          false,
+                          normalizeToArea,
+                          accumulate,
+                          plotAverage,
+                          condition,
+                          negateCondition);
 }
 
 //bool MTRShuttle::computeAreas(std::string path)
