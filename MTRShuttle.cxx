@@ -538,7 +538,9 @@ template<typename YType> TGraph *MTRShuttle::drawTrend(int plane,
                                                        bool normalizeToArea,
                                                        bool accumulate)
 {
+  //This time offset is NEEDED to correctly display data from timestamp!
   gStyle->SetTimeOffset(0);
+
   auto returnedGraph = drawCorrelation(plane,side,RPC,&RunObject::getSOR,getY,false,normalizeToArea,accumulate);
   returnedGraph->GetXaxis()->SetTimeDisplay(1);
   returnedGraph->GetXaxis()->SetTimeFormat("%d\/%m\/%y");
