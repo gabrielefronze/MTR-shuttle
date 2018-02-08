@@ -23,6 +23,7 @@ class MTRShuttle
     void propagateAMANDA();
     void saveData(std::string path = "MTRShuttle.csv");
     void loadData(std::string path = "MTRShuttle.csv");
+    void computeAverage();
 
     template<typename XType, typename YType> TGraph* drawCorrelation(int plane, int side, int RPC,
                                                                      XType(RunObject::*getX)() const,
@@ -46,6 +47,7 @@ class MTRShuttle
   public:
     std::vector<std::pair<int,int>> fRunList;
     std::vector<RunObject> fRunDataVect[kNPlanes][kNSides][kNRPC];
+    std::vector<RunObject> fRunDataVectAvg;
     std::vector<AMANDACurrent> fAMANDACurrentsVect[kNPlanes][kNSides][kNRPC];
 
     inline double getM(const AMANDACurrent iStart, const AMANDACurrent iStop) {

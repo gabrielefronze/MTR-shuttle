@@ -432,6 +432,44 @@ void MTRShuttle::propagateAMANDA()
   }
 }
 
+
+void MTRShuttle::computeAverage()
+{
+  auto nOfRuns = fRunDataVect[0][0][0].size();
+  fRunDataVectAvg.reserve(nOfRuns);
+  
+  for(int iRun = 0; iRun < nOfRuns; iRun++){
+
+    RunObject runData;
+    runData.setSOR(fRunDataVect[0][0][0][iRun].getSOR());
+    runData.setEOR(fRunDataVect[0][0][0][iRun].getEOR());
+    runData.setRunNumber(fRunDataVect[0][0][0][iRun].getRunNumber());
+    runData.setfIsDark(fRunDataVect[0][0][0][iRun].isDark());
+
+    for (int plane=0; plane<kNPlanes; plane++) {
+      for (int side = 0; side < kNSides; side++) {
+        for (int RPC = 0; RPC < kNRPC; RPC++) {
+          runData.setAvgHV(runData.getAvgHV()+ fRunDataVect[plane][side][RPC][iRun].getAvgHV());
+          runData.setAvgIDark(runData.getAvgIDark()+ fRunDataVect[plane][side][RPC][iRun].getAvgIDark());
+          runData.setAvgITot(runData.getAvgITot()+ fRunDataVect[plane][side][RPC][iRun].getAvgITot());
+          runData.setIntCharge(runData.getIntCharge()+ fRunDataVect[plane][side][RPC][iRun].getIntCharge());
+          runData.setScalBending(runData.getScalBending()+ fRunDataVect[plane][side][RPC][iRun].getScalBending());
+          runData.setScalNotBending(runData.getScalNotBending()+ fRunDataVect[plane][side][RPC][iRun].getScalNotBending());
+        }
+      }
+    }
+
+    runData.setAvgHV(runData.getAvgHV()/(double)nOfRuns);
+    runData.setAvgIDark(runData.getAvgIDark()/(double)nOfRuns);
+    runData.setAvgITot(runData.getAvgITot()/(double)nOfRuns);
+    runData.setIntCharge(runData.getIntCharge()/(double)nOfRuns);
+    runData.setScalBending(runData.getScalBending()/(double)nOfRuns);
+    runData.setScalNotBending(runData.getScalNotBending()/(double)nOfRuns);
+
+    fRunDataVectAvg.emplace_back(runData);
+  }
+}
+
 void MTRShuttle::saveData(std::string path)
 {
   std::ofstream outputFile(path.c_str());
