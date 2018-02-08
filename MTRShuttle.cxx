@@ -538,7 +538,12 @@ template<typename YType> TGraph *MTRShuttle::drawTrend(int plane,
                                                        bool normalizeToArea,
                                                        bool accumulate)
 {
-  return drawCorrelation(plane,side,RPC,&RunObject::getSOR,getY,false,normalizeToArea,accumulate);
+  gStyle->SetTimeOffset(0);
+  auto returnedGraph = drawCorrelation(plane,side,RPC,&RunObject::getSOR,getY,false,normalizeToArea,accumulate);
+  returnedGraph->GetXaxis()->SetTimeDisplay(1);
+  returnedGraph->GetXaxis()->SetTimeFormat("%d\/%m\/%Y");
+  returnedGraph->GetXaxis()->SetLabelSize(0.03);
+  return returnedGraph;
 }
 
 template<typename YType>TMultiGraph *MTRShuttle::drawTrend(YType(RunObject::*getY)() const,
