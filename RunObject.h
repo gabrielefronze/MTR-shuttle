@@ -9,6 +9,17 @@
 #include <cstdint>
 #include <fstream>
 
+class RunObject;
+
+template<typename Type> inline bool compareFunctions(Type(RunObject::*getX)() const, Type(RunObject::*getY)() const){
+  return (getX == getY);
+};
+
+template<typename XType, typename YType>
+inline typename std::enable_if<!(std::is_same<XType,YType>::value),bool>::type
+compareFunctions(XType(RunObject::*getX)() const, YType(RunObject::*getY)() const){
+  return false;
+};
 class RunObject{
   public:
     explicit RunObject(uint64_t fSOR=0, uint64_t fEOR=0, double fAvgHV=0., double fAvgITot=0., double fAvgIDark=0.,

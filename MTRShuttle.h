@@ -81,16 +81,6 @@ class MTRShuttle
       return iStart.getIDark();
     };
 
-    template<typename Type> inline bool compareFunctions(Type(RunObject::*getX)() const, Type(RunObject::*getY)() const){
-      return (getX == getY);
-    };
-
-    template<typename XType, typename YType>
-    inline typename std::enable_if<!(std::is_same<XType,YType>::value),bool>::type
-    compareFunctions(XType(RunObject::*getX)() const, YType(RunObject::*getY)() const){
-      return false;
-    };
-
     void graphMaquillage(int plane, int side, int RPC, TGraph* graph, bool isAvgGraph=false);
 };
 
