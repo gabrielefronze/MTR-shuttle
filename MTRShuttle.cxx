@@ -576,18 +576,24 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
   auto dataVector = (!plotAverage)?fRunDataVect[plane][side][RPC]:fRunDataVectAvg;
 
   for( auto const &dataIt : dataVector){
+
     if ((dataIt.*condition)()==negateCondition) continue;
+
     XType x = (dataIt.*getX)();
     YType y = (dataIt.*getY)();
+
     if (normalizeToAreaX){
       if(!plotAverage) x=x/kAreas[plane][side][RPC];
       else x=x/kAreas[0][0][0];
     }
+
     if (normalizeToAreaY){
       if(!plotAverage) y=y/kAreas[plane][side][RPC];
       else y=y/kAreas[0][0][0];
     }
+
     if ( y==(YType)0 ) continue;
+
     returnedGraph->SetPoint(counter++,(double)x,(double)((accumulate)?(yCumulus+=y):y)); //TODO: normalize to area
   }
 
