@@ -9,40 +9,6 @@
 #include <cstdint>
 #include <fstream>
 
-class RunObject;
-
-template<typename Type> inline bool compareFunctions(Type(RunObject::*getX)() const, Type(RunObject::*getY)() const){
-  return (getX == getY);
-};
-
-template<typename XType, typename YType>
-inline typename std::enable_if<!(std::is_same<XType,YType>::value),bool>::type
-compareFunctions(XType(RunObject::*getX)() const, YType(RunObject::*getY)() const){
-  return false;
-};
-
-template<typename Type> inline bool isTimestamp(Type(RunObject::*getter)() const){
-  return (compareFunctions(getter,&RunObject::getEOR) || compareFunctions(getter,&RunObject::getSOR));
-}
-
-template<typename Type> inline bool isCurrent(Type(RunObject::*getter)() const){
-  return (compareFunctions(getter,&RunObject::getAvgIDark) || compareFunctions(getter,&RunObject::getAvgITot));
-}
-
-template<typename Type> inline bool isScaler(Type(RunObject::*getter)() const){
-  return (compareFunctions(getter,&RunObject::getScalBending) || compareFunctions(getter,&RunObject::getScalNotBending));
-}
-
-template<typename Type> inline bool isHV(Type(RunObject::*getter)() const){
-  return compareFunctions(getter,&RunObject::getAvgHV);
-}
-
-template<typename Type> inline bool isIntCharge(Type(RunObject::*getter)() const){
-  return compareFunctions(getter,&RunObject::getIntCharge);
-}
-
-template<typename Type> std::string getLabel(Type(RunObject::*getter)() const, bool normalizedToArea);
-
 class RunObject{
   public:
     explicit RunObject(uint64_t fSOR=0, uint64_t fEOR=0, double fAvgHV=0., double fAvgITot=0., double fAvgIDark=0.,
@@ -103,5 +69,38 @@ std::ostream& operator<<(std::ostream& os, const RunObject& obj){
             << ";" << obj.getAvgITot() << ";" << obj.getAvgIDark() << ";" << obj.getIntCharge()
             << ";" << obj.getScalBending() << ";" << obj.getScalNotBending() << ";" << (int) obj.isDark();
 }
+
+template<typename Type> inline bool compareFunctions(Type(RunObject::*getX)() const, Type(RunObject::*getY)() const){
+  return (getX == getY);
+};
+
+template<typename XType, typename YType>
+inline typename std::enable_if<!(std::is_same<XType,YType>::value),bool>::type
+compareFunctions(XType(RunObject::*getX)() const, YType(RunObject::*getY)() const){
+  return false;
+};
+
+template<typename Type> inline bool isTimestamp(Type(RunObject::*getter)() const){
+  return (compareFunctions(getter,&RunObject::getEOR) || compareFunctions(getter,&RunObject::getSOR));
+}
+
+template<typename Type> inline bool isCurrent(Type(RunObject::*getter)() const){
+  return (compareFunctions(getter,&RunObject::getAvgIDark) || compareFunctions(getter,&RunObject::getAvgITot));
+}
+
+template<typename Type> inline bool isScaler(Type(RunObject::*getter)() const){
+  return (compareFunctions(getter,&RunObject::getScalBending) || compareFunctions(getter,&RunObject::getScalNotBending));
+}
+
+template<typename Type> inline bool isHV(Type(RunObject::*getter)() const){
+  return compareFunctions(getter,&RunObject::getAvgHV);
+}
+
+template<typename Type> inline bool isIntCharge(Type(RunObject::*getter)() const){
+  return compareFunctions(getter,&RunObject::getIntCharge);
+}
+
+template<typename Type> std::string getLabel(Type(RunObject::*getter)() const, bool normalizedToArea);
+
 
 #endif //MTR_SHUTTLE_RUNOBJECT_H
