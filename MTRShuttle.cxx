@@ -553,6 +553,9 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
     graphMaquillage(plane,side,RPC,returnedGraph,plotAverage);
   }
 
+  returnedGraph->GetXaxis()->SetTitle(getLabel(getX,normalizeToAreaX).c_str());
+  returnedGraph->GetYaxis()->SetTitle(getLabel(getY,normalizeToAreaY).c_str());
+
   if (compareFunctions(getX,&RunObject::getSOR) || compareFunctions(getX,&RunObject::getEOR)){
     //This time offset is NEEDED to correctly display data from timestamp!
     gStyle->SetTimeOffset(0);
