@@ -15,6 +15,7 @@
 #include <TClonesArray.h>
 #include <TAxis.h>
 #include <TStyle.h>
+#include <TH1F.h>
 #include "MTRShuttle.h"
 #include "AlienUtils.h"
 
@@ -558,7 +559,7 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
 
   if (compareFunctions(getX,&RunObject::getSOR) || compareFunctions(getX,&RunObject::getEOR)){
     //This time offset is NEEDED to correctly display data from timestamp!
-    gStyle->SetTimeOffset(0);
+    returnedGraph->GetYaxis()->SetTimeOffset(0);
     returnedGraph->GetXaxis()->SetTimeDisplay(1);
     returnedGraph->GetXaxis()->SetTimeFormat("%d\/%m\/%Y");
     returnedGraph->GetXaxis()->SetLabelSize(0.03);
@@ -566,7 +567,7 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
 
   if (compareFunctions(getY,&RunObject::getSOR) || compareFunctions(getY,&RunObject::getEOR)){
     //This time offset is NEEDED to correctly display data from timestamp!
-    gStyle->SetTimeOffset(0);
+    returnedGraph->GetYaxis()->SetTimeOffset(0);
     returnedGraph->GetYaxis()->SetTimeDisplay(1);
     returnedGraph->GetYaxis()->SetTimeFormat("%d\/%m\/%Y");
     returnedGraph->GetYaxis()->SetLabelSize(0.03);
@@ -612,12 +613,12 @@ template<typename XType, typename YType> TMultiGraph *MTRShuttle::drawCorrelatio
                                                                                    bool (RunObject::*condition)() const,
                                                                                    bool negateCondition)
 {
-  auto *returnedMultiGraph = new TMultiGraph();
+  auto *mg = new TMultiGraph();
 
   for (int plane=0; plane<kNPlanes; plane++) {
     for (int side = 0; side < kNSides; side++) {
       for (int RPC = 0; RPC < kNRPC; RPC++) {
-        returnedMultiGraph->Add(
+        mg->Add(
           drawCorrelation(getX,
                           getY,
                           normalizeToAreaX,
@@ -634,7 +635,7 @@ template<typename XType, typename YType> TMultiGraph *MTRShuttle::drawCorrelatio
   }
 
   if (plotAverage) {
-    returnedMultiGraph->Add(
+    mg->Add(
       drawCorrelation(getX,
                       getY,
                       normalizeToAreaX,
@@ -648,7 +649,16 @@ template<typename XType, typename YType> TMultiGraph *MTRShuttle::drawCorrelatio
                       negateCondition));
   }
 
-  return returnedMultiGraph;
+  mg->Draw("ap");
+  mg->GetHistogram()->GetXaxis()->SetTimeOffset(0);
+  mg->GetHistogram()->GetXaxis()->SetTimeDisplay(1);
+  mg->GetHistogram()->GetXaxis()->SetTimeFormat("%d\/%m\/%Y");
+  mg->GetHistogram()->GetYaxis()->SetLabelSize(0.03);
+
+  mg->GetHistogram()->GetXaxis()->SetTitle(getLabel(getX,normalizeToAreaX).c_str());
+  mg->GetHistogram()->GetYaxis()->SetTitle(getLabel(getY,normalizeToAreaY).c_str());
+
+  return mg;
 }
 
 template<typename YType>
