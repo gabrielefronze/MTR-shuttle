@@ -16,6 +16,7 @@ set(SOURCE_FILES
         AlienUtils.h
         CompileAll.c
         testMTRShuttle.c
+        testTemplate.c
         )
 
 add_executable(alice_MTR_utils ${SOURCE_FILES})
