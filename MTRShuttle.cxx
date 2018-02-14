@@ -615,8 +615,6 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
       resetMT12OUTSIDE6 = false;
       yCumulus = (YType)0;
     }
-
-    std::cout << "point " << counter+1 << std::endl;
     returnedGraph->SetPoint(counter++,(double)x,(double)((accumulate)?(yCumulus+=y):y));
   }
 
