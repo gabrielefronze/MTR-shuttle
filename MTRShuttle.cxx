@@ -467,13 +467,15 @@ void MTRShuttle::computeAverage()
     runDataTot.setRunNumber(fRunDataVect[0][0][0][iRun].getRunNumber());
     runDataTot.setfIsDark(fRunDataVect[0][0][0][iRun].isDark());
 
+    fRunDataVectAvg[4].reserve(nOfRuns);
+
     for (int plane=0; plane<kNPlanes; plane++) {
       runDataTot = runDataTot + fRunDataVectAvg[plane][iRun];
     }
 
     runDataTot = runDataTot/(double)kNPlanes;
 
-    fRunDataVectAvg[5].emplace_back(runDataTot);
+    fRunDataVectAvg[4].emplace_back(runDataTot);
   }
 }
 
@@ -581,7 +583,7 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
 
   auto yCumulus = (YType)0;
 
-  auto dataVector = (!plotAverage)?fRunDataVect[plane][side][RPC]:fRunDataVectAvg;
+  auto dataVector = (!plotAverage)?fRunDataVect[plane][side][RPC]:fRunDataVectAvg[4];
 
   bool resetMT12OUTSIDE6 = true;
   bool isReplacedRPC = ( plane==1
@@ -614,7 +616,8 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
       yCumulus = (YType)0;
     }
 
-    returnedGraph->SetPoint(counter++,(double)x,(double)((accumulate)?(yCumulus+=y):y)); //TODO: normalize to area
+    std::cout << "point " << counter+1 << std::endl;
+    returnedGraph->SetPoint(counter++,(double)x,(double)((accumulate)?(yCumulus+=y):y));
   }
 
   return returnedGraph;
