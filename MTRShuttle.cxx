@@ -732,16 +732,20 @@ MTRShuttle::drawMaxMin(YType (RunObject::*getY)() const,
                        bool (RunObject::*condition)() const,
                        bool negateCondition)
 {
-  auto mg = drawTrends(getY,normalizeToAreaY,accumulate,plotAverage,plotAverage,condition,negateCondition);
+  auto mg = drawTrends(getY,normalizeToAreaY,accumulate,plotAverage,MT,condition,negateCondition);
   auto grList = mg->GetListOfGraphs();
 
   auto *mgOut = new TMultiGraph();
-  mgOut->Add((TGraph*)grList->FindObject("Average"));
+
+  if(plotAverage){
+    auto avgGraph = (TGraph*)grList->FindObject("avg");
+    if (avgGraph) mgOut->Add(avgGraph);
+  }
 
   TGraph *minGraph = nullptr;
   TGraph *maxGraph = nullptr;
 
-  Double_t minValue=0.;
+  Double_t minValue=1e+19;
   Double_t maxValue=0.;
 
   for(int iGraph = 0; iGraph < grList->GetEntries(); iGraph++){
