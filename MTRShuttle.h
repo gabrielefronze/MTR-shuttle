@@ -69,7 +69,7 @@ class MTRShuttle
   public:
     std::vector<std::pair<int,int>> fRunList;
     std::vector<RunObject> fRunDataVect[kNPlanes][kNSides][kNRPC];
-    std::vector<RunObject> fRunDataVectAvg[kPlanes+1];
+    std::vector<RunObject> fRunDataVectAvg[kNPlanes+1];
     std::vector<AMANDACurrent> fAMANDACurrentsVect[kNPlanes][kNSides][kNRPC];
 
     inline double getM(const AMANDACurrent iStart, const AMANDACurrent iStop) {
