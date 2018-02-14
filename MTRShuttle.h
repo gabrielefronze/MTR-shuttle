@@ -47,6 +47,7 @@ class MTRShuttle
                                   bool plotAverage=true,
                                   bool (RunObject::*condition)() const=&RunObject::getTrue,
                                   bool negateCondition=false);
+    
     template<typename YType>
     TGraph *drawTrend(YType (RunObject::*getY)() const,
                       bool normalizeToArea=false,
