@@ -43,10 +43,10 @@ std::string getLabel(Type (RunObject::*getter)() const, bool normalizedToArea)
 
   if(isTimestamp(getter)) label="Timestamp [s]";
   else if(isHV(getter)) label="Voltage [V]";
-  else if(isIntCharge(getter)) label=(normalizedToArea)?"Integrated charge [uC/cm^2]":"Integrated charge [uC]";
-  else if(isScaler(getter)) label=(normalizedToArea)?"Hits [Hz/cm^2]":"Hits [Hz]";
+  else if(isIntCharge(getter)) label=(normalizedToArea)?"Integrated charge [#{mu}C/cm^{2}]":"Integrated charge [#{mu}C]";
+  else if(isScaler(getter)) label=(normalizedToArea)?"Hits [Hz/cm^{2}]":"Hits [Hz]";
   else if(isCurrent(getter)) {
-    label=(normalizedToArea)?"urrent [uA/cm^2]":"urrent [uA]";
+    label=(normalizedToArea)?"urrent [#{mu}A/cm^{2}]":"urrent [#{mu}A]";
     if(compareFunctions(getter,&RunObject::getAvgITot)) label="Total c"+label;
     else label="Dark c"+label;
   }

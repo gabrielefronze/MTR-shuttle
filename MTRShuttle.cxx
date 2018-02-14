@@ -552,7 +552,8 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
 {
   auto *returnedGraph = new TGraph();
   if(!plotAverage){
-    returnedGraph->SetNameTitle(Form("%d_%d_%d",plane,side,RPC),Form("MT%d %s RPC:%d",kPlanes[plane],kSides[side].c_str(),RPC));
+    if (plane<0) returnedGraph->SetNameTitle(Form("%d_%d_%d",plane,side,RPC+1),Form("MT%d %s RPC:%d",kPlanes[plane],kSidesShort[side].c_str(),RPC+1));
+    else returnedGraph->SetNameTitle(Form("%d_%d",side,RPC+1),Form("%s RPC:%d",kSidesShort[side].c_str(),RPC+1));
   } else {
     returnedGraph->SetNameTitle("avg","Average");
   }
@@ -567,6 +568,7 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
     returnedGraph->GetXaxis()->SetTimeDisplay(1);
     returnedGraph->GetXaxis()->SetTimeFormat("%d\/%m\/%Y");
     returnedGraph->GetXaxis()->SetLabelSize(0.03);
+    returnedGraph->GetXaxis()->SetTitle("Date");
   }
 
   if (compareFunctions(getY,&RunObject::getSOR) || compareFunctions(getY,&RunObject::getEOR)){
@@ -575,6 +577,7 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
     returnedGraph->GetYaxis()->SetTimeDisplay(1);
     returnedGraph->GetYaxis()->SetTimeFormat("%d\/%m\/%Y");
     returnedGraph->GetYaxis()->SetLabelSize(0.03);
+    returnedGraph->GetYaxis()->SetTitle("Date");
   }
 
   int counter = 0;

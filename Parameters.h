@@ -18,6 +18,7 @@ static const int kNCathodes=2;
 
 // Naming arrays to read AMANDA and create plot titles
 static const std::string kSides[]={"INSIDE","OUTSIDE"};
+static const std::string kSidesShort[]={"IN","OUT"};
 static const int kPlanes[]={11,12,21,22};
 static const std::string kCathodes[]={"BENDING","NOT BENDING"};
 
