@@ -554,11 +554,10 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
   auto *returnedGraph = new TGraph();
   if(!plotAverage){
     returnedGraph->SetNameTitle(Form("%d_%d_%d",plane,side,RPC),Form("MT%d %s RPC:%d",kPlanes[plane],kSides[side].c_str(),RPC));
-    graphMaquillage(plane,side,RPC,returnedGraph,plotAverage);
   } else {
     returnedGraph->SetNameTitle("avg","Average");
-    graphMaquillage(plane,side,RPC,returnedGraph,plotAverage);
   }
+  graphMaquillage(plane,side,RPC,returnedGraph,plotAverage);
 
   returnedGraph->GetXaxis()->SetTitle(getLabel(getX,normalizeToAreaX).c_str());
   returnedGraph->GetYaxis()->SetTitle(getLabel(getY,normalizeToAreaY).c_str());
