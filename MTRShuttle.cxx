@@ -533,7 +533,7 @@ void MTRShuttle::graphMaquillage(int plane, int side, int RPC, TGraph *graph, bo
     graph->SetMarkerColor(kBlack);
     graph->SetMarkerStyle(29);
     graph->SetLineStyle((Style_t)(1));
-    graph->SetLineWidth(5);
+    graph->SetLineWidth(2);
   }
 }
 
