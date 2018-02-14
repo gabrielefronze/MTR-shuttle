@@ -47,7 +47,7 @@ class MTRShuttle
                                   bool plotAverage=true,
                                   bool (RunObject::*condition)() const=&RunObject::getTrue,
                                   bool negateCondition=false);
-    
+
     template<typename YType>
     TGraph *drawTrend(YType (RunObject::*getY)() const,
                       bool normalizeToArea=false,
@@ -69,7 +69,7 @@ class MTRShuttle
   public:
     std::vector<std::pair<int,int>> fRunList;
     std::vector<RunObject> fRunDataVect[kNPlanes][kNSides][kNRPC];
-    std::vector<RunObject> fRunDataVectAvg;
+    std::vector<RunObject> fRunDataVectAvg[kPlanes+1];
     std::vector<AMANDACurrent> fAMANDACurrentsVect[kNPlanes][kNSides][kNRPC];
 
     inline double getM(const AMANDACurrent iStart, const AMANDACurrent iStop) {

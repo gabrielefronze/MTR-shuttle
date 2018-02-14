@@ -437,9 +437,7 @@ void MTRShuttle::propagateAMANDA()
 void MTRShuttle::computeAverage()
 {
   auto nOfRuns = fRunDataVect[0][0][0].size();
-  fRunDataVectAvg.reserve(nOfRuns);
-
-  auto nOfRPC = kNPlanes*kNSides*kNRPC;
+  auto nOfRPC = kNSides*kNRPC;
 
   for(int iRun = 0; iRun < nOfRuns; iRun++){
 
@@ -450,26 +448,32 @@ void MTRShuttle::computeAverage()
     runData.setfIsDark(fRunDataVect[0][0][0][iRun].isDark());
 
     for (int plane=0; plane<kNPlanes; plane++) {
+      fRunDataVectAvg[plane].reserve(nOfRuns);
+
       for (int side = 0; side < kNSides; side++) {
         for (int RPC = 0; RPC < kNRPC; RPC++) {
-          runData.setAvgHV(runData.getAvgHV()+ fRunDataVect[plane][side][RPC][iRun].getAvgHV());
-          runData.setAvgIDark(runData.getAvgIDark()+ fRunDataVect[plane][side][RPC][iRun].getAvgIDark());
-          runData.setAvgITot(runData.getAvgITot()+ fRunDataVect[plane][side][RPC][iRun].getAvgITot());
-          runData.setIntCharge(runData.getIntCharge()+ fRunDataVect[plane][side][RPC][iRun].getIntCharge());
-          runData.setScalBending(runData.getScalBending()+ fRunDataVect[plane][side][RPC][iRun].getScalBending());
-          runData.setScalNotBending(runData.getScalNotBending()+ fRunDataVect[plane][side][RPC][iRun].getScalNotBending());
+          runData = runData + fRunDataVect[plane][side][RPC][iRun];
         }
       }
+
+      runData = runData/(double)nOfRPC;
+
+      fRunDataVectAvg[plane].emplace_back(runData);
     }
 
-    runData.setAvgHV(runData.getAvgHV()/(double)nOfRPC);
-    runData.setAvgIDark(runData.getAvgIDark()/(double)nOfRPC);
-    runData.setAvgITot(runData.getAvgITot()/(double)nOfRPC);
-    runData.setIntCharge(runData.getIntCharge()/(double)nOfRPC);
-    runData.setScalBending(runData.getScalBending()/(double)nOfRPC);
-    runData.setScalNotBending(runData.getScalNotBending()/(double)nOfRPC);
+    RunObject runDataTot;
+    runDataTot.setSOR(fRunDataVect[0][0][0][iRun].getSOR());
+    runDataTot.setEOR(fRunDataVect[0][0][0][iRun].getEOR());
+    runDataTot.setRunNumber(fRunDataVect[0][0][0][iRun].getRunNumber());
+    runDataTot.setfIsDark(fRunDataVect[0][0][0][iRun].isDark());
 
-    fRunDataVectAvg.emplace_back(runData);
+    for (int plane=0; plane<kNPlanes; plane++) {
+      runDataTot = runDataTot + fRunDataVectAvg[plane][iRun];
+    }
+
+    runDataTot = runDataTot/(double)kNPlanes;
+
+    fRunDataVectAvg[5].emplace_back(runDataTot);
   }
 }
 
