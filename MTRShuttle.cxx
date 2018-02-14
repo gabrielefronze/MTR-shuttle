@@ -559,7 +559,7 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
 
   if (compareFunctions(getX,&RunObject::getSOR) || compareFunctions(getX,&RunObject::getEOR)){
     //This time offset is NEEDED to correctly display data from timestamp!
-    returnedGraph->GetYaxis()->SetTimeOffset(0);
+    gStyle->SetTimeOffset(0);
     returnedGraph->GetXaxis()->SetTimeDisplay(1);
     returnedGraph->GetXaxis()->SetTimeFormat("%d\/%m\/%Y");
     returnedGraph->GetXaxis()->SetLabelSize(0.03);
@@ -567,7 +567,7 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
 
   if (compareFunctions(getY,&RunObject::getSOR) || compareFunctions(getY,&RunObject::getEOR)){
     //This time offset is NEEDED to correctly display data from timestamp!
-    returnedGraph->GetYaxis()->SetTimeOffset(0);
+    gStyle->SetTimeOffset(0);
     returnedGraph->GetYaxis()->SetTimeDisplay(1);
     returnedGraph->GetYaxis()->SetTimeFormat("%d\/%m\/%Y");
     returnedGraph->GetYaxis()->SetLabelSize(0.03);
