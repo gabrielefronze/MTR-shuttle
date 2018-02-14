@@ -750,29 +750,38 @@ MTRShuttle::drawMaxMin(YType (RunObject::*getY)() const,
     Double_t dummyX;
     Double_t dummyY;
 
-    graph->GetPoint(graph->GetN(), dummyX, dummyY);
+    graph->GetPoint(graph->GetN()-1, dummyX, dummyY);
 
     if (iGraph==0) {
       minValue = dummyY;
       minGraph = graph;
 
-      minValue = dummyY;
-      maxGraph = graph;
-    }
-
-    if ( dummyY < minValue ){
-      minValue = dummyY;
-      minGraph = graph;
-    }
-
-    if ( dummyY > maxValue ){
       maxValue = dummyY;
       maxGraph = graph;
+    } else {
+      if ( dummyY < minValue ){
+        minValue = dummyY;
+        minGraph = graph;
+      }
+
+      if ( dummyY > maxValue ){
+        maxValue = dummyY;
+        maxGraph = graph;
+      }
     }
   }
 
-  mgOut->Add(minGraph);
-  mgOut->Add(maxGraph);
+  if (minGraph) mgOut->Add(minGraph);
+  if (maxGraph) mgOut->Add(maxGraph);
+
+  mgOut->Draw("ap");
+  mgOut->GetHistogram()->GetXaxis()->SetTimeOffset(0);
+  mgOut->GetHistogram()->GetXaxis()->SetTimeDisplay(1);
+  mgOut->GetHistogram()->GetXaxis()->SetTimeFormat("%d\/%m\/%Y");
+  mgOut->GetHistogram()->GetYaxis()->SetLabelSize(0.03);
+
+  mgOut->GetHistogram()->GetXaxis()->SetTitle(getLabel(&RunObject::getEOR,false).c_str());
+  mgOut->GetHistogram()->GetYaxis()->SetTitle(getLabel(getY,normalizeToAreaY).c_str());
 
   return mgOut;
 }
