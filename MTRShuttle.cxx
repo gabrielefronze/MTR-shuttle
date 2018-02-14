@@ -552,8 +552,8 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
 {
   auto *returnedGraph = new TGraph();
   if(!plotAverage){
-    if (plane<0) returnedGraph->SetNameTitle(Form("%d_%d_%d",plane,side,RPC+1),Form("MT%d %s RPC:%d",kPlanes[plane],kSidesShort[side].c_str(),RPC+1));
-    else returnedGraph->SetNameTitle(Form("%d_%d",side,RPC+1),Form("%s RPC:%d",kSidesShort[side].c_str(),RPC+1));
+    if (plane<0) returnedGraph->SetNameTitle(Form("%d_%d_%d",plane,side,RPC+1),Form("MT%d %s %d",kPlanes[plane],kSidesShort[side].c_str(),RPC+1));
+    else returnedGraph->SetNameTitle(Form("%d_%d",side,RPC+1),Form("%s %d",kSidesShort[side].c_str(),RPC+1));
   } else {
     returnedGraph->SetNameTitle("avg","Average");
   }
@@ -675,8 +675,8 @@ template<typename XType, typename YType> TMultiGraph *MTRShuttle::drawCorrelatio
   mg->GetHistogram()->GetXaxis()->SetTimeFormat("%d\/%m\/%Y");
   mg->GetHistogram()->GetYaxis()->SetLabelSize(0.03);
 
-  mg->GetHistogram()->GetXaxis()->SetTitle(getLabel(getX,normalizeToAreaX).c_str());
-  mg->GetHistogram()->GetYaxis()->SetTitle(getLabel(getY,normalizeToAreaY).c_str());
+  mg->GetHistogram()->GetXaxis()->SetTitle("Date");
+  mg->GetHistogram()->GetYaxis()->SetTitle("Date");
 
   return mg;
 }
@@ -787,7 +787,7 @@ MTRShuttle::drawMaxMin(YType (RunObject::*getY)() const,
   mgOut->GetHistogram()->GetXaxis()->SetTimeFormat("%d\/%m\/%Y");
   mgOut->GetHistogram()->GetYaxis()->SetLabelSize(0.03);
 
-  mgOut->GetHistogram()->GetXaxis()->SetTitle(getLabel(&RunObject::getEOR,false).c_str());
+  mgOut->GetHistogram()->GetXaxis()->SetTitle("Date");
   mgOut->GetHistogram()->GetYaxis()->SetTitle(getLabel(getY,normalizeToAreaY).c_str());
 
   return mgOut;
