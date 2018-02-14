@@ -64,6 +64,26 @@ class RunObject{
     bool fIsDark;
 };
 
+inline RunObject operator+ (RunObject result, const RunObject &added){
+  result.setAvgIDark(result.getAvgIDark()+added.getAvgIDark());
+  result.setAvgITot(result.getAvgITot()+added.getAvgITot());
+  result.setAvgHV(result.getAvgHV()+added.getAvgHV());
+  result.setIntCharge(result.getIntCharge()+added.getIntCharge());
+  result.setScalBending(result.getScalBending()+added.getScalBending());
+  result.setScalNotBending(result.getScalNotBending()+added.getScalNotBending());
+  return result;
+}
+
+inline RunObject operator/ (RunObject result, const double &divider){
+  result.setAvgIDark(result.getAvgIDark()/divider);
+  result.setAvgITot(result.getAvgITot()/divider);
+  result.setAvgHV(result.getAvgHV()/divider);
+  result.setIntCharge(result.getIntCharge()/divider);
+  result.setScalBending(result.getScalBending()/divider);
+  result.setScalNotBending(result.getScalNotBending()/divider);
+  return result;
+}
+
 std::ostream& operator<<(std::ostream& os, const RunObject& obj){
   return os << obj.getRunNumber() << ";" << obj.getSOR() << ";" << obj.getEOR() << ";" << obj.getAvgHV()
             << ";" << obj.getAvgITot() << ";" << obj.getAvgIDark() << ";" << obj.getIntCharge()
