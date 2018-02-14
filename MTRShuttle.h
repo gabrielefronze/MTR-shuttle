@@ -45,6 +45,7 @@ class MTRShuttle
                                   bool normalizeToAreaY=false,
                                   bool accumulate=false,
                                   bool plotAverage=true,
+                                  int MT=-1,
                                   bool (RunObject::*condition)() const=&RunObject::getTrue,
                                   bool negateCondition=false);
 
@@ -59,12 +60,14 @@ class MTRShuttle
                       bool (RunObject::*condition)() const=&RunObject::getTrue,
                       bool negateCondition=false);
 
-    template<typename YType> TMultiGraph* drawTrends(YType(RunObject::*getY)() const,
-                                                     bool normalizeToArea=false,
-                                                     bool accumulate=false,
-                                                     bool plotAverage=false,
-                                                     bool (RunObject::*condition)() const=&RunObject::getTrue,
-                                                     bool negateCondition=false);
+    template<typename YType>
+    TMultiGraph *drawTrends(YType (RunObject::*getY)() const,
+                            bool normalizeToArea,
+                            bool accumulate,
+                            bool plotAverage,
+                            int plane=-1,
+                            bool (RunObject::*condition)() const=&RunObject::getTrue,
+                            bool negateCondition=false);
 
   public:
     std::vector<std::pair<int,int>> fRunList;

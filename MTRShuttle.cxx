@@ -581,7 +581,7 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
 
   auto yCumulus = (YType)0;
 
-  auto dataVector = (!plotAverage)?fRunDataVect[plane][side][RPC]:fRunDataVectAvg[4];
+  auto dataVector = (!plotAverage)?fRunDataVect[plane][side][RPC]:fRunDataVectAvg[(plane>=0)?plane:4];
 
   bool resetMT12OUTSIDE6 = true;
   bool isReplacedRPC = ( plane==1
@@ -625,12 +625,14 @@ template<typename XType, typename YType> TMultiGraph *MTRShuttle::drawCorrelatio
                                                                                    bool normalizeToAreaY,
                                                                                    bool accumulate,
                                                                                    bool plotAverage,
+                                                                                   int MT,
                                                                                    bool (RunObject::*condition)() const,
                                                                                    bool negateCondition)
 {
   auto *mg = new TMultiGraph();
 
   for (int plane=0; plane<kNPlanes; plane++) {
+    if ( MT>=0 && plane!=MT ) continue;
     for (int side = 0; side < kNSides; side++) {
       for (int RPC = 0; RPC < kNRPC; RPC++) {
         mg->Add(
@@ -657,7 +659,7 @@ template<typename XType, typename YType> TMultiGraph *MTRShuttle::drawCorrelatio
                       normalizeToAreaY,
                       accumulate,
                       plotAverage,
-                      -1,
+                      MT,
                       -1,
                       -1,
                       condition,
@@ -700,12 +702,14 @@ TGraph *MTRShuttle::drawTrend(YType (RunObject::*getY)() const,
                          negateCondition);
 }
 
-template<typename YType>TMultiGraph *MTRShuttle::drawTrends(YType(RunObject::*getY)() const,
-                                                            bool normalizeToArea,
-                                                            bool accumulate,
-                                                            bool plotAverage,
-                                                            bool (RunObject::*condition)() const,
-                                                            bool negateCondition)
+template<typename YType>
+TMultiGraph *MTRShuttle::drawTrends(YType (RunObject::*getY)() const,
+                                    bool normalizeToArea,
+                                    bool accumulate,
+                                    bool plotAverage,
+                                    int plane,
+                                    bool (RunObject::*condition)() const,
+                                    bool negateCondition)
 {
   return drawCorrelations(&RunObject::getSOR,
                           getY,
@@ -713,6 +717,7 @@ template<typename YType>TMultiGraph *MTRShuttle::drawTrends(YType(RunObject::*ge
                           normalizeToArea,
                           accumulate,
                           plotAverage,
+                          plane,
                           condition,
                           negateCondition);
 }
