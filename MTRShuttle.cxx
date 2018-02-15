@@ -754,6 +754,8 @@ MTRShuttle::drawMaxMin(YType (RunObject::*getY)() const,
   for(int iGraph = 0; iGraph < grList->GetEntries(); iGraph++){
     auto graph = (TGraph*)(grList->At(iGraph));
 
+    if(MT==1 && strcmp(graph->GetName(),"1_6")==0) continue;
+
     Double_t dummyX;
     Double_t dummyY;
 
