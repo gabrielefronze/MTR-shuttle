@@ -114,7 +114,7 @@ void MTRShuttle::parseOCDB(std::string path)
     auto EOR = (uint64_t) grpObj->GetTimeEnd();
 
     //settaggio del flag beamPresence
-    bool isBeamPresent = (beamEnergy > 1.);
+    bool isBeamPresent = (beamEnergy > .1);
 
     //inizializzazione dell'entry contente i valori di corrente
     AliCDBEntry *entryDCS = managerCDB->Get("MUON/Calib/TriggerDCS");
