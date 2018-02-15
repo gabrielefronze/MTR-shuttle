@@ -531,7 +531,7 @@ void MTRShuttle::graphMaquillage(int plane, int side, int RPC, TGraph *graph, bo
   } else {
     graph->SetLineColor(kBlack);
     graph->SetMarkerColor(kBlack);
-    graph->SetMarkerStyle(29);
+    graph->SetMarkerStyle(34);
     graph->SetLineStyle((Style_t)(1));
     graph->SetLineWidth(2);
   }
@@ -566,8 +566,8 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
     //This time offset is NEEDED to correctly display data from timestamp!
     gStyle->SetTimeOffset(0);
     returnedGraph->GetXaxis()->SetTimeDisplay(1);
-    returnedGraph->GetXaxis()->SetTimeFormat("%d\/%m\/%Y");
-    returnedGraph->GetXaxis()->SetLabelSize(0.03);
+    returnedGraph->GetXaxis()->SetTimeFormat("%d-%m-%y");
+    returnedGraph->GetXaxis()->SetLabelSize(0.02);
     returnedGraph->GetXaxis()->SetTitle("Date");
   }
 
@@ -575,14 +575,14 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
     //This time offset is NEEDED to correctly display data from timestamp!
     gStyle->SetTimeOffset(0);
     returnedGraph->GetYaxis()->SetTimeDisplay(1);
-    returnedGraph->GetYaxis()->SetTimeFormat("%d\/%m\/%Y");
-    returnedGraph->GetYaxis()->SetLabelSize(0.03);
+    returnedGraph->GetYaxis()->SetTimeFormat("%d-%m-%y");
+    returnedGraph->GetYaxis()->SetLabelSize(0.02);
     returnedGraph->GetYaxis()->SetTitle("Date");
   }
 
   int counter = 0;
 
-  auto yCumulus = (YType)0;
+  auto yCumulus = (YType)4000.;
 
   auto dataVector = (!plotAverage)?fRunDataVect[plane][side][RPC]:fRunDataVectAvg[(plane>=0)?plane:4];
 
@@ -672,11 +672,11 @@ template<typename XType, typename YType> TMultiGraph *MTRShuttle::drawCorrelatio
   mg->Draw("ap");
   mg->GetHistogram()->GetXaxis()->SetTimeOffset(0);
   mg->GetHistogram()->GetXaxis()->SetTimeDisplay(1);
-  mg->GetHistogram()->GetXaxis()->SetTimeFormat("%d\/%m\/%Y");
-  mg->GetHistogram()->GetYaxis()->SetLabelSize(0.03);
+  mg->GetHistogram()->GetXaxis()->SetTimeFormat("%d-%m-%y");
+  mg->GetHistogram()->GetYaxis()->SetLabelSize(0.02);
 
   mg->GetHistogram()->GetXaxis()->SetTitle("Date");
-  mg->GetHistogram()->GetYaxis()->SetTitle("Date");
+  mg->GetHistogram()->GetYaxis()->SetTitle(getLabel(getY,normalizeToAreaY).c_str());
 
   return mg;
 }
@@ -784,8 +784,8 @@ MTRShuttle::drawMaxMin(YType (RunObject::*getY)() const,
   mgOut->Draw("ap");
   mgOut->GetHistogram()->GetXaxis()->SetTimeOffset(0);
   mgOut->GetHistogram()->GetXaxis()->SetTimeDisplay(1);
-  mgOut->GetHistogram()->GetXaxis()->SetTimeFormat("%d\/%m\/%Y");
-  mgOut->GetHistogram()->GetYaxis()->SetLabelSize(0.03);
+  mgOut->GetHistogram()->GetXaxis()->SetTimeFormat("%d-%m-%y");
+  mgOut->GetHistogram()->GetYaxis()->SetLabelSize(0.02);
 
   mgOut->GetHistogram()->GetXaxis()->SetTitle("Date");
   mgOut->GetHistogram()->GetYaxis()->SetTitle(getLabel(getY,normalizeToAreaY).c_str());
