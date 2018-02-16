@@ -95,7 +95,7 @@ class MTRShuttle
       return (deltaTS>0.)?deltaI/deltaTS:0.;
     };
 
-    inline double getQ(const AMANDACurrent iStart, const AMANDACurrent iStop) {
+    inline double getQ(const AMANDACurrent iStart, const AMANDACurrent /*iStop*/) {
       return iStart.getIDark();
     };
 
