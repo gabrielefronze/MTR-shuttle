@@ -35,48 +35,53 @@ class MTRShuttle
                             int plane=-1,
                             int side=-1,
                             int RPC=-1,
-                            bool (RunObject::*condition)(Args...) const= reinterpret_cast<bool (RunObject::*)(Args...) const>(&RunObject::getTrue),
-                            bool negateCondition=false);
+                            bool negateCondition=false,
+                            bool (RunObject::*condition)(Args...) const = reinterpret_cast<bool (RunObject::*)(Args...) const>(&RunObject::getTrue),
+                            Args... args);
 
     template<typename XType, typename YType, class ...Args>
     TMultiGraph* drawCorrelations(XType(RunObject::*getX)() const,
                                   YType(RunObject::*getY)() const,
-                                  bool normalizeToAreaX=false,
-                                  bool normalizeToAreaY=false,
-                                  bool accumulate=false,
-                                  bool plotAverage=true,
-                                  int MT=-1,
-                                  bool (RunObject::*condition)(Args...) const,
-                                  bool negateCondition=false);
+                                  bool normalizeToAreaX,
+                                  bool normalizeToAreaY,
+                                  bool accumulate,
+                                  bool plotAverage,
+                                  int MT,
+                                  bool negateCondition,
+                                  bool (RunObject::*condition)(Args... args) const,
+                                  Args... args);
 
     template<typename YType, class ...Args>
     TGraph *drawTrend(YType (RunObject::*getY)() const,
-                      bool normalizeToArea=false,
-                      bool accumulate=false,
-                      bool plotAverage=true,
-                      int plane=-1,
-                      int side=-1,
-                      int RPC=-1,
-                      bool (RunObject::*condition)(Args...) const,
-                      bool negateCondition=false);
+                      bool normalizeToArea,
+                      bool accumulate,
+                      bool plotAverage,
+                      int plane,
+                      int side,
+                      int RPC,
+                      bool negateCondition,
+                      bool (RunObject::*condition)(Args... args) const,
+                      Args... args);
 
     template<typename YType, class ...Args>
     TMultiGraph *drawTrends(YType (RunObject::*getY)() const,
                             bool normalizeToArea,
                             bool accumulate,
                             bool plotAverage,
-                            int plane=-1,
-                            bool (RunObject::*condition)(Args...) const,
-                            bool negateCondition=false);
+                            int plane,
+                            bool negateCondition,
+                            bool (RunObject::*condition)(Args... args) const,
+                            Args... args);
 
     template<typename YType, class ...Args>
     TMultiGraph* drawMaxMin(YType(RunObject::*getY)() const,
-                                  bool normalizeToAreaY=false,
-                                  bool accumulate=false,
-                                  bool plotAverage=true,
-                                  int MT=-1,
-                                  bool (RunObject::*condition)(Args...) const,
-                                  bool negateCondition=false);
+                            bool normalizeToArea,
+                            bool accumulate,
+                            bool plotAverage,
+                            int M,
+                            bool negateCondition,
+                            bool (RunObject::*condition)(Args... args) const,
+                            Args... args);
 
   public:
     std::vector<std::pair<int,int>> fRunList;
