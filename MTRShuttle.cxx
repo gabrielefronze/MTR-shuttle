@@ -450,7 +450,7 @@ void MTRShuttle::computeAverage()
   auto nOfRuns = fRunDataVect[0][0][0].size();
   auto nOfRPC = kNSides*kNRPC;
 
-  for(int iRun = 0; iRun < nOfRuns; iRun++){
+  for(int iRun = 0; iRun < (int)nOfRuns; iRun++){
 
     RunObject runData;
     runData.setSOR(fRunDataVect[0][0][0][iRun].getSOR());
@@ -531,7 +531,7 @@ void MTRShuttle::loadData(std::string path)
   else std::cout << "Unable to open file";
 }
 
-void MTRShuttle::graphMaquillage(int plane, int side, int RPC, TGraph *graph, bool isAvgGraph)
+void MTRShuttle::graphMaquillage(int plane, int RPC, TGraph *graph, bool isAvgGraph)
 {
   if(!isAvgGraph){
     graph->SetLineColor(kColors[RPC]);
@@ -569,7 +569,7 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
   } else {
     returnedGraph->SetNameTitle("avg","Average");
   }
-  graphMaquillage(plane,side,RPC,returnedGraph,plotAverage);
+  graphMaquillage(plane, RPC, returnedGraph, plotAverage);
 
   returnedGraph->GetXaxis()->SetTitle(getLabel(getX,normalizeToAreaX).c_str());
   returnedGraph->GetYaxis()->SetTitle(getLabel(getY,normalizeToAreaY).c_str());

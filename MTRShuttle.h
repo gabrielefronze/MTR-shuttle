@@ -99,7 +99,7 @@ class MTRShuttle
       return iStart.getIDark();
     };
 
-    void graphMaquillage(int plane, int side, int RPC, TGraph* graph, bool isAvgGraph=false);
+    void graphMaquillage(int plane, int RPC, TGraph *graph, bool isAvgGraph);
 };
 
 #endif //MTR_SHUTTLE_MTRSHUTTLE_H
