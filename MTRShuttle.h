@@ -25,7 +25,7 @@ class MTRShuttle
     void loadData(std::string path = "MTRShuttle.csv");
     void computeAverage();
 
-    template<typename XType, typename YType>
+    template<typename XType, typename YType, class ...Args>
     TGraph *drawCorrelation(XType (RunObject::*getX)() const,
                             YType (RunObject::*getY)() const,
                             bool normalizeToAreaX=false,
@@ -35,10 +35,10 @@ class MTRShuttle
                             int plane=-1,
                             int side=-1,
                             int RPC=-1,
-                            bool (RunObject::*condition)() const=&RunObject::getTrue,
+                            bool (RunObject::*condition)(Args...) const= reinterpret_cast<bool (RunObject::*)(Args...) const>(&RunObject::getTrue),
                             bool negateCondition=false);
 
-    template<typename XType, typename YType>
+    template<typename XType, typename YType, class ...Args>
     TMultiGraph* drawCorrelations(XType(RunObject::*getX)() const,
                                   YType(RunObject::*getY)() const,
                                   bool normalizeToAreaX=false,
@@ -46,10 +46,10 @@ class MTRShuttle
                                   bool accumulate=false,
                                   bool plotAverage=true,
                                   int MT=-1,
-                                  bool (RunObject::*condition)() const=&RunObject::getTrue,
+                                  bool (RunObject::*condition)(Args...) const,
                                   bool negateCondition=false);
 
-    template<typename YType>
+    template<typename YType, class ...Args>
     TGraph *drawTrend(YType (RunObject::*getY)() const,
                       bool normalizeToArea=false,
                       bool accumulate=false,
@@ -57,25 +57,25 @@ class MTRShuttle
                       int plane=-1,
                       int side=-1,
                       int RPC=-1,
-                      bool (RunObject::*condition)() const=&RunObject::getTrue,
+                      bool (RunObject::*condition)(Args...) const,
                       bool negateCondition=false);
 
-    template<typename YType>
+    template<typename YType, class ...Args>
     TMultiGraph *drawTrends(YType (RunObject::*getY)() const,
                             bool normalizeToArea,
                             bool accumulate,
                             bool plotAverage,
                             int plane=-1,
-                            bool (RunObject::*condition)() const=&RunObject::getTrue,
+                            bool (RunObject::*condition)(Args...) const,
                             bool negateCondition=false);
 
-    template<typename YType>
+    template<typename YType, class ...Args>
     TMultiGraph* drawMaxMin(YType(RunObject::*getY)() const,
                                   bool normalizeToAreaY=false,
                                   bool accumulate=false,
                                   bool plotAverage=true,
                                   int MT=-1,
-                                  bool (RunObject::*condition)() const=&RunObject::getTrue,
+                                  bool (RunObject::*condition)(Args...) const,
                                   bool negateCondition=false);
 
   public:
