@@ -49,7 +49,7 @@ class RunObject{
 
     inline bool getTrue() const { return true; }
 
-    friend std::ostream& operator<<(std::ostream& os, const RunObject& dt);
+    friend std::ostream& operator<<(std::ostream& os, const RunObject& obj);
 
   private:
     uint64_t fRunNumber;
