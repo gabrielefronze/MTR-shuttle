@@ -126,6 +126,8 @@ void MTRShuttle::parseOCDB(std::string path)
 
     RunObject runObjectBuffer[kNPlanes][kNSides][kNRPC];
 
+    bool isHVOkGlobal = true;
+
     //loop sui piani, i lati (inside e outside) e le RPC (9 per side)
     for (int plane = 0; plane < kNPlanes; plane++) {
       for (int side = 0; side < kNSides; side++) {
@@ -144,6 +146,7 @@ void MTRShuttle::parseOCDB(std::string path)
 //          bool isVoltageOk=true;
           double avgHV = 0.;
           int counterHV = 0;
+          bool isHVOk = true;
 
           //loop sulle entry del vettore di misure di tensione
           for (int arrayIndex = 0; arrayIndex < (dataArrayVoltage->GetEntries()); arrayIndex++) {
@@ -151,7 +154,10 @@ void MTRShuttle::parseOCDB(std::string path)
 
             auto HV = value->GetFloat();
 
-            if (HV < kMinWorkHV) {
+            bool HVcheck = HV < kMinWorkHV;
+            isHVOk &= HVcheck;
+
+            if (HVcheck) {
               break;
             } else {
               avgHV += HV;
@@ -159,7 +165,9 @@ void MTRShuttle::parseOCDB(std::string path)
             }
           }
 
-          runObjectBuffer[plane][side][RPC].setfIsDark(!(isBeamPresent));
+          isHVOkGlobal &= isHVOk;
+
+          runObjectBuffer[plane][side][RPC].setfIsDark(!(isBeamPresent) && isHVOk);
           runObjectBuffer[plane][side][RPC].setRunNumber((uint64_t)runIterator.first);
           runObjectBuffer[plane][side][RPC].setSOR(SOR);
           runObjectBuffer[plane][side][RPC].setEOR(EOR);
@@ -167,6 +175,9 @@ void MTRShuttle::parseOCDB(std::string path)
         }
       }
     }
+
+    // Skipping runs with HV under lower limits
+    if (!isHVOkGlobal) continue;
 
     //inizializzazone dell'entry contenente le letture degli scalers
     AliCDBEntry *entryScalers = managerCDB->Get("MUON/Calib/TriggerScalers");
