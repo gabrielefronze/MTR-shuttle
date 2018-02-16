@@ -36,7 +36,7 @@ class MTRShuttle
                             int side=-1,
                             int RPC=-1,
                             bool negateCondition=false,
-                            bool (RunObject::*condition)(Args... args) const = &RunObject::getTrue,
+                            bool (RunObject::*condition)(Args...) const = &RunObject::getTrue,
                             Args... args);
 
     template<typename XType, typename YType, class ...Args>
@@ -47,8 +47,8 @@ class MTRShuttle
                                   bool accumulate,
                                   bool plotAverage,
                                   int MT,
-                                  bool negateCondition,
-                                  bool (RunObject::*condition)(Args... args) const,
+                                  bool negateCondition=false,
+                                  bool (RunObject::*condition)(Args...) const = &RunObject::getTrue,
                                   Args... args);
 
     template<typename YType, class ...Args>
@@ -59,8 +59,8 @@ class MTRShuttle
                       int plane,
                       int side,
                       int RPC,
-                      bool negateCondition,
-                      bool (RunObject::*condition)(Args... args) const,
+                      bool negateCondition=false,
+                      bool (RunObject::*condition)(Args...) const = &RunObject::getTrue,
                       Args... args);
 
     template<typename YType, class ...Args>
@@ -69,8 +69,8 @@ class MTRShuttle
                             bool accumulate,
                             bool plotAverage,
                             int plane,
-                            bool negateCondition,
-                            bool (RunObject::*condition)(Args... args) const,
+                            bool negateCondition=false,
+                            bool (RunObject::*condition)(Args...) const = &RunObject::getTrue,
                             Args... args);
 
     template<typename YType, class ...Args>
@@ -79,8 +79,8 @@ class MTRShuttle
                             bool accumulate,
                             bool plotAverage,
                             int M,
-                            bool negateCondition,
-                            bool (RunObject::*condition)(Args... args) const,
+                            bool negateCondition=false,
+                            bool (RunObject::*condition)(Args...) const = &RunObject::getTrue,
                             Args... args);
 
   public:
