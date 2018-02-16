@@ -337,7 +337,7 @@ void MTRShuttle::propagateAMANDA()
           auto EOR = runObjectIt.getEOR();
 
           // Loop over the current readings
-          for ( setIsDarkIt; setIsDarkIt!=fAMANDACurrentsVect[plane][side][RPC].end(); setIsDarkIt++) {
+          for ( ; setIsDarkIt!=fAMANDACurrentsVect[plane][side][RPC].end(); setIsDarkIt++) {
 
             auto TS = setIsDarkIt->getTimeStamp();
 
@@ -408,7 +408,7 @@ void MTRShuttle::propagateAMANDA()
           uint64_t previousTS = currentIt->getTimeStamp();
 
           // Loop over the current readings
-          for ( currentIt; currentIt!=fAMANDACurrentsVect[plane][side][RPC].end(); currentIt++) {
+          for ( ; currentIt!=fAMANDACurrentsVect[plane][side][RPC].end(); currentIt++) {
 
             auto TS = currentIt->getTimeStamp();
 
