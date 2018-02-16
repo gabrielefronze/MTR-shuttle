@@ -47,7 +47,7 @@ class RunObject{
     inline bool isDark() const { return fIsDark; }
     inline void setfIsDark(bool fIsDark) { RunObject::fIsDark = fIsDark; }
 
-    constexpr bool getTrue() const { return true; }
+    template<class ...Args> constexpr bool getTrue(Args... /*arg*/) const { return true; }
 
     friend std::ostream& operator<<(std::ostream& os, const RunObject& obj);
 

@@ -36,7 +36,7 @@ class MTRShuttle
                             int side=-1,
                             int RPC=-1,
                             bool negateCondition=false,
-                            bool (RunObject::*condition)(Args...) const = reinterpret_cast<bool (RunObject::*)(Args...) const>(&RunObject::getTrue),
+                            bool (RunObject::*condition)(Args... args) const = &RunObject::getTrue,
                             Args... args);
 
     template<typename XType, typename YType, class ...Args>
