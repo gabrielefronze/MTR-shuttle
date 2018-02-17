@@ -8,6 +8,7 @@
 
 #include <cstdint>
 #include <fstream>
+#include "Parameters.h"
 
 class RunObject{
   public:
@@ -54,6 +55,8 @@ class RunObject{
     inline bool isBefore(uint64_t TS=0) const { return fEOR<TS; }
     inline bool isAfter(uint64_t TS=UINT64_MAX) const { return fSOR>TS; }
     inline bool isBetweenTimestamps(uint64_t TSMin, uint64_t TSMax) const { return (isBefore(TSMax) && isAfter(TSMin)); }
+
+    inline bool isValidForIntCharge() const { return (!fIsDark && fAvgHV>kMinWorkHV); }
 
     template<class ...Args> constexpr bool getTrue(Args... /*arg*/) const { return true; }
 
