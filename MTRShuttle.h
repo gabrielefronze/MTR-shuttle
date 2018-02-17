@@ -28,15 +28,15 @@ class MTRShuttle
     template<typename XType, typename YType, class ...Args>
     TGraph *drawCorrelation(XType (RunObject::*getX)() const,
                             YType (RunObject::*getY)() const,
-                            bool normalizeToAreaX=false,
-                            bool normalizeToAreaY=false,
-                            bool accumulate=false,
-                            bool plotAverage=true,
-                            int plane=-1,
-                            int side=-1,
-                            int RPC=-1,
-                            bool negateCondition=false,
-                            bool (RunObject::*condition)(Args...) const = &RunObject::getTrue,
+                            bool normalizeToAreaX,
+                            bool normalizeToAreaY,
+                            bool accumulate,
+                            bool plotAverage,
+                            int plane,
+                            int side,
+                            int RPC,
+                            bool negateCondition,
+                            bool (RunObject::*condition)(Args...) const,
                             Args... args);
 
     template<typename XType, typename YType, class ...Args>
@@ -47,8 +47,8 @@ class MTRShuttle
                                   bool accumulate,
                                   bool plotAverage,
                                   int MT,
-                                  bool negateCondition=false,
-                                  bool (RunObject::*condition)(Args...) const = &RunObject::getTrue,
+                                  bool negateCondition,
+                                  bool (RunObject::*condition)(Args...) const,
                                   Args... args);
 
     template<typename YType, class ...Args>
@@ -59,8 +59,8 @@ class MTRShuttle
                       int plane,
                       int side,
                       int RPC,
-                      bool negateCondition=false,
-                      bool (RunObject::*condition)(Args...) const = &RunObject::getTrue,
+                      bool negateCondition,
+                      bool (RunObject::*condition)(Args...) const,
                       Args... args);
 
     template<typename YType, class ...Args>
@@ -69,8 +69,8 @@ class MTRShuttle
                             bool accumulate,
                             bool plotAverage,
                             int plane,
-                            bool negateCondition=false,
-                            bool (RunObject::*condition)(Args...) const = &RunObject::getTrue,
+                            bool negateCondition,
+                            bool (RunObject::*condition)(Args...) const,
                             Args... args);
 
     template<typename YType, class ...Args>
@@ -79,8 +79,8 @@ class MTRShuttle
                             bool accumulate,
                             bool plotAverage,
                             int M,
-                            bool negateCondition=false,
-                            bool (RunObject::*condition)(Args...) const = &RunObject::getTrue,
+                            bool negateCondition,
+                            bool (RunObject::*condition)(Args...) const,
                             Args... args);
 
   public:
