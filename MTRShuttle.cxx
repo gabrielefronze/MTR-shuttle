@@ -161,7 +161,7 @@ void MTRShuttle::parseOCDB(std::string path)
             isHVOk &= HVcheck;
 
             if (HVcheck) {
-              break;
+              continue;
             } else {
               avgHV += HV;
               counterHV++;
@@ -180,7 +180,7 @@ void MTRShuttle::parseOCDB(std::string path)
     }
 
     // Skipping runs with HV under lower limits
-    if (!isHVOkGlobal) continue;
+//    if (!isHVOkGlobal) continue;
 
     //inizializzazone dell'entry contenente le letture degli scalers
     AliCDBEntry *entryScalers = managerCDB->Get("MUON/Calib/TriggerScalers");
@@ -613,6 +613,11 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
     if ((dataIt.*condition)(args...)==negateCondition) continue;
 
     XType x = (dataIt.*getX)();
+
+//    if (dataIt.getAvgHV()<kMinWorkHV || dataIt.isDark()) continue;
+
+//    std::cout << dataIt.getRunNumber() << " " << dataIt.getAvgHV() << std::endl;
+
     YType y = (dataIt.*getY)();
 
     if (normalizeToAreaX){
