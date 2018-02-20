@@ -160,7 +160,7 @@ void MTRShuttle::parseOCDB(std::string path)
             bool HVcheck = HV > kMinWorkHV;
             isHVOk &= HVcheck;
 
-            if (HVcheck) {
+            if (!HVcheck) {
               continue;
             } else {
               avgHV += HV;
