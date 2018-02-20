@@ -172,6 +172,8 @@ void MTRShuttle::parseOCDB(std::string path)
       }
     }
 
+    if (!isHVOkGlobal) continue;
+
     // Skipping runs with HV under lower limits
 //    if (!isHVOkGlobal) continue;
     if (AlienUtils::checkCDB(defStorage,"MUON/Calib/TriggerScalers")) {
