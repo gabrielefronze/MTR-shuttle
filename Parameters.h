@@ -60,7 +60,7 @@ static const double kAreas[4][2][9] = {{{ 17340.000000, 17340.000000, 17340.0000
                                         { 19962.556422, 19962.556422, 19962.556422, 19297.137875, 15970.045138, 19297.137875, 19962.556422, 19962.556422, 19962.556422 }}};
 
 // Detector parameters
-static const double kMinWorkHV=10000.;
+static const double kMinWorkHV=8500.;
 static const uint64_t kFullScale=65535;
 
 //Graph maquillage vectors
