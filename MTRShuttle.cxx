@@ -412,10 +412,8 @@ void MTRShuttle::propagateAMANDA()
           auto EOR = runObjectIt.getEOR();
 
           double iDarkCumulus = 0.;
-          double iDarkCounter = 0;
-
           double iTotCumulus = 0.;
-          double iTotCounter = 0;
+          double totalT = 0.;
 
           double integratedCharge = 0;
           uint64_t previousTS = currentIt->getTimeStamp();
@@ -436,20 +434,19 @@ void MTRShuttle::propagateAMANDA()
               break;
               // If SOR<TS<EOR then set IDark
             } else {
-              iDarkCumulus+=currentIt->getIDark();
-              iDarkCounter++;
+              auto deltaT = currentIt->getTimeStamp()-previousTS;
+              iDarkCumulus+=currentIt->getIDark()*deltaT;
+              iTotCumulus+=currentIt->getITot()*deltaT;
+              integratedCharge+=currentIt->getINet()*deltaT;
 
-              iTotCumulus+=currentIt->getITot();
-              iTotCounter++;
-
-              integratedCharge+=currentIt->getINet()*(currentIt->getTimeStamp()-previousTS);
+              totalT+=deltaT;
 
               previousTS = TS;
             }
           }
 
-          runObjectIt.setAvgIDark((iDarkCounter>0)?iDarkCumulus/(double)iDarkCounter:0.);
-          runObjectIt.setAvgITot((iTotCounter>0)?iTotCumulus/(double)iTotCounter:0.);
+          runObjectIt.setAvgIDark((totalT>0)?iDarkCumulus/(double)totalT:0.);
+          runObjectIt.setAvgITot((totalT>0)?iTotCumulus/(double)totalT:0.);
           runObjectIt.setIntCharge(integratedCharge);
         }
       }
