@@ -191,14 +191,14 @@ void MTRShuttle::parseOCDB(std::string path)
     if (!arrayScalers) continue;
 
     uint64_t elapsedTime = 0;
-    double scalers[kNCathodes][kNSides][kNPlanes][kNRPC];
+    uint64_t scalers[kNCathodes][kNSides][kNPlanes][kNRPC];
     bool overflowLB[kNCathodes][kNSides][kNPlanes][kNRPC];
 
     for (int plane = 0; plane < kNPlanes; plane++) {
       for (int side = 0; side < kNSides; side++) {
         for (int RPC = 0; RPC < kNRPC; RPC++) {
           for (int cathode = 0; cathode < kNCathodes; cathode++) {
-            scalers[cathode][side][plane][RPC] = 0.;
+            scalers[cathode][side][plane][RPC] = 0;
             overflowLB[cathode][side][plane][RPC] = false;
           }
         }
