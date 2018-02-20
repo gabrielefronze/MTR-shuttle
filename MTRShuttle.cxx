@@ -190,16 +190,15 @@ void MTRShuttle::parseOCDB(std::string path)
     auto *arrayScalers = (TClonesArray *) entryScalers->GetObject();
     if (!arrayScalers) continue;
 
-    uint64_t elapsedTime = 0;
+    uint64_t elapsedTime[kNCathodes][kNSides][kNPlanes][kNRPC];
     uint64_t scalers[kNCathodes][kNSides][kNPlanes][kNRPC];
-    bool overflowLB[kNCathodes][kNSides][kNPlanes][kNRPC];
 
     for (int plane = 0; plane < kNPlanes; plane++) {
       for (int side = 0; side < kNSides; side++) {
         for (int RPC = 0; RPC < kNRPC; RPC++) {
           for (int cathode = 0; cathode < kNCathodes; cathode++) {
             scalers[cathode][side][plane][RPC] = 0;
-            overflowLB[cathode][side][plane][RPC] = false;
+            elapsedTime[cathode][side][plane][RPC] = 0;
           }
         }
       }
@@ -209,8 +208,7 @@ void MTRShuttle::parseOCDB(std::string path)
     AliMUONTriggerScalers *scalersData = nullptr;
     TIter next(arrayScalers);
     while ( (scalersData = static_cast<AliMUONTriggerScalers*>(next())) ) {
-      Int_t arrayScalersEntries = arrayScalers->GetEntries();
-      elapsedTime += scalersData->GetDeltaT();
+      int arrayScalersEntries = arrayScalers->GetEntries();
 
       for (int plane = 0; plane < kNPlanes; plane++) {
         for (int cathode = 0; cathode < kNCathodes; cathode++) {
@@ -222,11 +220,11 @@ void MTRShuttle::parseOCDB(std::string path)
 
             // se in overflow passo alla LB successiva
             if (scalersData->GetLocScalStripOver(cathode, plane, localBoard) != 0.) {
-              overflowLB[cathode][iSide][plane][iRPC09] |= true;
               continue;
             }
 
             scalers[cathode][iSide][plane][iRPC09] += scalersData->GetLocScalStrip(cathode, plane, localBoard);
+            elapsedTime[cathode][iSide][plane][iRPC09] += scalersData->GetDeltaT();
           }
         }
       }
@@ -236,11 +234,12 @@ void MTRShuttle::parseOCDB(std::string path)
       for (int side=0; side<kNSides; side++) {
         for (int RPC=0; RPC<kNRPC; RPC++) {
           double values[2] = {0.,0.};
-          if (elapsedTime>0.){
             for (int cathode=0; cathode<kNCathodes; cathode++) {
-              values[cathode] = scalers[cathode][side][plane][RPC] / (elapsedTime);
+              if (elapsedTime[cathode][side][plane][RPC]>0.) {
+                values[cathode] =
+                  (double) scalers[cathode][side][plane][RPC] / (double) elapsedTime[cathode][side][plane][RPC];
+              }
             }
-          }
           runObjectBuffer[plane][side][RPC].setScalBending(values[0]);
           runObjectBuffer[plane][side][RPC].setScalNotBending(values[1]);
 
