@@ -215,7 +215,7 @@ void MTRShuttle::parseOCDB(std::string path)
               int iSide = kRPCSides[iRPC017];
 
               // se in overflow passo alla LB successiva
-              if (scalersData->GetLocScalStripOver(cathode, plane, localBoard) != 0.) {
+              if (scalersData->GetLocScalStripOver(cathode, plane, localBoard) > 0) {
                 continue;
               }
 
