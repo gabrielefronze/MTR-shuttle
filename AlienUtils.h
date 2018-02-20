@@ -26,6 +26,21 @@ namespace AlienUtils
       std::string command = "alien-token-init "+userName;
       system(command.c_str());
     }
+
+    static bool checkCDB(AliCDBStorage *defStorage, TString path){
+      TObjArray *arrCDBID = defStorage->GetQueryCDBList();
+      if (!arrCDBID) return false;
+
+      TIter nxt(arrCDBID);
+      AliCDBId *cdbID = 0;
+      while ((cdbID = (AliCDBId *) nxt())) {
+        if (cdbID->GetPath() == path) {
+          return true;
+        }
+      }
+
+      return false;
+    }
 };
 
 #endif //MTR_SHUTTLE_ALIENUTILS_H
