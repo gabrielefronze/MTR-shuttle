@@ -157,7 +157,7 @@ void MTRShuttle::parseOCDB(std::string path)
 
             auto HV = value->GetFloat();
 
-            bool HVcheck = HV < kMinWorkHV;
+            bool HVcheck = HV > kMinWorkHV;
             isHVOk &= HVcheck;
 
             if (HVcheck) {
