@@ -73,30 +73,19 @@ void MTRShuttle::parseOCDB(std::string path)
   managerCDB->SetDefaultStorage(path.c_str());
 
   for (const auto &runIterator : fRunList) {
-    AliCDBManager *managerYearCheck = managerCDB;
 
     int RunYear = runIterator.second;
-
-    managerCDB->SetRun(runIterator.first);
 
     AliCDBStorage *defStorage = managerCDB->GetDefaultStorage();
     if (!defStorage) continue;
 
     defStorage->QueryCDB(runIterator.first);
-    TObjArray *arrCDBID = defStorage->GetQueryCDBList();
-    if (!arrCDBID) continue;
-    TIter nxt(arrCDBID);
-    AliCDBId *cdbID = 0;
-    bool hasGRP = false;
-    while ((cdbID = (AliCDBId *) nxt())) {
-      if (cdbID->GetPath() == "GRP/GRP/Data") {
-        hasGRP = kTRUE;
-        break;
-      }
-    }
-    if (!hasGRP) {
+
+    if (!AlienUtils::checkCDB(defStorage,"GRP/GRP/Data")) {
       continue;
     }
+
+    managerCDB->SetRun(runIterator.first);
 
     if (!AliMpCDB::LoadDDLStore()) continue;
     AliMpDDLStore *ddlStore = AliMpDDLStore::Instance();
@@ -118,6 +107,10 @@ void MTRShuttle::parseOCDB(std::string path)
 
     //settaggio del flag beamPresence
     bool isBeamPresent = (beamEnergy > .1);
+
+    if (!AlienUtils::checkCDB(defStorage,"MUON/Calib/TriggerDCS")) {
+      continue;
+    }
 
     //inizializzazione dell'entry contente i valori di corrente
     AliCDBEntry *entryDCS = managerCDB->Get("MUON/Calib/TriggerDCS");
@@ -181,9 +174,9 @@ void MTRShuttle::parseOCDB(std::string path)
 
     // Skipping runs with HV under lower limits
 //    if (!isHVOkGlobal) continue;
-
-    {
+    if (AlienUtils::checkCDB(defStorage,"MUON/Calib/TriggerScalers")) {
       //inizializzazone dell'entry contenente le letture degli scalers
+
       AliCDBEntry *entryScalers = managerCDB->Get("MUON/Calib/TriggerScalers");
       if (!entryScalers) continue;
 
@@ -208,7 +201,7 @@ void MTRShuttle::parseOCDB(std::string path)
       //loop sulle entries, sui piani, i catodi (bending e non bending) e le Local Boards (234 per piano)
       AliMUONTriggerScalers *scalersData = nullptr;
       TIter next(arrayScalers);
-      while ( (scalersData = static_cast<AliMUONTriggerScalers*>(next())) ) {
+      while ((scalersData = static_cast<AliMUONTriggerScalers *>(next()))) {
         int arrayScalersEntries = arrayScalers->GetEntries();
 
         for (int plane = 0; plane < kNPlanes; plane++) {
