@@ -692,13 +692,24 @@ TMultiGraph *MTRShuttle::drawCorrelations(XType(RunObject::*getX)() const,
   }
 
   mg->Draw("ap");
-  mg->GetHistogram()->GetXaxis()->SetTimeOffset(0);
-  mg->GetHistogram()->GetXaxis()->SetTimeDisplay(1);
-  mg->GetHistogram()->GetXaxis()->SetTimeFormat("%d-%m-%y");
-  mg->GetHistogram()->GetYaxis()->SetLabelSize(0.02);
 
-  mg->GetHistogram()->GetXaxis()->SetTitle("Date");
-  mg->GetHistogram()->GetYaxis()->SetTitle(getLabel(getY,normalizeToAreaY).c_str());
+  if (compareFunctions(getX,&RunObject::getSOR) || compareFunctions(getX,&RunObject::getEOR)){
+    //This time offset is NEEDED to correctly display data from timestamp!
+    gStyle->SetTimeOffset(0);
+    mg->GetXaxis()->SetTimeDisplay(1);
+    mg->GetXaxis()->SetTimeFormat("%d-%m-%y");
+    mg->GetXaxis()->SetLabelSize(0.02);
+    mg->GetXaxis()->SetTitle("Date");
+  } else mg->GetHistogram()->GetXaxis()->SetTitle(getLabel(getX,normalizeToAreaX).c_str());
+
+  if (compareFunctions(getY,&RunObject::getSOR) || compareFunctions(getY,&RunObject::getEOR)){
+    //This time offset is NEEDED to correctly display data from timestamp!
+    gStyle->SetTimeOffset(0);
+    mg->GetYaxis()->SetTimeDisplay(1);
+    mg->GetYaxis()->SetTimeFormat("%d-%m-%y");
+    mg->GetYaxis()->SetLabelSize(0.02);
+    mg->GetYaxis()->SetTitle("Date");
+  } else mg->GetHistogram()->GetYaxis()->SetTitle(getLabel(getY,normalizeToAreaY).c_str());
 
   return mg;
 }
