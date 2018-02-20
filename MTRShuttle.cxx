@@ -219,6 +219,10 @@ void MTRShuttle::parseOCDB(std::string path)
                 continue;
               }
 
+              auto value = scalersData->GetLocScalStrip(cathode, plane, localBoard);
+
+//              if (value > 0 && iRPC017 == 0) printf("%d %d %d %d %llu\n", plane, cathode, localBoard, iRPC09, value);
+
               scalers[cathode][iSide][plane][iRPC09] += scalersData->GetLocScalStrip(cathode, plane, localBoard);
               elapsedTime[cathode][iSide][plane][iRPC09] += scalersData->GetDeltaT();
             }
@@ -226,27 +230,32 @@ void MTRShuttle::parseOCDB(std::string path)
         }
       }
 
-      for (int plane=0; plane<kNPlanes; plane++) {
-        for (int side=0; side<kNSides; side++) {
-          for (int RPC=0; RPC<kNRPC; RPC++) {
-            double values[2] = {0.,0.};
-              for (int cathode=0; cathode<kNCathodes; cathode++) {
-                if (elapsedTime[cathode][side][plane][RPC]>0.) {
-                  values[cathode] =
-                    (double) scalers[cathode][side][plane][RPC] / (double) elapsedTime[cathode][side][plane][RPC];
-                }
+      for (int plane = 0; plane < kNPlanes; plane++) {
+        for (int side = 0; side < kNSides; side++) {
+          for (int RPC = 0; RPC < kNRPC; RPC++) {
+            double values[2] = {0., 0.};
+            for (int cathode = 0; cathode < kNCathodes; cathode++) {
+              if (elapsedTime[cathode][side][plane][RPC] > 0) {
+                values[cathode] =
+                  (double) scalers[cathode][side][plane][RPC] / (double) elapsedTime[cathode][side][plane][RPC];
+//                printf("%d %d %d %llu %llu %f\n", plane, side, RPC, scalers[cathode][side][plane][RPC],
+//                       elapsedTime[cathode][side][plane][RPC], values[cathode]);
+
               }
+            }
             runObjectBuffer[plane][side][RPC].setScalBending(values[0]);
             runObjectBuffer[plane][side][RPC].setScalNotBending(values[1]);
-
-            fRunDataVect[plane][side][RPC].emplace_back(runObjectBuffer[plane][side][RPC]);
           }
         }
       }
+    }
 
-      entryScalers = nullptr;
-      arrayScalers = nullptr;
-      scalersData = nullptr;
+    for (int plane=0; plane<kNPlanes; plane++) {
+      for (int side = 0; side < kNSides; side++) {
+        for (int RPC = 0; RPC < kNRPC; RPC++) {
+          fRunDataVect[plane][side][RPC].emplace_back(runObjectBuffer[plane][side][RPC]);
+        }
+      }
     }
 
     printf("scalers reading complete.\n");
