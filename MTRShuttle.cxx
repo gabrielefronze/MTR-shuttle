@@ -334,8 +334,7 @@ void MTRShuttle::propagateAMANDA()
         // Loop over run objects to retreve SOR and EOR values
         for (const auto &runObjectIt: fRunDataVect[plane][side][RPC]) {
 
-          // If run is not dark skip
-          if (!runObjectIt.isDark()) continue;
+          bool isDarkRun = runObjectIt.isDark();
 
           // Load SOR and EOR values
           auto SOR = runObjectIt.getSOR();
@@ -354,8 +353,8 @@ void MTRShuttle::propagateAMANDA()
               break;
             // If SOR<TS<EOR then set IDark
             } else {
-              setIsDarkIt->setIDark(setIsDarkIt->getITot());
-              setIsDarkIt->setIsDark(true);
+              if(isDarkRun) setIsDarkIt->setIDark(setIsDarkIt->getITot());
+              setIsDarkIt->setIsDark(isDarkRun);
             }
           }
         }
