@@ -36,6 +36,8 @@ class RunObject{
     inline double getAvgIDark() const { return fAvgIDark; }
     inline void setAvgIDark(double fAvgIDark) { RunObject::fAvgIDark = fAvgIDark; }
 
+    inline double getAvgINet() const { return (fAvgITot<=fAvgIDark)?(fAvgITot - fAvgIDark):0.; }
+
     inline double getIntCharge() const { return fIntCharge; }
     inline void setIntCharge(double fIntCharge) { RunObject::fIntCharge = fIntCharge; }
 
@@ -56,7 +58,8 @@ class RunObject{
     inline bool isAfter(uint64_t TS=UINT64_MAX) const { return fSOR>TS; }
     inline bool isBetweenTimestamps(uint64_t TSMin, uint64_t TSMax) const { return (isBefore(TSMax) && isAfter(TSMin)); }
 
-    inline bool isValidForIntCharge() const { return (!fIsDark && fAvgHV>kMinWorkHV); }
+    inline bool isValidForIntCharge() const { return (!fIsDark && (fAvgHV>kMinWorkHV)); }
+    inline bool isHVOk() const { return fAvgHV>kMinWorkHV; }
 
     template<class ...Args> constexpr bool getTrue(Args... /*arg*/) const { return true; }
 
