@@ -614,12 +614,9 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
     if ((dataIt.*condition)(args...)==negateCondition) continue;
 
     XType x = (dataIt.*getX)();
-
-//    if (dataIt.getAvgHV()<kMinWorkHV || dataIt.isDark()) continue;
-
-//    std::cout << dataIt.getRunNumber() << " " << dataIt.getAvgHV() << std::endl;
-
     YType y = (dataIt.*getY)();
+
+    if ( std::isnan(y) || std::isnan(x) ) continue;
 
     if (normalizeToAreaX){
       if(!plotAverage) x=x/kAreas[plane][side][RPC];
