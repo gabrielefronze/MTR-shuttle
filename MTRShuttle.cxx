@@ -369,10 +369,10 @@ void MTRShuttle::propagateAMANDA()
              darkCurrentIt!=fAMANDACurrentsVect[plane][side][RPC].end();
              darkCurrentIt++) {
 
-          // If previous reading and current one are dark update last dark
+          // If previous reading and current one are dark, update last dark
           if ( wasPrevDark && darkCurrentIt->isDark() ) lastDarkIt = darkCurrentIt;
 
-          // If previous reading wasn't dark, while current one yes, set dark currents
+          // If previous reading wasn't dark, while current one is, set dark currents
           else if ( !wasPrevDark && darkCurrentIt->isDark()) {
 
             // Computing the parameters for the "dumb interpolation"
