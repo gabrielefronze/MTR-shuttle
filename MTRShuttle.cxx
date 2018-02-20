@@ -236,8 +236,10 @@ void MTRShuttle::parseOCDB(std::string path)
       for (int side=0; side<kNSides; side++) {
         for (int RPC=0; RPC<kNRPC; RPC++) {
           double values[2] = {0.,0.};
-          for (int cathode=0; cathode<kNCathodes; cathode++) {
-            values[cathode] = scalers[cathode][side][plane][RPC] / (elapsedTime);
+          if (elapsedTime>0.){
+            for (int cathode=0; cathode<kNCathodes; cathode++) {
+              values[cathode] = scalers[cathode][side][plane][RPC] / (elapsedTime);
+            }
           }
           runObjectBuffer[plane][side][RPC].setScalBending(values[0]);
           runObjectBuffer[plane][side][RPC].setScalNotBending(values[1]);
