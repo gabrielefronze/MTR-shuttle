@@ -27,13 +27,16 @@ namespace AlienUtils
       system(command.c_str());
     }
 
-    static bool checkCDB(AliCDBStorage *defStorage, TString path){
+    static bool checkCDB(AliCDBStorage *defStorage, TString path, bool defaultAllowed){
       TObjArray *arrCDBID = defStorage->GetQueryCDBList();
       if (!arrCDBID) return false;
 
       TIter nxt(arrCDBID);
       AliCDBId *cdbID = 0;
+
       while ((cdbID = (AliCDBId *) nxt())) {
+        if (cdbID->GetFirstRun()==0 && !defaultAllowed) continue;
+
         if (cdbID->GetPath() == path) {
           return true;
         }

@@ -81,7 +81,7 @@ void MTRShuttle::parseOCDB(std::string path)
 
     defStorage->QueryCDB(runIterator.first);
 
-    if (!AlienUtils::checkCDB(defStorage,"GRP/GRP/Data")) {
+    if (!AlienUtils::checkCDB(defStorage,"GRP/GRP/Data",false)) {
       continue;
     }
 
@@ -108,7 +108,7 @@ void MTRShuttle::parseOCDB(std::string path)
     //settaggio del flag beamPresence
     bool isBeamPresent = (beamEnergy > .1);
 
-    if (!AlienUtils::checkCDB(defStorage,"MUON/Calib/TriggerDCS")) {
+    if (!AlienUtils::checkCDB(defStorage,"MUON/Calib/TriggerDCS",false)) {
       continue;
     }
 
@@ -176,7 +176,7 @@ void MTRShuttle::parseOCDB(std::string path)
 
     // Skipping runs with HV under lower limits
 //    if (!isHVOkGlobal) continue;
-    if (AlienUtils::checkCDB(defStorage,"MUON/Calib/TriggerScalers")) {
+    if (AlienUtils::checkCDB(defStorage,"MUON/Calib/TriggerScalers",false)) {
       //inizializzazone dell'entry contenente le letture degli scalers
 
       AliCDBEntry *entryScalers = managerCDB->Get("MUON/Calib/TriggerScalers");
