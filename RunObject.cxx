@@ -25,7 +25,7 @@ RunObject::RunObject(std::string csvLine, int &plane, int &side, int &RPC)
          &RPC,
          &fRunNumber,
          &fSOR,
-         &fSOR,
+         &fEOR,
          &fAvgHV,
          &fAvgITot,
          &fAvgIDark,
