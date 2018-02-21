@@ -59,6 +59,7 @@ class RunObject{
     inline bool isBetweenTimestamps(uint64_t TSMin, uint64_t TSMax) const { return (isBefore(TSMax) && isAfter(TSMin)); }
 
     inline bool isValidForIntCharge() const { return (!fIsDark && (fAvgHV>kMinWorkHV)); }
+    inline bool isValidForIDark() const { return (fIsDark && (fAvgHV>kMinWorkHV)); }
     inline bool isHVOk() const { return fAvgHV>kMinWorkHV; }
 
     template<class ...Args> constexpr bool getTrue(Args... /*arg*/) const { return true; }
