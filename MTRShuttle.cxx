@@ -37,7 +37,7 @@ void MTRShuttle::parseRunList(std::string path)
     auto position = std::find_if(fRunList.begin(),fRunList.end(),[&runBuffer](const std::pair<int,int>& pair){
       return pair.first == runBuffer;
     });
-    if( position == fRunList.end() )fRunList.emplace_back(std::make_pair(runBuffer,2017));
+    if( position == fRunList.end() )fRunList.emplace_back(std::make_pair(runBuffer,AlienUtils::getRunYear(runBuffer)));
   }
   fin.close();
 
@@ -57,9 +57,17 @@ void MTRShuttle::parseOCDB(std::string path)
   AlienUtils::connectIfNeeded(path);
 
   AliCDBManager *managerCDB = AliCDBManager::Instance();
-  managerCDB->SetDefaultStorage(path.c_str());
+
+  int previousRunYear = 0;
 
   for (const auto &runIterator : fRunList) {
+
+    if(previousRunYear!=runIterator.second){
+      previousRunYear=runIterator.second;
+      path.replace(path.find("####"), 4,std::to_string(runIterator.second).c_str());
+      printf("%s\n",path);
+      managerCDB->SetDefaultStorage(path.c_str());
+    }
 
     printf("\t\tINFO: Processing run %d\n",runIterator.first);
 

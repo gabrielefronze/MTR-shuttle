@@ -11,6 +11,15 @@
 
 namespace AlienUtils
 {
+    const int kRunYears[][3] = {{2010,105524,139698},
+                                {2011,139699,170718},
+                                {2012,170719,194308},
+                                {2013,194309,199177},
+                                {2014,200001,208364},
+                                {2015,208365,247170},
+                                {2016,247171,267254},
+                                {2017,267255,282900}};
+
     static bool checkAlienToken() {
       std::string checkTokenBashCommand = R"(if [[ "`alien-token-info | grep "still valid" `" != "" ]]; then echo "1"; else echo "0"; fi)";
       bool returnValue = false;
@@ -43,7 +52,14 @@ namespace AlienUtils
       }
       return true;
     }
+
+    static int getRunYear(int runNumber){
+      for (int iYear = 0; iYear < 8; ++iYear) {
+        if ( runNumber<=kRunYears[iYear][2] && runNumber>=kRunYears[iYear][1]) return kRunYears[iYear][0];
+      }
+      return 0;
     }
+
     static bool checkCDB(int runNumber, AliCDBStorage *defStorage, TString path, bool defaultAllowed){
       TObjArray *arrCDBID = defStorage->GetQueryCDBList();
       if (!arrCDBID) return false;
