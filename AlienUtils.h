@@ -70,7 +70,7 @@ namespace AlienUtils
       while ((cdbID = (AliCDBId *) nxt())) {
         if (cdbID->GetPath() == path) {
 
-          printf("Validity %d %d\n",cdbID->GetFirstRun(),cdbID->GetLastRun());
+//          printf("Validity %d %d\n",cdbID->GetFirstRun(),cdbID->GetLastRun());
 
           if (cdbID->GetFirstRun()==0) continue;
 
