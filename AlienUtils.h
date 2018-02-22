@@ -27,7 +27,7 @@ namespace AlienUtils
       system(command.c_str());
     }
 
-    static bool checkCDB(AliCDBStorage *defStorage, TString path, bool defaultAllowed){
+    static bool checkCDB(int runNumber, AliCDBStorage *defStorage, TString path, bool defaultAllowed){
       TObjArray *arrCDBID = defStorage->GetQueryCDBList();
       if (!arrCDBID) return false;
 
@@ -35,13 +35,22 @@ namespace AlienUtils
       AliCDBId *cdbID = 0;
 
       while ((cdbID = (AliCDBId *) nxt())) {
-        if (cdbID->GetFirstRun()==0 && !defaultAllowed) continue;
-
         if (cdbID->GetPath() == path) {
-          return true;
+
+          printf("Validity %d %d\n",cdbID->GetFirstRun(),cdbID->GetLastRun());
+
+          if (cdbID->GetFirstRun()==AliCDBRunRange::Infinity()) continue;
+
+          if (cdbID->GetFirstRun()==runNumber){
+            return true;
+          }
+
+          if (cdbID->GetFirstRun()==0 && defaultAllowed){
+            printf("\t\tINFO: Only default file found.\n");
+            return defaultAllowed;
+          }
         }
       }
-
       return false;
     }
 };
