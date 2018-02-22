@@ -65,11 +65,8 @@ void MTRShuttle::parseOCDB(std::string path)
 
     if(previousRunYear!=runIterator.second){
       previousRunYear=runIterator.second;
-
       CDBpath = path;
-
       CDBpath.replace(CDBpath.find("####"), 4,std::to_string(runIterator.second).c_str());
-      printf("%s\n",CDBpath.c_str());
       managerCDB->SetDefaultStorage(CDBpath.c_str());
     }
 
