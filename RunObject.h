@@ -50,6 +50,9 @@ class RunObject{
     inline bool isDark() const { return fIsDark; }
     inline void setfIsDark(bool fIsDark) { RunObject::fIsDark = fIsDark; }
 
+    inline bool isHVOk() const { return fIsHVOk; }
+    inline void setfIsHVOk(bool fIsHVOk) { RunObject::fIsHVOk = fIsHVOk; }
+
     inline bool isAfterRun(uint64_t run=0) const { return fRunNumber>run; }
     inline bool isBeforeRun(uint64_t run=UINT64_MAX) const { return fRunNumber<run; }
     inline bool isBetweenRuns(uint64_t runMin, uint64_t runMax) const { return (isBeforeRun(runMax) && isAfterRun(runMin)); }
@@ -60,7 +63,6 @@ class RunObject{
 
     inline bool isValidForIntCharge() const { return (!fIsDark && (fAvgHV>kMinWorkHV)); }
     inline bool isValidForIDark() const { return (fIsDark && (fAvgHV>kMinWorkHV)); }
-    inline bool isHVOk() const { return fAvgHV>kMinWorkHV; }
 
     template<class ...Args> constexpr bool getTrue(Args... /*arg*/) const { return true; }
 
@@ -76,6 +78,7 @@ class RunObject{
     double fIntCharge;
     double fScalBending;
     double fScalNotBending;
+    bool fIsHVOk;
     bool fIsDark;
 };
 
