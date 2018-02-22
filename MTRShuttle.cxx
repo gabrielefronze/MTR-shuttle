@@ -140,6 +140,8 @@ void MTRShuttle::parseOCDB(std::string path)
 
     RunObject runObjectBuffer[kNPlanes][kNSides][kNRPC];
 
+    int badHVCounter = 0;
+
     //loop sui piani, i lati (inside e outside) e le RPC (9 per side)
     for (int plane = 0; plane < kNPlanes; plane++) {
       for (int side = 0; side < kNSides; side++) {
@@ -169,8 +171,10 @@ void MTRShuttle::parseOCDB(std::string path)
             bool HVcheck = HV > kMinWorkHV;
             isHVOk &= HVcheck;
 
+
             if (!HVcheck) {
               printf("HV not OK for %d %d %d %f\n",plane,side,RPC,HV);
+              badHVCounter++;
               break;
             } else {
               avgHV += HV;
@@ -186,6 +190,11 @@ void MTRShuttle::parseOCDB(std::string path)
           runObjectBuffer[plane][side][RPC].setAvgHV((counterHV != 0 && isHVOk) ? avgHV / counterHV : 0.);
         }
       }
+    }
+
+    if(badHVCounter==kNPlanes*kNSides*kNRPC) {
+      printf("\t\tINFO: Run %d has low HV and is skipped\n",runIterator.first);
+      continue;
     }
 
     // Skipping runs with HV under lower limits
