@@ -140,8 +140,6 @@ void MTRShuttle::parseOCDB(std::string path)
 
     RunObject runObjectBuffer[kNPlanes][kNSides][kNRPC];
 
-    bool isHVOkGlobal = true;
-
     //loop sui piani, i lati (inside e outside) e le RPC (9 per side)
     for (int plane = 0; plane < kNPlanes; plane++) {
       for (int side = 0; side < kNSides; side++) {
@@ -172,27 +170,22 @@ void MTRShuttle::parseOCDB(std::string path)
             isHVOk &= HVcheck;
 
             if (!HVcheck) {
-              continue;
+              printf("HV not OK for %d %d %d %f\n",plane,side,RPC,HV);
+              break;
             } else {
               avgHV += HV;
               counterHV++;
             }
           }
 
-          isHVOkGlobal &= isHVOk;
-
-          runObjectBuffer[plane][side][RPC].setfIsDark(!(isBeamPresent) && isHVOk);
+          runObjectBuffer[plane][side][RPC].setfIsHVOk(isHVOk);
+          runObjectBuffer[plane][side][RPC].setfIsDark(!isBeamPresent);
           runObjectBuffer[plane][side][RPC].setRunNumber((uint64_t)runIterator.first);
           runObjectBuffer[plane][side][RPC].setSOR(SOR);
           runObjectBuffer[plane][side][RPC].setEOR(EOR);
-          runObjectBuffer[plane][side][RPC].setAvgHV((counterHV != 0) ? avgHV / counterHV : 0.);
+          runObjectBuffer[plane][side][RPC].setAvgHV((counterHV != 0 && isHVOk) ? avgHV / counterHV : 0.);
         }
       }
-    }
-
-    if (!isHVOkGlobal) {
-      printf("\t\tINFO: HV not OK for run %d\n",runIterator.first);
-//      continue;
     }
 
     // Skipping runs with HV under lower limits
