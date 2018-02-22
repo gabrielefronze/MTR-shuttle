@@ -452,9 +452,9 @@ void MTRShuttle::propagateAMANDA()
               // If SOR<TS<EOR then set IDark
             } else {
               auto deltaT = currentIt->getTimeStamp()-previousTS;
-              iDarkCumulus+=currentIt->getIDark()*deltaT;
-              iTotCumulus+=currentIt->getITot()*deltaT;
-              integratedCharge+=currentIt->getINet()*deltaT;
+              iDarkCumulus+=currentIt->getIDark()*(double)deltaT;
+              iTotCumulus+=currentIt->getITot()*(double)deltaT;
+              integratedCharge+=currentIt->getINet()*(double)deltaT;
 
               totalT+=deltaT;
 
