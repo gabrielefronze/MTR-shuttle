@@ -59,14 +59,18 @@ void MTRShuttle::parseOCDB(std::string path)
   AliCDBManager *managerCDB = AliCDBManager::Instance();
 
   int previousRunYear = 0;
+  std::string CDBpath;
 
   for (const auto &runIterator : fRunList) {
 
     if(previousRunYear!=runIterator.second){
       previousRunYear=runIterator.second;
-      path.replace(path.find("####"), 4,std::to_string(runIterator.second).c_str());
-      printf("%s\n",path);
-      managerCDB->SetDefaultStorage(path.c_str());
+
+      CDBpath = path;
+
+      CDBpath.replace(CDBpath.find("####"), 4,std::to_string(runIterator.second).c_str());
+      printf("%s\n",CDBpath.c_str());
+      managerCDB->SetDefaultStorage(CDBpath.c_str());
     }
 
     printf("\t\tINFO: Processing run %d\n",runIterator.first);
