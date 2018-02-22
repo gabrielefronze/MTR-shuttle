@@ -54,20 +54,7 @@ void MTRShuttle::parseRunList(std::string path)
 
 void MTRShuttle::parseOCDB(std::string path)
 {
-
-  if (path.find("alien") != std::string::npos) {
-    if (!AlienUtils::checkAlienToken()) {
-      std::string userName;
-      std::cerr << "Alien token is not valid" << std::endl;
-      std::cout << "Please enter your Alien username " << std::endl;
-      std::cin >> userName;
-      AlienUtils::initAlienToken(userName);
-      if (!AlienUtils::checkAlienToken()) {
-        std::cerr << "Alien token not valid even after reset. Proceed manually!" << std::endl;
-        return;
-      }
-    }
-  }
+  AlienUtils::connectIfNeeded(path);
 
   AliCDBManager *managerCDB = AliCDBManager::Instance();
   managerCDB->SetDefaultStorage(path.c_str());

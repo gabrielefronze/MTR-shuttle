@@ -27,6 +27,23 @@ namespace AlienUtils
       system(command.c_str());
     }
 
+    static bool connectIfNeeded(std::string path){
+      if (path.find("alien") != std::string::npos) {
+        if (!AlienUtils::checkAlienToken()) {
+          std::string userName;
+          std::cerr << "Alien token is not valid" << std::endl;
+          std::cout << "Please enter your Alien username " << std::endl;
+          std::cin >> userName;
+          AlienUtils::initAlienToken(userName);
+          if (!AlienUtils::checkAlienToken()) {
+            std::cerr << "Alien token not valid even after reset. Proceed manually!" << std::endl;
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+    }
     static bool checkCDB(int runNumber, AliCDBStorage *defStorage, TString path, bool defaultAllowed){
       TObjArray *arrCDBID = defStorage->GetQueryCDBList();
       if (!arrCDBID) return false;
