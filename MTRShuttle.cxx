@@ -490,11 +490,12 @@ void MTRShuttle::computeAverage()
 
       for (int side = 0; side < kNSides; side++) {
         for (int RPC = 0; RPC < kNRPC; RPC++) {
-          runData = runData + fRunDataVect[plane][side][RPC][iRun];
+          if(runData.isHVOk()) runData = runData + fRunDataVect[plane][side][RPC][iRun];
+          else nOfRPC--;
         }
       }
 
-      runData = runData/(double)nOfRPC;
+      if(nOfRPC!=0) runData = runData/(double)nOfRPC;
 
       fRunDataVectAvg[plane].emplace_back(runData);
     }
