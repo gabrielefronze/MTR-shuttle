@@ -263,7 +263,6 @@ void MTRShuttle::parseOCDB(std::string path)
           }
         }
       }
-      printf("scalers reading complete.\n");
     } else {
       printf("\t\tERROR: TriggerScalers not found for run %d\n",runIterator.first);
     }
