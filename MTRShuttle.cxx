@@ -74,29 +74,39 @@ void MTRShuttle::parseOCDB(std::string path)
 
   for (const auto &runIterator : fRunList) {
 
+    printf("\t\tINFO: Processing run %d\n",runIterator.first);
+
     int RunYear = runIterator.second;
 
     AliCDBStorage *defStorage = managerCDB->GetDefaultStorage();
     if (!defStorage) continue;
 
+    managerCDB->SetRun(runIterator.first);
     defStorage->QueryCDB(runIterator.first);
 
-    if (!AlienUtils::checkCDB(defStorage,"GRP/GRP/Data",false)) {
+    if (!AlienUtils::checkCDB(runIterator.first,defStorage,"GRP/GRP/Data",false)) {
+      printf("\t\tERROR: GRP/GRP/Data not found for run %d\n",runIterator.first);
       continue;
+    } else {
+      printf("\t\tINFO: GRP/GRP/Data found for run %d\n",runIterator.first);
     }
-
-    managerCDB->SetRun(runIterator.first);
 
     if (!AliMpCDB::LoadDDLStore()) continue;
     AliMpDDLStore *ddlStore = AliMpDDLStore::Instance();
 
     //inizializzazione dell'entry contente il runtype
     AliCDBEntry *entryRunType = managerCDB->Get("GRP/GRP/Data");
-    if (!entryRunType) continue;
+    if (!entryRunType) {
+      printf("\t\tERROR: AliCDBEntry not found for run %d\n",runIterator.first);
+      continue;
+    }
 
     //retrievering delle informazioni sul run
     auto *grpObj = (AliGRPObject *) entryRunType->GetObject();
-    if (!grpObj) continue;
+    if (!grpObj) {
+      printf("\t\tERROR: AliGRPObject not found for run %d\n",runIterator.first);
+      continue;
+    }
 
     TString runType = grpObj->GetRunType();
     TString beamType = grpObj->GetBeamType();
@@ -108,17 +118,26 @@ void MTRShuttle::parseOCDB(std::string path)
     //settaggio del flag beamPresence
     bool isBeamPresent = (beamEnergy > .1);
 
-    if (!AlienUtils::checkCDB(defStorage,"MUON/Calib/TriggerDCS",false)) {
+    if (!AlienUtils::checkCDB(runIterator.first,defStorage,"MUON/Calib/TriggerDCS",false)) {
+      printf("\t\tERROR: TriggerDCS not found for run %d\n",runIterator.first);
       continue;
+    } else {
+      printf("\t\tINFO: TriggerDCS found for run %d\n",runIterator.first);
     }
 
     //inizializzazione dell'entry contente i valori di corrente
     AliCDBEntry *entryDCS = managerCDB->Get("MUON/Calib/TriggerDCS");
-    if (!entryDCS) continue;
+    if (!entryDCS) {
+      printf("\t\tERROR: AliCDBEntry not found for run %d\n",runIterator.first);
+      continue;
+    }
 
     //mappa delle correnti
     auto mapDCS = (TMap *) entryDCS->GetObject();
-    if (!mapDCS) continue;
+    if (!mapDCS) {
+      printf("\t\tERROR: mapDCS not found for run %d\n",runIterator.first);
+      continue;
+    }
 
     RunObject runObjectBuffer[kNPlanes][kNSides][kNRPC];
 
@@ -172,12 +191,16 @@ void MTRShuttle::parseOCDB(std::string path)
       }
     }
 
-    if (!isHVOkGlobal) continue;
+    if (!isHVOkGlobal) {
+      printf("\t\tINFO: HV not OK for run %d\n",runIterator.first);
+//      continue;
+    }
 
     // Skipping runs with HV under lower limits
 //    if (!isHVOkGlobal) continue;
-    if (AlienUtils::checkCDB(defStorage,"MUON/Calib/TriggerScalers",false)) {
+    if (AlienUtils::checkCDB(runIterator.first,defStorage,"MUON/Calib/TriggerScalers",false)) {
       //inizializzazone dell'entry contenente le letture degli scalers
+      printf("\t\tINFO: TriggerScaler found for run %d\n",runIterator.first);
 
       AliCDBEntry *entryScalers = managerCDB->Get("MUON/Calib/TriggerScalers");
       if (!entryScalers) continue;
@@ -248,7 +271,12 @@ void MTRShuttle::parseOCDB(std::string path)
           }
         }
       }
+      printf("scalers reading complete.\n");
+    } else {
+      printf("\t\tERROR: TriggerScalers not found for run %d\n",runIterator.first);
     }
+
+    printf("\t\tINFO: Saving run %d\n",runIterator.first);
 
     for (int plane=0; plane<kNPlanes; plane++) {
       for (int side = 0; side < kNSides; side++) {
@@ -257,8 +285,6 @@ void MTRShuttle::parseOCDB(std::string path)
         }
       }
     }
-
-    printf("scalers reading complete.\n");
   }
 
   for (int plane=0; plane<kNPlanes; plane++) {
