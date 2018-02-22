@@ -72,7 +72,7 @@ namespace AlienUtils
 
           printf("Validity %d %d\n",cdbID->GetFirstRun(),cdbID->GetLastRun());
 
-          if (cdbID->GetFirstRun()==AliCDBRunRange::Infinity()) continue;
+          if (cdbID->GetFirstRun()==0) continue;
 
           if (cdbID->GetFirstRun()==runNumber){
             return true;
