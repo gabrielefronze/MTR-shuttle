@@ -103,9 +103,17 @@ inline RunObject operator/ (RunObject result, const double &divider){
 }
 
 std::ostream& operator<<(std::ostream& os, const RunObject& obj){
-  return os << obj.getRunNumber() << ";" << obj.getSOR() << ";" << obj.getEOR() << ";" << obj.getAvgHV()
-            << ";" << obj.getAvgITot() << ";" << obj.getAvgIDark() << ";" << obj.getIntCharge()
-            << ";" << obj.getScalBending() << ";" << obj.getScalNotBending() << ";" << (int) obj.isDark();
+  return os << obj.getRunNumber() << ";"
+            << obj.getSOR() << ";"
+            << obj.getEOR() << ";"
+            << obj.getAvgHV() << ";"
+            << obj.getAvgITot() << ";"
+            << obj.getAvgIDark() << ";"
+            << obj.getIntCharge() << ";"
+            << obj.getScalBending() << ";"
+            << obj.getScalNotBending() << ";"
+            << (int) obj.isDark() << ";"
+            << (int) obj.isHVOk();
 }
 
 template<typename Type> inline bool compareFunctions(Type(RunObject::*getX)() const, Type(RunObject::*getY)() const){

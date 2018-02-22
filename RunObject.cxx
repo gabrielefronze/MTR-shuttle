@@ -18,8 +18,9 @@ RunObject::RunObject(uint64_t fSOR, uint64_t fEOR, double fAvgHV, double fAvgITo
 
 RunObject::RunObject(std::string csvLine, int &plane, int &side, int &RPC)
 {
-  int ifDarkBuffer = 0;
-  sscanf(csvLine.c_str(),"%d;%d;%d;%llu;%llu;%llu;%lf;%lf;%lf;%lf;%lf;%lf;%d",
+  int isDarkBuffer = 0;
+  int isHVOkBuffer = 0;
+  sscanf(csvLine.c_str(),"%d;%d;%d;%llu;%llu;%llu;%lf;%lf;%lf;%lf;%lf;%lf;%d;%d",
          &plane,
          &side,
          &RPC,
@@ -32,8 +33,10 @@ RunObject::RunObject(std::string csvLine, int &plane, int &side, int &RPC)
          &fIntCharge,
          &fScalBending,
          &fScalNotBending,
-         &ifDarkBuffer);
-  fIsDark = (ifDarkBuffer == 1);
+         &isDarkBuffer,
+         &isHVOkBuffer);
+  fIsDark = (isDarkBuffer == 1);
+  fIsHVOk = (isHVOkBuffer == 1);
 }
 
 template<typename Type>
