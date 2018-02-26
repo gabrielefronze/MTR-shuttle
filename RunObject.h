@@ -55,11 +55,15 @@ class RunObject{
 
     inline bool isAfterRun(uint64_t run=0) const { return fRunNumber>run; }
     inline bool isBeforeRun(uint64_t run=UINT64_MAX) const { return fRunNumber<run; }
-    inline bool isBetweenRuns(uint64_t runMin, uint64_t runMax) const { return (isBeforeRun(runMax) && isAfterRun(runMin)); }
+    inline bool isBetweenRuns(uint64_t runMin, uint64_t runMax) const {
+      return (isBeforeRun(runMax) && isAfterRun(runMin));
+    }
 
     inline bool isBefore(uint64_t TS=0) const { return fEOR<TS; }
     inline bool isAfter(uint64_t TS=UINT64_MAX) const { return fSOR>TS; }
-    inline bool isBetweenTimestamps(uint64_t TSMin, uint64_t TSMax) const { return (isBefore(TSMax) && isAfter(TSMin)); }
+    inline bool isBetweenTimestamps(uint64_t TSMin, uint64_t TSMax) const {
+      return (isBefore(TSMax) && isAfter(TSMin));
+    }
 
     inline bool isValidForIntCharge() const { return (!fIsDark && fIsHVOk); }
     inline bool isValidForIDark() const { return (fIsDark && fIsHVOk); }
