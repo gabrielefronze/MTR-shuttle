@@ -301,7 +301,7 @@ void MTRShuttle::parseAMANDAiMon(std::string path)
 {
   int linesCounter = 0;
   {
-    uint64_t dummyTimeStamp = 0;
+    double dummyTimeStamp = 0;
     double timeStamp = 0;
     double current = 0.;
     int MT = 0;
@@ -324,11 +324,11 @@ void MTRShuttle::parseAMANDAiMon(std::string path)
         std::cout << linesCounter++ << "\r";
         const char *charbuffer = (char *) line.c_str();
         if (!charbuffer) continue;
-        sscanf(charbuffer, "%llu;MTR_%c", &dummyTimeStamp, &InsideOutside);
+        sscanf(charbuffer, "%lf;MTR_%c", &dummyTimeStamp, &InsideOutside);
         char pattern[200];
         sprintf(pattern, "%%lf;MTR_%sSIDE_MT%%d_RPC%%d_HV.actual.iMon;%%lf", (InsideOutside == 'I' ? "IN" : "OUT"));
         sscanf(charbuffer, pattern, &timeStamp, &MT, &RPC, &current);
-        bufferCurrent.setTimeStamp(static_cast<uint64_t>(timeStamp));
+        bufferCurrent.setTimeStamp((uint64_t)timeStamp);
         bufferCurrent.setITot(current);
         fAMANDACurrentsVect[mts[MT]][(InsideOutside == 'I' ? 0 : 1)][RPC - 1].emplace_back(bufferCurrent);
       }
