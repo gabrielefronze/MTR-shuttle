@@ -634,10 +634,10 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
 
   bool resetMT12OUTSIDE6 = true;
   bool isReplacedRPC = ( plane==1
-                       && side==1
-                       && RPC==5
-                       && funcCmp(getY, &RunObject::getIntCharge)
-                       && accumulate );
+                         && side==1
+                         && RPC==5
+                         && funcCmp(getY, &RunObject::getIntCharge)
+                         && accumulate );
 
   for( auto const &dataIt : dataVector){
 
