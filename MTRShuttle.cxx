@@ -862,3 +862,41 @@ MTRShuttle::drawMaxMin(YType (RunObject::*getY)() const,
 
   return mgOut;
 }
+
+TMultiGraph *MTRShuttle::interpreter(TString inputStr){
+  int plane =-1, RPC = -1, side = -1;
+
+  if( inputStr.Contains("MT11") ) plane=0;
+  if( inputStr.Contains("MT12") ) plane=1;
+  if( inputStr.Contains("MT21") || inputStr.Contains("MT13") ) plane=2;
+  if( inputStr.Contains("MT21") || inputStr.Contains("MT14") ) plane=3;
+
+  if( inputStr.Contains("IN")
+      || inputStr.Contains("INSIDE")
+      || inputStr.Contains("in")
+      || inputStr.Contains("inside") ) side=0;
+  else
+  if( inputStr.Contains("OUT")
+      || inputStr.Contains("OUTSIDE")
+      || inputStr.Contains("out")
+      || inputStr.Contains("outside") ) side=1;
+
+  if( inputStr.Contains("RPC") ){
+    // TODO: get RPC number
+  }
+
+  bool normalizeToArea = false, plotAverage = false;
+  if( inputStr.Contains("avg") || inputStr.Contains("average") ) plotAverage=true;
+  if( inputStr.Contains("norm") || inputStr.Contains("normalize") ) plotAverage=true;
+
+
+  TMultiGraph *returnedMultiGraph = new TMultiGraph();
+
+  if ( inputStr.Contains("vs time") ){
+//    returnedMultiGraph->Add(drawTrend(&RunObject::getRunNumber,normalizeToArea,false,plotAverage,plane,side,RPC);
+  } else {
+
+  }
+
+  return returnedMultiGraph;
+}
