@@ -10,10 +10,10 @@
 class AMANDAData
 {
   public:
-    AMANDAData(uint64_t fTimeStamp=0);
+    AMANDAData(uint64_t timeStamp=0);
 
     inline uint64_t getTimeStamp() const { return fTimeStamp; }
-    inline void setTimeStamp(uint64_t fTimeStamp) { AMANDAData::fTimeStamp = fTimeStamp; }
+    inline void setTimeStamp(uint64_t timeStamp) { AMANDAData::fTimeStamp = timeStamp; }
 
   private:
     uint64_t fTimeStamp;

@@ -4,5 +4,5 @@
 
 #include "AMANDAData.h"
 
-AMANDAData::AMANDAData(uint64_t fTimeStamp) : fTimeStamp(fTimeStamp)
+AMANDAData::AMANDAData(uint64_t timeStamp) : fTimeStamp(timeStamp)
 {}

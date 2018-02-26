@@ -12,46 +12,46 @@
 
 class RunObject{
   public:
-    explicit RunObject(uint64_t fSOR=0, uint64_t fEOR=0, double fAvgHV=0., double fAvgITot=0., double fAvgIDark=0.,
-              double fIntCharge=0., uint64_t fScalBending=0, uint64_t fScalNotBending=0,
-              bool fIsDark=false);
+    explicit RunObject(uint64_t SOR=0, uint64_t EOR=0, double avgHV=0., double avgITot=0., double avgIDark=0.,
+              double intCharge=0., uint64_t scalBending=0, uint64_t scalNotBending=0,
+              bool isDark=false);
 
     RunObject(std::string csvLine, int &plane, int &side, int &RPC);
 
     inline uint64_t getRunNumber() const { return fRunNumber; }
-    inline void setRunNumber(uint64_t fRunNumber) { RunObject::fRunNumber = fRunNumber; }
+    inline void setRunNumber(uint64_t runNumber) { RunObject::fRunNumber = runNumber; }
 
     inline uint64_t getSOR() const { return fSOR; }
-    inline void setSOR(uint64_t fSOR) { RunObject::fSOR = fSOR; }
+    inline void setSOR(uint64_t SOR) { RunObject::fSOR = SOR; }
 
     inline uint64_t getEOR() const { return fEOR; }
-    inline void setEOR(uint64_t fEOR) { RunObject::fEOR = fEOR; }
+    inline void setEOR(uint64_t EOR) { RunObject::fEOR = EOR; }
 
     inline double getAvgHV() const { return fAvgHV; }
-    inline void setAvgHV(double fAvgHV) { RunObject::fAvgHV = fAvgHV; }
+    inline void setAvgHV(double avgHV) { RunObject::fAvgHV = avgHV; }
 
     inline double getAvgITot() const { return fAvgITot; }
-    inline void setAvgITot(double fAvgITot) { RunObject::fAvgITot = fAvgITot; }
+    inline void setAvgITot(double avgITot) { RunObject::fAvgITot = avgITot; }
 
     inline double getAvgIDark() const { return fAvgIDark; }
-    inline void setAvgIDark(double fAvgIDark) { RunObject::fAvgIDark = fAvgIDark; }
+    inline void setAvgIDark(double avgIDark) { RunObject::fAvgIDark = avgIDark; }
 
     inline double getAvgINet() const { return (fAvgITot<=fAvgIDark)?(fAvgITot - fAvgIDark):0.; }
 
     inline double getIntCharge() const { return fIntCharge; }
-    inline void setIntCharge(double fIntCharge) { RunObject::fIntCharge = fIntCharge; }
+    inline void setIntCharge(double intCharge) { RunObject::fIntCharge = intCharge; }
 
     inline double getScalBending() const { return fScalBending; }
-    inline void setScalBending(double fScalBending) { RunObject::fScalBending = fScalBending; }
+    inline void setScalBending(double scalBending) { RunObject::fScalBending = scalBending; }
 
     inline double getScalNotBending() const { return fScalNotBending; }
-    inline void setScalNotBending(double fScalNotBending) { RunObject::fScalNotBending = fScalNotBending; }
+    inline void setScalNotBending(double scalNotBending) { RunObject::fScalNotBending = scalNotBending; }
 
     inline bool isDark() const { return fIsDark; }
-    inline void setfIsDark(bool fIsDark) { RunObject::fIsDark = fIsDark; }
+    inline void setfIsDark(bool isDark) { RunObject::fIsDark = isDark; }
 
     inline bool isHVOk() const { return fIsHVOk; }
-    inline void setfIsHVOk(bool fIsHVOk) { RunObject::fIsHVOk = fIsHVOk; }
+    inline void setfIsHVOk(bool isHVOk) { RunObject::fIsHVOk = isHVOk; }
 
     inline bool isAfterRun(uint64_t run=0) const { return fRunNumber>run; }
     inline bool isBeforeRun(uint64_t run=UINT64_MAX) const { return fRunNumber<run; }
@@ -61,8 +61,8 @@ class RunObject{
     inline bool isAfter(uint64_t TS=UINT64_MAX) const { return fSOR>TS; }
     inline bool isBetweenTimestamps(uint64_t TSMin, uint64_t TSMax) const { return (isBefore(TSMax) && isAfter(TSMin)); }
 
-    inline bool isValidForIntCharge() const { return (!fIsDark && (fAvgHV>kMinWorkHV)); }
-    inline bool isValidForIDark() const { return (fIsDark && (fAvgHV>kMinWorkHV)); }
+    inline bool isValidForIntCharge() const { return (!fIsDark && fIsHVOk); }
+    inline bool isValidForIDark() const { return (fIsDark && fIsHVOk); }
 
     template<class ...Args> constexpr bool getTrue(Args... /*arg*/) const { return true; }
 

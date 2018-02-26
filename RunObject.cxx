@@ -4,16 +4,16 @@
 
 #include "RunObject.h"
 
-RunObject::RunObject(uint64_t fSOR, uint64_t fEOR, double fAvgHV, double fAvgITot, double fAvgIDark, double fIntCharge,
-                     uint64_t fScalBending, uint64_t fScalNotBending, bool fIsDark) : fSOR(fSOR),
-                                                                              fEOR(fEOR),
-                                                                              fAvgHV(fAvgHV),
-                                                                              fAvgITot(fAvgITot),
-                                                                              fAvgIDark(fAvgIDark),
-                                                                              fIntCharge(fIntCharge),
-                                                                              fScalBending(fScalBending),
-                                                                              fScalNotBending(fScalNotBending),
-                                                                              fIsDark(fIsDark)
+RunObject::RunObject(uint64_t SOR, uint64_t EOR, double avgHV, double avgITot, double avgIDark, double intCharge,
+                     uint64_t scalBending, uint64_t scalNotBending, bool isDark) : fSOR(SOR),
+                                                                              fEOR(EOR),
+                                                                              fAvgHV(avgHV),
+                                                                              fAvgITot(avgITot),
+                                                                              fAvgIDark(avgIDark),
+                                                                              fIntCharge(intCharge),
+                                                                              fScalBending(scalBending),
+                                                                              fScalNotBending(scalNotBending),
+                                                                              fIsDark(isDark)
 {}
 
 RunObject::RunObject(std::string csvLine, int &plane, int &side, int &RPC)
