@@ -50,7 +50,7 @@ std::string getLabel(Type (RunObject::*getter)() const, bool normalizedToArea)
   else if(isScaler(getter)) label=(normalizedToArea)?"Hits [Hz/cm^{2}]":"Hits [Hz]";
   else if(isCurrent(getter)) {
     label=(normalizedToArea)?"urrent [#muA/cm^{2}]":"urrent [#muA]";
-    if(compareFunctions(getter,&RunObject::getAvgITot)) label="Total c"+label;
+    if(funcCmp(getter, &RunObject::getAvgITot)) label="Total c"+label;
     else label="Dark c"+label;
   }
 

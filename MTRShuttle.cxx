@@ -608,7 +608,7 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
   returnedGraph->GetXaxis()->SetTitle(getLabel(getX,normalizeToAreaX).c_str());
   returnedGraph->GetYaxis()->SetTitle(getLabel(getY,normalizeToAreaY).c_str());
 
-  if (compareFunctions(getX,&RunObject::getSOR) || compareFunctions(getX,&RunObject::getEOR)){
+  if (funcCmp(getX, &RunObject::getSOR) || funcCmp(getX, &RunObject::getEOR)){
     //This time offset is NEEDED to correctly display data from timestamp!
     gStyle->SetTimeOffset(0);
     returnedGraph->GetXaxis()->SetTimeDisplay(1);
@@ -617,7 +617,7 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
     returnedGraph->GetXaxis()->SetTitle("Date");
   }
 
-  if (compareFunctions(getY,&RunObject::getSOR) || compareFunctions(getY,&RunObject::getEOR)){
+  if (funcCmp(getY, &RunObject::getSOR) || funcCmp(getY, &RunObject::getEOR)){
     //This time offset is NEEDED to correctly display data from timestamp!
     gStyle->SetTimeOffset(0);
     returnedGraph->GetYaxis()->SetTimeDisplay(1);
@@ -636,7 +636,7 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
   bool isReplacedRPC = ( plane==1
                        && side==1
                        && RPC==5
-                       && compareFunctions(getY,&RunObject::getIntCharge)
+                       && funcCmp(getY, &RunObject::getIntCharge)
                        && accumulate );
 
   for( auto const &dataIt : dataVector){
@@ -723,7 +723,7 @@ TMultiGraph *MTRShuttle::drawCorrelations(XType(RunObject::*getX)() const,
 
   mg->Draw("ap");
 
-  if (compareFunctions(getX,&RunObject::getSOR) || compareFunctions(getX,&RunObject::getEOR)){
+  if (funcCmp(getX, &RunObject::getSOR) || funcCmp(getX, &RunObject::getEOR)){
     //This time offset is NEEDED to correctly display data from timestamp!
     gStyle->SetTimeOffset(0);
     mg->GetXaxis()->SetTimeDisplay(1);
@@ -732,7 +732,7 @@ TMultiGraph *MTRShuttle::drawCorrelations(XType(RunObject::*getX)() const,
     mg->GetXaxis()->SetTitle("Date");
   } else mg->GetHistogram()->GetXaxis()->SetTitle(getLabel(getX,normalizeToAreaX).c_str());
 
-  if (compareFunctions(getY,&RunObject::getSOR) || compareFunctions(getY,&RunObject::getEOR)){
+  if (funcCmp(getY, &RunObject::getSOR) || funcCmp(getY, &RunObject::getEOR)){
     //This time offset is NEEDED to correctly display data from timestamp!
     gStyle->SetTimeOffset(0);
     mg->GetYaxis()->SetTimeDisplay(1);

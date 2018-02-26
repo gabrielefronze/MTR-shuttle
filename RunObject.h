@@ -116,34 +116,34 @@ std::ostream& operator<<(std::ostream& os, const RunObject& obj){
             << (int) obj.isHVOk();
 }
 
-template<typename Type> inline bool compareFunctions(Type(RunObject::*getX)() const, Type(RunObject::*getY)() const){
+template<typename Type> inline bool funcCmp(Type(RunObject::*getX)() const, Type(RunObject::*getY)() const){
   return (getX == getY);
 };
 
 template<typename XType, typename YType>
 inline typename std::enable_if<!(std::is_same<XType,YType>::value),bool>::type
-compareFunctions(XType(RunObject::*/*getX*/)() const, YType(RunObject::*/*getY*/)() const){
+funcCmp(XType(RunObject::*/*getX*/)() const, YType(RunObject::*/*getY*/)() const){
   return false;
 };
 
 template<typename Type> inline bool isTimestamp(Type(RunObject::*getter)() const){
-  return (compareFunctions(getter,&RunObject::getEOR) || compareFunctions(getter,&RunObject::getSOR));
+  return (funcCmp(getter, &RunObject::getEOR) || funcCmp(getter, &RunObject::getSOR));
 }
 
 template<typename Type> inline bool isCurrent(Type(RunObject::*getter)() const){
-  return (compareFunctions(getter,&RunObject::getAvgIDark) || compareFunctions(getter,&RunObject::getAvgITot));
+  return (funcCmp(getter, &RunObject::getAvgIDark) || funcCmp(getter, &RunObject::getAvgITot));
 }
 
 template<typename Type> inline bool isScaler(Type(RunObject::*getter)() const){
-  return (compareFunctions(getter,&RunObject::getScalBending) || compareFunctions(getter,&RunObject::getScalNotBending));
+  return (funcCmp(getter, &RunObject::getScalBending) || funcCmp(getter, &RunObject::getScalNotBending));
 }
 
 template<typename Type> inline bool isHV(Type(RunObject::*getter)() const){
-  return compareFunctions(getter,&RunObject::getAvgHV);
+  return funcCmp(getter, &RunObject::getAvgHV);
 }
 
 template<typename Type> inline bool isIntCharge(Type(RunObject::*getter)() const){
-  return compareFunctions(getter,&RunObject::getIntCharge);
+  return funcCmp(getter, &RunObject::getIntCharge);
 }
 
 template<typename Type> std::string getLabel(Type(RunObject::*getter)() const, bool normalizedToArea);
