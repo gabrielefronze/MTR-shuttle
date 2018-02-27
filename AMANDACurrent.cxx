@@ -6,3 +6,19 @@
 
 AMANDACurrent::AMANDACurrent(double iTot, double iDark, bool isDarkCurrent) : fITot(iTot), fIDark(iDark), fIsDarkCurrent(isDarkCurrent)
 {}
+
+AMANDACurrent::AMANDACurrent(std::string csvLine, int &plane, int &side, int &RPC)
+{
+  int bufferIsDark = 0;
+  sscanf(csvLine.c_str(),"%d;%d;%d;%llu;%lf;%lf;%d",
+         &plane,
+         &side,
+         &RPC,
+         &fTimeStamp,
+         &fITot,
+         &fIDark,
+         &bufferIsDark);
+  fIsDarkCurrent = (bufferIsDark==1);
+
+
+}

@@ -7,15 +7,11 @@
 
 #include <cstdint>
 
-class AMANDAData
+struct AMANDAData
 {
-  public:
     AMANDAData(uint64_t timeStamp=0);
-
     inline uint64_t getTimeStamp() const { return fTimeStamp; }
     inline void setTimeStamp(uint64_t timeStamp) { AMANDAData::fTimeStamp = timeStamp; }
-
-  private:
     uint64_t fTimeStamp;
 };
 
