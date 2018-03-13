@@ -47,28 +47,30 @@ class RunObject{
     inline double getScalNotBending() const { return fScalNotBending; }
     inline void setScalNotBending(double scalNotBending) { RunObject::fScalNotBending = scalNotBending; }
 
-    inline bool isDark() const { return fIsDark; }
-    inline void setfIsDark(bool isDark) { RunObject::fIsDark = isDark; }
+    inline void setfIsDark(bool isDark, double /*second*/=0.) { RunObject::fIsDark = isDark; }
+    inline void setfIsHVOk(bool isHVOk, double /*second*/=0.) { RunObject::fIsHVOk = isHVOk; }
 
-    inline bool isHVOk() const { return fIsHVOk; }
-    inline void setfIsHVOk(bool isHVOk) { RunObject::fIsHVOk = isHVOk; }
+    // Conditions
+    inline bool isDark(uint64_t /*first*/=0., uint64_t /*second*/=0.) const { return fIsDark; }
 
-    inline bool isAfterRun(uint64_t run=0) const { return fRunNumber>run; }
-    inline bool isBeforeRun(uint64_t run=UINT64_MAX) const { return fRunNumber<run; }
+    inline bool isHVOk(uint64_t /*first*/=0., uint64_t /*second*/=0.) const { return fIsHVOk; }
+
+    inline bool isAfterRun(uint64_t run=0, uint64_t /*second*/=0.) const { return fRunNumber>run; }
+    inline bool isBeforeRun(uint64_t run=UINT64_MAX, uint64_t /*second*/=0.) const { return fRunNumber<run; }
     inline bool isBetweenRuns(uint64_t runMin, uint64_t runMax) const {
       return (isBeforeRun(runMax) && isAfterRun(runMin));
     }
 
-    inline bool isBefore(uint64_t TS=0) const { return fEOR<TS; }
-    inline bool isAfter(uint64_t TS=UINT64_MAX) const { return fSOR>TS; }
+    inline bool isBefore(uint64_t TS=0, uint64_t /*second*/=0.) const { return fEOR<TS; }
+    inline bool isAfter(uint64_t TS=UINT64_MAX, uint64_t /*second*/=0.) const { return fSOR>TS; }
     inline bool isBetweenTimestamps(uint64_t TSMin, uint64_t TSMax) const {
       return (isBefore(TSMax) && isAfter(TSMin));
     }
 
-    inline bool isValidForIntCharge() const { return (!fIsDark && fIsHVOk); }
-    inline bool isValidForIDark() const { return (fIsDark && fIsHVOk); }
+    inline bool isValidForIntCharge(uint64_t /*first*/=0., uint64_t /*second*/=0.) const { return (!fIsDark && fIsHVOk); }
+    inline bool isValidForIDark(uint64_t /*first*/=0., uint64_t /*second*/=0.) const { return (fIsDark && fIsHVOk); }
 
-    template<class ...Args> constexpr bool getTrue(Args... /*arg*/) const { return true; }
+    constexpr bool getTrue(uint64_t /*first*/=0., uint64_t /*second*/=0.) const { return true; }
 
     friend std::ostream& operator<<(std::ostream& os, const RunObject& obj);
 

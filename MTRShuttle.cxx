@@ -583,7 +583,7 @@ void MTRShuttle::graphMaquillage(int plane, int RPC, TGraph *graph, bool isAvgGr
   }
 }
 
-template<typename XType, typename YType, typename CondType>
+template<typename XType, typename YType>
 TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
                                     YType (RunObject::*getY)() const,
                                     bool normalizeToAreaX,
@@ -593,7 +593,7 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
                                     int plane,
                                     int side,
                                     int RPC,
-                                    CondType conditions)
+                                    std::vector<PlotCondition>  conditions)
 {
   auto *returnedGraph = new TGraph();
   if(!plotAverage){
@@ -641,11 +641,9 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
   for( auto const &dataIt : dataVector){
 
     bool shouldPlot = true;
-    if(VectorChekcer::is_container<CondType>::value) {
-      for (const auto &itCondition : conditions) {
-        shouldPlot &= (dataIt.*(itCondition.fCondition)(itCondition.fArgs...) == itCondition.fNegate);
-      }
-    } else shouldPlot = (dataIt.*(conditions.fCondition)(conditions.fArgs...) == conditions.fNegate);
+    for (const auto &itCondition : conditions) {
+      shouldPlot &= itCondition(dataIt);
+    }
     if (!shouldPlot) continue;
 
     XType x = (dataIt.*getX)();
@@ -674,6 +672,57 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
 
   return returnedGraph;
 }
+
+template<typename XType, typename YType>
+TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
+                        YType (RunObject::*getY)() const,
+                        bool normalizeToAreaX,
+                        bool normalizeToAreaY,
+                        bool accumulate,
+                        bool plotAverage,
+                        int plane,
+                        int side,
+                        int RPC,
+                        PlotCondition condition){
+  std::vector<PlotCondition> dummyVect = {condition};
+  return drawCorrelation(getX,
+                         getY,
+                         normalizeToAreaX,
+                         normalizeToAreaY,
+                         accumulate,
+                         plotAverage,
+                         plane,
+                         side,
+                         RPC,
+                         dummyVect);
+}
+
+//template<typename XType, typename YType>
+//TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
+//                            YType (RunObject::*getY)() const,
+//                            bool normalizeToAreaX,
+//                            bool normalizeToAreaY,
+//                            bool accumulate,
+//                            bool plotAverage,
+//                            int plane,
+//                            int side,
+//                            int RPC,
+//                            bool (RunObject::*condition)(uint64_t,uint64_t) const,
+//                            bool negate,
+//                            uint64_t arg0,
+//                            uint64_t arg1)
+//{
+//  return drawCorrelation(getX,
+//                         getY,
+//                         normalizeToAreaX,
+//                         normalizeToAreaY,
+//                         accumulate,
+//                         plotAverage,
+//                         plane,
+//                         side,
+//                         RPC,
+//                         PlotCondition(condition,negate,arg0,arg1));
+//}
 
 template<typename XType, typename YType, typename CondType>
 TMultiGraph *MTRShuttle::drawCorrelations(XType(RunObject::*getX)() const,

@@ -13,12 +13,25 @@
 #include "AMANDACurrent.h"
 #include "Parameters.h"
 
-template<class ...Args> struct PlotCondition{
-    bool (RunObject::*fCondition)(Args...);
-    Args... fArgs;
-    bool fNegate;
-} typedef PlotCondition;
 
+class PlotCondition{
+  public:
+    PlotCondition(bool (RunObject::*condition)(uint64_t,uint64_t) const, bool negate, uint64_t arg0=0, uint64_t arg1=0) : fNegate(negate){
+      fCondition=condition;
+      fArgs[0]=arg0;
+      fArgs[1]=arg1;
+    }
+    bool operator()(RunObject data) const{
+      return ((data.*(fCondition))(fArgs[0],fArgs[1]) == !fNegate);
+    }
+    bool operator()(RunObject *data) const{
+      return operator()(*data);
+    }
+
+    bool (RunObject::*fCondition)(uint64_t,uint64_t) const;
+    uint64_t fArgs[2];
+    bool fNegate;
+};
 class MTRShuttle
 {
   public:
@@ -31,7 +44,7 @@ class MTRShuttle
     void loadData(std::string path = "MTRShuttle.csv");
     void computeAverage();
 
-    template<typename XType, typename YType, typename CondType>
+    template<typename XType, typename YType>
     TGraph *drawCorrelation(XType (RunObject::*getX)() const,
                             YType (RunObject::*getY)() const,
                             bool normalizeToAreaX,
@@ -41,7 +54,19 @@ class MTRShuttle
                             int plane,
                             int side,
                             int RPC,
-                            CondType conditions);
+                            std::vector<PlotCondition> conditions);
+
+    template<typename XType, typename YType>
+    TGraph *drawCorrelation(XType (RunObject::*getX)() const,
+                            YType (RunObject::*getY)() const,
+                            bool normalizeToAreaX,
+                            bool normalizeToAreaY,
+                            bool accumulate,
+                            bool plotAverage,
+                            int plane,
+                            int side,
+                            int RPC,
+                            PlotCondition condition);
 
     template<typename XType, typename YType, typename CondType>
     TMultiGraph* drawCorrelations(XType(RunObject::*getX)() const,
