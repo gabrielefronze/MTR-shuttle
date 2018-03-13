@@ -13,6 +13,12 @@
 #include "AMANDACurrent.h"
 #include "Parameters.h"
 
+template<class ...Args> struct PlotCondition{
+    bool (RunObject::*fCondition)(Args...);
+    Args... fArgs;
+    bool fNegate;
+} typedef PlotCondition;
+
 class MTRShuttle
 {
   public:
@@ -25,7 +31,7 @@ class MTRShuttle
     void loadData(std::string path = "MTRShuttle.csv");
     void computeAverage();
 
-    template<typename XType, typename YType, class ...Args>
+    template<typename XType, typename YType, typename CondType>
     TGraph *drawCorrelation(XType (RunObject::*getX)() const,
                             YType (RunObject::*getY)() const,
                             bool normalizeToAreaX,
@@ -35,11 +41,9 @@ class MTRShuttle
                             int plane,
                             int side,
                             int RPC,
-                            bool negateCondition,
-                            bool (RunObject::*condition)(Args...) const,
-                            Args... args);
+                            CondType conditions);
 
-    template<typename XType, typename YType, class ...Args>
+    template<typename XType, typename YType, typename CondType>
     TMultiGraph* drawCorrelations(XType(RunObject::*getX)() const,
                                   YType(RunObject::*getY)() const,
                                   bool normalizeToAreaX,
@@ -47,11 +51,9 @@ class MTRShuttle
                                   bool accumulate,
                                   bool plotAverage,
                                   int MT,
-                                  bool negateCondition,
-                                  bool (RunObject::*condition)(Args...) const,
-                                  Args... args);
+                                  CondType conditions);
 
-    template<typename YType, class ...Args>
+    template<typename YType, typename CondType>
     TGraph *drawTrend(YType (RunObject::*getY)() const,
                       bool normalizeToArea,
                       bool accumulate,
@@ -59,29 +61,23 @@ class MTRShuttle
                       int plane,
                       int side,
                       int RPC,
-                      bool negateCondition,
-                      bool (RunObject::*condition)(Args...) const,
-                      Args... args);
+                      CondType conditions);
 
-    template<typename YType, class ...Args>
+    template<typename YType, typename CondType>
     TMultiGraph *drawTrends(YType (RunObject::*getY)() const,
                             bool normalizeToArea,
                             bool accumulate,
                             bool plotAverage,
                             int plane,
-                            bool negateCondition,
-                            bool (RunObject::*condition)(Args...) const,
-                            Args... args);
+                            CondType conditions);
 
-    template<typename YType, class ...Args>
+    template<typename YType, typename CondType>
     TMultiGraph* drawMaxMin(YType(RunObject::*getY)() const,
                             bool normalizeToArea,
                             bool accumulate,
                             bool plotAverage,
                             int M,
-                            bool negateCondition,
-                            bool (RunObject::*condition)(Args...) const,
-                            Args... args);
+                            CondType conditions);
 
 
 

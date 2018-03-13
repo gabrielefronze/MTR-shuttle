@@ -18,6 +18,7 @@
 #include <TH1F.h>
 #include "MTRShuttle.h"
 #include "AlienUtils.h"
+#include "VectorChecker.h"
 
 void MTRShuttle::parseRunList(std::string path)
 {
@@ -582,7 +583,7 @@ void MTRShuttle::graphMaquillage(int plane, int RPC, TGraph *graph, bool isAvgGr
   }
 }
 
-template<typename XType, typename YType, class ...Args>
+template<typename XType, typename YType, typename CondType>
 TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
                                     YType (RunObject::*getY)() const,
                                     bool normalizeToAreaX,
@@ -592,9 +593,7 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
                                     int plane,
                                     int side,
                                     int RPC,
-                                    bool negateCondition,
-                                    bool (RunObject::*condition)(Args...) const,
-                                    Args... args)
+                                    CondType conditions)
 {
   auto *returnedGraph = new TGraph();
   if(!plotAverage){
@@ -641,7 +640,13 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
 
   for( auto const &dataIt : dataVector){
 
-    if ((dataIt.*condition)(args...)==negateCondition) continue;
+    bool shouldPlot = true;
+    if(VectorChekcer::is_container<CondType>::value) {
+      for (const auto &itCondition : conditions) {
+        shouldPlot &= (dataIt.*(itCondition.fCondition)(itCondition.fArgs...) == itCondition.fNegate);
+      }
+    } else shouldPlot = (dataIt.*(conditions.fCondition)(conditions.fArgs...) == conditions.fNegate);
+    if (!shouldPlot) continue;
 
     XType x = (dataIt.*getX)();
     YType y = (dataIt.*getY)();
@@ -670,7 +675,7 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
   return returnedGraph;
 }
 
-template<typename XType, typename YType, class ...Args>
+template<typename XType, typename YType, typename CondType>
 TMultiGraph *MTRShuttle::drawCorrelations(XType(RunObject::*getX)() const,
                                           YType(RunObject::*getY)() const,
                                           bool normalizeToAreaX,
@@ -678,9 +683,7 @@ TMultiGraph *MTRShuttle::drawCorrelations(XType(RunObject::*getX)() const,
                                           bool accumulate,
                                           bool plotAverage,
                                           int MT,
-                                          bool negateCondition,
-                                          bool (RunObject::*condition)(Args...) const,
-                                          Args... args)
+                                          CondType conditions)
 {
   auto *mg = new TMultiGraph();
 
@@ -698,9 +701,7 @@ TMultiGraph *MTRShuttle::drawCorrelations(XType(RunObject::*getX)() const,
                           plane,
                           side,
                           RPC,
-                          negateCondition,
-                          condition,
-                          args...));
+                          conditions));
       }
     }
   }
@@ -716,9 +717,7 @@ TMultiGraph *MTRShuttle::drawCorrelations(XType(RunObject::*getX)() const,
                       MT,
                       -1,
                       -1,
-                      negateCondition,
-                      condition,
-                      args...));
+                      conditions));
   }
 
   mg->Draw("ap");
@@ -744,7 +743,7 @@ TMultiGraph *MTRShuttle::drawCorrelations(XType(RunObject::*getX)() const,
   return mg;
 }
 
-template<typename YType, class ...Args>
+template<typename YType, typename CondType>
 TGraph *MTRShuttle::drawTrend(YType (RunObject::*getY)() const,
                               bool normalizeToArea,
                               bool accumulate,
@@ -752,9 +751,7 @@ TGraph *MTRShuttle::drawTrend(YType (RunObject::*getY)() const,
                               int plane,
                               int side,
                               int RPC,
-                              bool negateCondition,
-                              bool (RunObject::*condition)(Args...) const,
-                              Args... args)
+                              CondType conditions)
 {
   return drawCorrelation(&RunObject::getSOR,
                          getY,
@@ -765,20 +762,16 @@ TGraph *MTRShuttle::drawTrend(YType (RunObject::*getY)() const,
                          plane,
                          side,
                          RPC,
-                         negateCondition,
-                         condition,
-                         args...);
+                         conditions);
 }
 
-template<typename YType, class ...Args>
+template<typename YType, typename CondType>
 TMultiGraph *MTRShuttle::drawTrends(YType (RunObject::*getY)() const,
                                     bool normalizeToArea,
                                     bool accumulate,
                                     bool plotAverage,
                                     int plane,
-                                    bool negateCondition,
-                                    bool (RunObject::*condition)(Args...) const,
-                                    Args... args)
+                                    CondType conditions)
 {
   return drawCorrelations(&RunObject::getSOR,
                           getY,
@@ -787,23 +780,19 @@ TMultiGraph *MTRShuttle::drawTrends(YType (RunObject::*getY)() const,
                           accumulate,
                           plotAverage,
                           plane,
-                          negateCondition,
-                          condition,
-                          args...);
+                          conditions);
 }
 
-template<typename YType, class ...Args>
+template<typename YType, typename CondType>
 TMultiGraph *
 MTRShuttle::drawMaxMin(YType (RunObject::*getY)() const,
                        bool normalizeToAreaY,
                        bool accumulate,
                        bool plotAverage,
                        int MT,
-                       bool negateCondition,
-                       bool (RunObject::*condition)(Args...) const,
-                       Args... args)
+                       CondType conditions)
 {
-  auto mg = drawTrends(getY,normalizeToAreaY,accumulate,plotAverage,MT,negateCondition,condition,args...);
+  auto mg = drawTrends(getY,normalizeToAreaY,accumulate,plotAverage,MT,conditions);
   auto grList = mg->GetListOfGraphs();
 
   auto *mgOut = new TMultiGraph();
