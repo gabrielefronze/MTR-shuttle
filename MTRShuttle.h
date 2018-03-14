@@ -12,15 +12,7 @@
 #include "RunObject.h"
 #include "AMANDACurrent.h"
 #include "Parameters.h"
-
-namespace MTRConditions{
-typedef std::function<bool(RunObject const *)> cond_type;
-typedef std::vector<cond_type> cond_vector;
-
-template<class ...Args> static void binder(MTRConditions::cond_vector &vc, bool (RunObject::*condition)(Args...) const, bool negate, Args... args){
-  vc.emplace_back([=](RunObject const * rObj) -> bool { return (rObj->*condition)(args...) == !negate; });
-}
-}
+#include "MTRConditions.h"
 
 class MTRShuttle
 {
@@ -44,9 +36,9 @@ class MTRShuttle
                             int plane,
                             int side,
                             int RPC,
-                            MTRConditions::cond_vector conditions);
+                            MTRConditions conditions);
 
-    template<typename XType, typename YType>
+    template<typename XType, typename YType, class ...Args>
     TGraph *drawCorrelation(XType (RunObject::*getX)() const,
                             YType (RunObject::*getY)() const,
                             bool normalizeToAreaX,
@@ -56,7 +48,9 @@ class MTRShuttle
                             int plane,
                             int side,
                             int RPC,
-                            MTRConditions::cond_type condition);
+                            bool (RunObject::*condition)(Args...) const,
+                            bool negate,
+                            Args... args);
 
     template<typename XType, typename YType, typename CondType>
     TMultiGraph* drawCorrelations(XType(RunObject::*getX)() const,

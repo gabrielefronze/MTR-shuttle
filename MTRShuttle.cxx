@@ -597,7 +597,7 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
                                     int plane,
                                     int side,
                                     int RPC,
-                                    MTRConditions::cond_vector conditions)
+                                    MTRConditions conditions)
 {
   auto *returnedGraph = new TGraph();
   if(!plotAverage){
@@ -645,7 +645,7 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
   for( auto const &dataIt : dataVector){
 
     bool shouldPlot = true;
-    for (const auto &itCondition : conditions) {
+    for (const auto &itCondition : conditions()) {
       shouldPlot &= itCondition(&dataIt);
     }
     if (!shouldPlot) continue;
@@ -677,7 +677,7 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
   return returnedGraph;
 }
 
-template<typename XType, typename YType>
+template<typename XType, typename YType, class ...Args>
 TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
                                     YType (RunObject::*getY)() const,
                                     bool normalizeToAreaX,
@@ -687,8 +687,11 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
                                     int plane,
                                     int side,
                                     int RPC,
-                                    MTRConditions::cond_type condition){
-  MTRConditions::cond_vector dummyVect = {std::move(condition)};
+                                    bool (RunObject::*condition)(Args...) const,
+                                    bool negate,
+                                    Args... args){
+  MTRConditions dummyCond;
+  dummyCond.addCondition(condition,negate,args...);
   return drawCorrelation(getX,
                          getY,
                          normalizeToAreaX,
@@ -698,7 +701,7 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
                          plane,
                          side,
                          RPC,
-                         dummyVect);
+                         dummyCond);
 }
 
 template<typename XType, typename YType, typename CondType>

@@ -10,6 +10,7 @@ set(SOURCE_FILES
         AMANDAData.cxx
         AMANDACurrent.h
         AMANDACurrent.cxx
+        MTRConditions.h
         MTRShuttle.h
         MTRShuttle.cxx
         Parameters.h
