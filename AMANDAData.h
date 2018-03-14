@@ -5,7 +5,7 @@
 #ifndef MTR_SHUTTLE_AMANDADATA_H
 #define MTR_SHUTTLE_AMANDADATA_H
 
-#include <cstdint>
+#include <stdint.h>
 
 struct AMANDAData
 {

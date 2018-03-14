@@ -5,8 +5,8 @@
 #ifndef MTR_SHUTTLE_ALIENUTILS_H
 #define MTR_SHUTTLE_ALIENUTILS_H
 
-#include <cstdio>
-#include <cstdlib>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string>
 
 namespace AlienUtils

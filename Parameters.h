@@ -5,7 +5,7 @@
 #ifndef MTR_SHUTTLE_PARAMETERS_H
 #define MTR_SHUTTLE_PARAMETERS_H
 
-#include <cstdint>
+#include <stdint.h>
 #include <string>
 #include <Rtypes.h>
 

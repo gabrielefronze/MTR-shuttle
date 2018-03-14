@@ -6,7 +6,7 @@
 #define MTR_SHUTTLE_RUNOBJECT_H
 
 
-#include <cstdint>
+#include <stdint.h>
 #include <fstream>
 #include "Parameters.h"
 
