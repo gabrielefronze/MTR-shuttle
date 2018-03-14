@@ -3,7 +3,14 @@
 //
 
 #include <Riostream.h>
-#include <cstdint>
+#ifdef APPLE
+#include <_types/_uint8_t.h>
+#include <_types/_uint16_t.h>
+#include <_types/_uint32_t.h>
+#include <_types/_uint64_t.h>
+#else
+#include <stdint.h>
+#endif
 #include <fstream>
 #include "MTRShuttle.h"
 #include "RunObject.h"
@@ -13,6 +20,7 @@
 #include "TLatex.h"
 #include "TLegend.h"
 #include "boost/any.hpp"
+#include "MTRConditions.h"
 
 void SetStyle(Bool_t graypalette) {
   cout << "Setting style!" << endl;
@@ -62,12 +70,12 @@ int testTemplate(){
 
   MTRShuttle sciattol;
 
-  sciattol.loadData("MTRShuttle_2016_2017.csv");
+  sciattol.loadData("MTR_2017_test90.csv");
   sciattol.computeAverage();
 
   TCanvas *canv = new TCanvas("canv","canv");
 
-//  auto graph4 = sciattol.sdrawMaxMin(&RunObject::getIntCharge,true,true,false,0);
+//  auto graph4 = sciattol.sdrawMaxMin(&RunObject::getAvgIDark,false,false,false,0);
 //  graph4->Draw("ap");
 //  canv->cd()->BuildLegend(0.13,0.8,.30,.89,"Legend","P");
 
@@ -82,9 +90,9 @@ int testTemplate(){
   auto TS = (uint64_t)1424105780;
   auto TS2017 = (uint64_t)1483291280;
 
-  MTRConditions::cond_vector conditions;
-  MTRConditions::binder(conditions,&RunObject::isAfter,false,TS2017);
-  MTRConditions::binder(conditions,&RunObject::isValidForIDark,false);
+  MTRConditions conditions;
+  conditions.addCondition(&RunObject::isAfter,false,TS2017);
+  conditions.addCondition(&RunObject::isValidForIDark,false);
 
 //  auto graph1 = sciattol.drawTrend(&RunObject::getAvgIDark,false,false,true,-1,-1,-1,conditions);
   auto graph2 = sciattol.drawTrend(&RunObject::getAvgIDark,false,false,false,3,0,2,conditions);
@@ -99,13 +107,13 @@ int testTemplate(){
   pad1->Divide(2,1);
   pad1->cd(1);
   auto trends1_in = sciattol.drawTrends(&RunObject::getAvgIDark,false,false,false,0,0,conditions);
-  trends1_in->GetYaxis()->SetRangeUser(0.,60.);
+//  trends1_in->GetYaxis()->SetRangeUser(0.,60.);
   trends1_in->Draw("alp");
   pad1->cd(1)->BuildLegend(0.18,0.63,0.35,0.98,"MT11","P")->SetNColumns(2);
 
   pad1->cd(2);
   auto trends1_out = sciattol.drawTrends(&RunObject::getAvgIDark,false,false,false,0,1,conditions);
-  trends1_out->GetYaxis()->SetRangeUser(0.,60.);
+//  trends1_out->GetYaxis()->SetRangeUser(0.,60.);
   trends1_out->Draw("alp");
   pad1->cd(2)->BuildLegend(0.18,0.63,0.35,0.98,"MT11","P")->SetNColumns(2);
 
@@ -113,13 +121,13 @@ int testTemplate(){
   pad2->Divide(2,1);
   pad2->cd(1);
   auto trends2_in = sciattol.drawTrends(&RunObject::getAvgIDark,false,false,false,1,0,conditions);
-  trends2_in->GetYaxis()->SetRangeUser(0.,60.);
+//  trends2_in->GetYaxis()->SetRangeUser(0.,60.);
   trends2_in->Draw("alp");
   pad2->cd(1)->BuildLegend(0.18,0.63,0.35,0.98,"MT12","P")->SetNColumns(2);
 
   pad2->cd(2);
   auto trends2_out = sciattol.drawTrends(&RunObject::getAvgIDark,false,false,false,1,1,conditions);
-  trends2_out->GetYaxis()->SetRangeUser(0.,60.);
+//  trends2_out->GetYaxis()->SetRangeUser(0.,60.);
   trends2_out->Draw("alp");
   pad2->cd(2)->BuildLegend(0.18,0.63,0.35,0.98,"MT12","P")->SetNColumns(2);
 
@@ -127,13 +135,13 @@ int testTemplate(){
   pad3->Divide(2,1);
   pad3->cd(1);
   auto trends3_in = sciattol.drawTrends(&RunObject::getAvgIDark,false,false,false,2,0,conditions);
-  trends3_in->GetYaxis()->SetRangeUser(0.,60.);
+//  trends3_in->GetYaxis()->SetRangeUser(0.,60.);
   trends3_in->Draw("alp");
   pad3->cd(1)->BuildLegend(0.18,0.63,0.35,0.98,"MT21","P")->SetNColumns(2);
 
   pad3->cd(2);
   auto trends3_out = sciattol.drawTrends(&RunObject::getAvgIDark,false,false,false,2,1,conditions);
-  trends3_out->GetYaxis()->SetRangeUser(0.,60.);
+//  trends3_out->GetYaxis()->SetRangeUser(0.,60.);
   trends3_out->Draw("alp");
   pad3->cd(2)->BuildLegend(0.18,0.63,0.35,0.98,"MT21","P")->SetNColumns(2);
 
@@ -141,13 +149,13 @@ int testTemplate(){
   pad4->Divide(2,1);
   pad4->cd(1);
   auto trends4_in = sciattol.drawTrends(&RunObject::getAvgIDark,false,false,false,3,0,conditions);
-  trends4_in->GetYaxis()->SetRangeUser(0.,60.);
+//  trends4_in->GetYaxis()->SetRangeUser(0.,60.);
   trends4_in->Draw("alp");
   pad4->cd(1)->BuildLegend(0.18,0.63,0.35,0.98,"MT22","P")->SetNColumns(2);
 
   pad4->cd(2);
   auto trends4_out = sciattol.drawTrends(&RunObject::getAvgIDark,false,false,false,3,1,conditions);
-  trends4_out->GetYaxis()->SetRangeUser(0.,60.);
+//  trends4_out->GetYaxis()->SetRangeUser(0.,60.);
   trends4_out->Draw("alp");
   pad4->cd(2)->BuildLegend(0.18,0.63,0.35,0.98,"MT22","P")->SetNColumns(2);
 

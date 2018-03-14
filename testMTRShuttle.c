@@ -8,7 +8,8 @@
 void testMTRShuttle(){
   MTRShuttle sciattol;
 
-  sciattol.parseRunList("../runlists_Max/allruns_2016-2017.txt");
+//  sciattol.parseRunList("../runlists_Max/allruns_2016-2017.txt");
+  sciattol.parseRunList("../runs_2017_test90");
 //  sciattol.parseRunList("runsTestPropagation");
   sciattol.parseOCDB("local:///Users/Gabriele/cernbox/Dottorato/MTR2017/CDB/####/OCDB");
   sciattol.parseAMANDAiMon("../IMon2017_UTF8.txt");
@@ -17,5 +18,5 @@ void testMTRShuttle(){
     std::cout << it.isDark();
   }
   std::cout << std::endl;
-  sciattol.saveData("dummy.csv");
+  sciattol.saveData("MTR_2017_test90.csv");
 }
