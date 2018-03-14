@@ -596,7 +596,7 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
                                     int plane,
                                     int side,
                                     int RPC,
-                                    CondType conditions)
+                                    cond_vector conditions)
 {
   auto *returnedGraph = new TGraph();
   if(!plotAverage){
@@ -644,11 +644,9 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
   for( auto const &dataIt : dataVector){
 
     bool shouldPlot = true;
-    if(VectorChekcer::is_container<CondType>::value) {
-      for (const auto &itCondition : conditions) {
-        shouldPlot &= (dataIt.*(itCondition.fCondition)(itCondition.fArgs...) == itCondition.fNegate);
-      }
-    } else shouldPlot = (dataIt.*(conditions.fCondition)(conditions.fArgs...) == conditions.fNegate);
+    for (const auto &itCondition : conditions) {
+      shouldPlot &= itCondition(&dataIt);
+    }
     if (!shouldPlot) continue;
 
     XType x = (dataIt.*getX)();
@@ -688,8 +686,8 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
                         int plane,
                         int side,
                         int RPC,
-                        PlotCondition condition){
-  std::vector<PlotCondition> dummyVect = {condition};
+                        cond_type condition){
+  cond_vector dummyVect = {condition};
   return drawCorrelation(getX,
                          getY,
                          normalizeToAreaX,

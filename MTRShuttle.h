@@ -17,7 +17,13 @@ template<class ...Args> struct PlotCondition{
     bool (RunObject::*fCondition)(Args...);
     Args... fArgs;
     bool fNegate;
-} typedef PlotCondition;
+};
+
+typedef std::function<bool(RunObject const *)> cond_type;
+typedef std::vector<cond_type> cond_vector;
+template<class ...Args> static auto binder(bool (RunObject::*condition)(Args...) const, bool negate, Args... args){
+  return std::bind(&condition,std::placeholders::_1,args...);
+}
 
 class MTRShuttle
 {
@@ -41,7 +47,19 @@ class MTRShuttle
                             int plane,
                             int side,
                             int RPC,
-                            CondType conditions);
+                            cond_vector conditions);
+
+    template<typename XType, typename YType>
+    TGraph *drawCorrelation(XType (RunObject::*getX)() const,
+                            YType (RunObject::*getY)() const,
+                            bool normalizeToAreaX,
+                            bool normalizeToAreaY,
+                            bool accumulate,
+                            bool plotAverage,
+                            int plane,
+                            int side,
+                            int RPC,
+                            cond_type condition);
 
     template<typename XType, typename YType, typename CondType>
     TMultiGraph* drawCorrelations(XType(RunObject::*getX)() const,
