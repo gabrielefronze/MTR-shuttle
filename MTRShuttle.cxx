@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <utility>
 #include "AliCDBManager.h"
 #include "AliGRPObject.h"
 #include "AliCDBStorage.h"
@@ -596,7 +597,7 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
                                     int plane,
                                     int side,
                                     int RPC,
-                                    std::vector<PlotCondition>  conditions)
+                                    MTRConditions::cond_vector conditions)
 {
   auto *returnedGraph = new TGraph();
   if(!plotAverage){
@@ -645,7 +646,7 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
 
     bool shouldPlot = true;
     for (const auto &itCondition : conditions) {
-      shouldPlot &= itCondition(dataIt);
+      shouldPlot &= itCondition(&dataIt);
     }
     if (!shouldPlot) continue;
 
@@ -678,16 +679,16 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
 
 template<typename XType, typename YType>
 TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
-                        YType (RunObject::*getY)() const,
-                        bool normalizeToAreaX,
-                        bool normalizeToAreaY,
-                        bool accumulate,
-                        bool plotAverage,
-                        int plane,
-                        int side,
-                        int RPC,
-                        PlotCondition condition){
-  std::vector<PlotCondition> dummyVect = {condition};
+                                    YType (RunObject::*getY)() const,
+                                    bool normalizeToAreaX,
+                                    bool normalizeToAreaY,
+                                    bool accumulate,
+                                    bool plotAverage,
+                                    int plane,
+                                    int side,
+                                    int RPC,
+                                    MTRConditions::cond_type condition){
+  MTRConditions::cond_vector dummyVect = {std::move(condition)};
   return drawCorrelation(getX,
                          getY,
                          normalizeToAreaX,

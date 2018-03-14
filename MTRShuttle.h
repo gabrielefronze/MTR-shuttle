@@ -13,25 +13,15 @@
 #include "AMANDACurrent.h"
 #include "Parameters.h"
 
+namespace MTRConditions{
+typedef std::function<bool(RunObject const *)> cond_type;
+typedef std::vector<cond_type> cond_vector;
 
-class PlotCondition{
-  public:
-    PlotCondition(bool (RunObject::*condition)(uint64_t,uint64_t) const, bool negate, uint64_t arg0=0, uint64_t arg1=0) : fNegate(negate){
-      fCondition=condition;
-      fArgs[0]=arg0;
-      fArgs[1]=arg1;
-    }
-    bool operator()(RunObject data) const{
-      return ((data.*(fCondition))(fArgs[0],fArgs[1]) == !fNegate);
-    }
-    bool operator()(RunObject *data) const{
-      return operator()(*data);
-    }
+template<class ...Args> static void binder(MTRConditions::cond_vector &vc, bool (RunObject::*condition)(Args...) const, bool negate, Args... args){
+  vc.emplace_back([=](RunObject const * rObj) -> bool { return (rObj->*condition)(args...) == !negate; });
+}
+}
 
-    bool (RunObject::*fCondition)(uint64_t,uint64_t) const;
-    uint64_t fArgs[2];
-    bool fNegate;
-};
 class MTRShuttle
 {
   public:
@@ -54,7 +44,7 @@ class MTRShuttle
                             int plane,
                             int side,
                             int RPC,
-                            std::vector<PlotCondition> conditions);
+                            MTRConditions::cond_vector conditions);
 
     template<typename XType, typename YType>
     TGraph *drawCorrelation(XType (RunObject::*getX)() const,
@@ -66,7 +56,7 @@ class MTRShuttle
                             int plane,
                             int side,
                             int RPC,
-                            PlotCondition condition);
+                            MTRConditions::cond_type condition);
 
     template<typename XType, typename YType, typename CondType>
     TMultiGraph* drawCorrelations(XType(RunObject::*getX)() const,
