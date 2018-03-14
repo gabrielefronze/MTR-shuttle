@@ -17,6 +17,7 @@
 #include <TAxis.h>
 #include <TStyle.h>
 #include <TH1F.h>
+#include <TRegexp.h>
 #include "MTRShuttle.h"
 #include "AlienUtils.h"
 #include "VectorChecker.h"
@@ -722,6 +723,7 @@ TMultiGraph *MTRShuttle::drawCorrelations(XType(RunObject::*getX)() const,
     for (int iSide = 0; iSide < kNSides; iSide++) {
       if ( iSide>=0 && iSide!=side ) continue;
       for (int iRPC = 0; iRPC < kNRPC; iRPC++) {
+        printf("%d %d %d\n",iPlane,iSide,iRPC);
         mg->Add(
           drawCorrelation(getX,
                           getY,
@@ -890,9 +892,11 @@ TMultiGraph *MTRShuttle::interpreter(TString inputStr){
   int plane =-1, RPC = -1, side = -1;
 
   if( inputStr.Contains("MT11") ) plane=0;
-  if( inputStr.Contains("MT12") ) plane=1;
-  if( inputStr.Contains("MT21") || inputStr.Contains("MT13") ) plane=2;
-  if( inputStr.Contains("MT21") || inputStr.Contains("MT14") ) plane=3;
+  else if( inputStr.Contains("MT12") ) plane=1;
+  else if( inputStr.Contains("MT21") || inputStr.Contains("MT13") ) plane=2;
+  else if( inputStr.Contains("MT21") || inputStr.Contains("MT14") ) plane=3;
+
+  std::cout << "Found plane " << plane <<std::endl;
 
   if( inputStr.Contains("IN")
       || inputStr.Contains("INSIDE")
@@ -904,21 +908,56 @@ TMultiGraph *MTRShuttle::interpreter(TString inputStr){
       || inputStr.Contains("out")
       || inputStr.Contains("outside") ) side=1;
 
-  if( inputStr.Contains("RPC") ){
-    // TODO: get RPC number
+  std::cout << "Found side " << side <<std::endl;
+
+  TRegexp regExp = "RPC[0-9]";
+  TString RPCstring;
+  if( inputStr.Contains(regExp) ){
+    RPCstring = inputStr(regExp);
+    sscanf(RPCstring.Data(),"RPC%d",&RPC);
   }
 
-  bool normalizeToArea = false, plotAverage = false;
-  if( inputStr.Contains("avg") || inputStr.Contains("average") ) plotAverage=true;
-  if( inputStr.Contains("norm") || inputStr.Contains("normalize") ) plotAverage=true;
+  std::cout << "Found RPC " << RPC <<std::endl;
 
+  bool normalizeToArea = false, plotAverage = false, accumulate = false;
+  if( inputStr.Contains("avg") || inputStr.Contains("average") ) plotAverage=true;
+  if( inputStr.Contains("norm") || inputStr.Contains("normalize") ) normalizeToArea=true;
+  if( inputStr.Contains("accum") || inputStr.Contains("accumulate") ) accumulate=true;
+
+  std::cout << "Found avg " << plotAverage <<std::endl;
+  std::cout << "Found norm " << normalizeToArea <<std::endl;
+  std::cout << "Found accum " << accumulate <<std::endl;
 
   TMultiGraph *returnedMultiGraph = new TMultiGraph();
 
-  if ( inputStr.Contains("vs time") ){
-//    returnedMultiGraph->Add(drawTrend(&RunObject::getRunNumber,normalizeToArea,false,plotAverage,plane,side,RPC);
-  } else {
+  double (RunObject::*funcX)() const = nullptr;
+  double (RunObject::*funcY)() const = nullptr;
 
+  MTRConditions conditions;
+  conditions.addCondition(&RunObject::isAfter,false,0ULL);
+
+  if ( inputStr.Contains("IDark vs") ) funcY = &RunObject::getAvgIDark;
+  else if ( inputStr.Contains("ITot vs") ) funcY = &RunObject::getAvgITot;
+  else if ( inputStr.Contains("INet vs") ) funcY = &RunObject::getAvgINet;
+  else if ( inputStr.Contains("HV vs") ) funcY = &RunObject::getAvgHV;
+  else if ( inputStr.Contains("RateBend vs") ) funcY = &RunObject::getScalBending;
+  else if ( inputStr.Contains("RateNotBend vs") ) funcY = &RunObject::getScalNotBending;
+  else if ( inputStr.Contains("IntCharge vs") ) funcY = &RunObject::getIntCharge;
+
+  if ( inputStr.Contains("vs time") ){
+    if(RPC==-1) returnedMultiGraph->Add(drawTrends(funcY,normalizeToArea,accumulate,plotAverage,plane,side,conditions));
+    else returnedMultiGraph->Add(drawTrend(funcY,normalizeToArea,accumulate,plotAverage,plane,side,RPC,conditions));
+  } else {
+    if ( inputStr.Contains("vs IDark") ) funcX = &RunObject::getAvgIDark;
+    else if ( inputStr.Contains("vs ITot") ) funcX = &RunObject::getAvgITot;
+    else if ( inputStr.Contains("vs INet") ) funcX = &RunObject::getAvgINet;
+    else if ( inputStr.Contains("vs HV") ) funcX = &RunObject::getAvgHV;
+    else if ( inputStr.Contains("vs RateBend") ) funcX = &RunObject::getScalBending;
+    else if ( inputStr.Contains("vs RateNotBend") ) funcX = &RunObject::getScalNotBending;
+    else if ( inputStr.Contains("vs IntCharge") ) funcX = &RunObject::getIntCharge;
+
+    if(RPC==-1) returnedMultiGraph->Add(drawCorrelations(funcX,funcY,normalizeToArea,normalizeToArea,accumulate,plotAverage,plane,side,conditions));
+    else returnedMultiGraph->Add(drawCorrelation(funcX,funcY,normalizeToArea,normalizeToArea,accumulate,plotAverage,plane,side,RPC,conditions));
   }
 
   return returnedMultiGraph;
