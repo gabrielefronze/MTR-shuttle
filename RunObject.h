@@ -68,7 +68,7 @@ class RunObject{
     inline bool isValidForIntCharge() const { return (!fIsDark && fIsHVOk); }
     inline bool isValidForIDark() const { return (fIsDark && fIsHVOk); }
 
-    template<class ...Args> constexpr bool getTrue(Args... /*arg*/) const { return true; }
+//    template<class ...Args> constexpr bool getTrue(Args... /*arg*/) const { return true; }
 
     friend std::ostream& operator<<(std::ostream& os, const RunObject& obj);
 
