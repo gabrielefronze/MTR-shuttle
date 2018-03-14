@@ -568,12 +568,15 @@ void MTRShuttle::loadData(std::string path)
 
 void MTRShuttle::graphMaquillage(int plane, int RPC, TGraph *graph, bool isAvgGraph)
 {
+  graph->GetXaxis()->SetLabelSize(0.035);
+  graph->GetYaxis()->SetLabelSize(0.035);
   if(!isAvgGraph){
     graph->SetLineColor(kColors[RPC]);
     graph->SetMarkerColor(kColors[RPC]);
     graph->SetMarkerStyle(kMarkers[plane]);
     graph->SetMarkerSize(0.1);
-    graph->SetLineStyle((Style_t)(4));
+    graph->SetLineStyle((Style_t)(1));
+    graph->SetLineWidth(1);
   } else {
     graph->SetLineColor(kBlack);
     graph->SetMarkerColor(kBlack);
