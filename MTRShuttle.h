@@ -13,16 +13,13 @@
 #include "AMANDACurrent.h"
 #include "Parameters.h"
 
-template<class ...Args> struct PlotCondition{
-    bool (RunObject::*fCondition)(Args...);
-    Args... fArgs;
-    bool fNegate;
-};
-
+namespace MTRConditions{
 typedef std::function<bool(RunObject const *)> cond_type;
 typedef std::vector<cond_type> cond_vector;
-template<class ...Args> static auto binder(bool (RunObject::*condition)(Args...) const, bool negate, Args... args){
-  return std::bind(&condition,std::placeholders::_1,args...);
+
+template<class ...Args> static void binder(MTRConditions::cond_vector &vc, bool (RunObject::*condition)(Args...) const, bool negate, Args... args){
+  vc.emplace_back([=](RunObject const * rObj) -> bool { return (rObj->*condition)(args...) == !negate; });
+}
 }
 
 class MTRShuttle
@@ -37,7 +34,7 @@ class MTRShuttle
     void loadData(std::string path = "MTRShuttle.csv");
     void computeAverage();
 
-    template<typename XType, typename YType, typename CondType>
+    template<typename XType, typename YType>
     TGraph *drawCorrelation(XType (RunObject::*getX)() const,
                             YType (RunObject::*getY)() const,
                             bool normalizeToAreaX,
@@ -47,7 +44,7 @@ class MTRShuttle
                             int plane,
                             int side,
                             int RPC,
-                            cond_vector conditions);
+                            MTRConditions::cond_vector conditions);
 
     template<typename XType, typename YType>
     TGraph *drawCorrelation(XType (RunObject::*getX)() const,
@@ -59,7 +56,7 @@ class MTRShuttle
                             int plane,
                             int side,
                             int RPC,
-                            cond_type condition);
+                            MTRConditions::cond_type condition);
 
     template<typename XType, typename YType, typename CondType>
     TMultiGraph* drawCorrelations(XType(RunObject::*getX)() const,
