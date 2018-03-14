@@ -150,7 +150,21 @@ template<typename Type> inline bool isIntCharge(Type(RunObject::*getter)() const
   return funcCmp(getter, &RunObject::getIntCharge);
 }
 
-template<typename Type> std::string getLabel(Type(RunObject::*getter)() const, bool normalizedToArea);
+template<typename Type> inline std::string getLabel(Type(RunObject::*getter)() const, bool normalizedToArea){
+  std::string label;
+
+  if(isTimestamp(getter)) label="Timestamp [s]";
+  else if(isHV(getter)) label="Voltage [V]";
+  else if(isIntCharge(getter)) label=(normalizedToArea)?"Integrated charge [#muC/cm^{2}]":"Integrated charge [#muC]";
+  else if(isScaler(getter)) label=(normalizedToArea)?"Hits [Hz/cm^{2}]":"Hits [Hz]";
+  else if(isCurrent(getter)) {
+    label=(normalizedToArea)?"urrent [#muA/cm^{2}]":"urrent [#muA]";
+    if(funcCmp(getter, &RunObject::getAvgITot)) label="Total c"+label;
+    else label="Dark c"+label;
+  }
+
+  return label;
+}
 
 
 #endif //MTR_SHUTTLE_RUNOBJECT_H
