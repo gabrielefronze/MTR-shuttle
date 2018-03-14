@@ -721,9 +721,8 @@ TMultiGraph *MTRShuttle::drawCorrelations(XType(RunObject::*getX)() const,
   for (int iPlane=0; iPlane<kNPlanes; iPlane++) {
     if ( plane>=0 && iPlane!=plane ) continue;
     for (int iSide = 0; iSide < kNSides; iSide++) {
-      if ( iSide>=0 && iSide!=side ) continue;
+      if ( side>=0 && iSide!=side ) continue;
       for (int iRPC = 0; iRPC < kNRPC; iRPC++) {
-        printf("%d %d %d\n",iPlane,iSide,iRPC);
         mg->Add(
           drawCorrelation(getX,
                           getY,
