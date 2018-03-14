@@ -76,6 +76,7 @@ class MTRShuttle
                                   bool accumulate,
                                   bool plotAverage,
                                   int MT,
+                                  int side,
                                   CondType conditions);
 
     template<typename YType, typename CondType>
@@ -94,6 +95,7 @@ class MTRShuttle
                             bool accumulate,
                             bool plotAverage,
                             int plane,
+                            int side,
                             CondType conditions);
 
     template<typename YType, typename CondType>
@@ -101,7 +103,8 @@ class MTRShuttle
                             bool normalizeToArea,
                             bool accumulate,
                             bool plotAverage,
-                            int M,
+                            int plane,
+                            int side,
                             CondType conditions);
 
 

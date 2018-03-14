@@ -700,33 +700,6 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
                          dummyVect);
 }
 
-//template<typename XType, typename YType>
-//TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
-//                            YType (RunObject::*getY)() const,
-//                            bool normalizeToAreaX,
-//                            bool normalizeToAreaY,
-//                            bool accumulate,
-//                            bool plotAverage,
-//                            int plane,
-//                            int side,
-//                            int RPC,
-//                            bool (RunObject::*condition)(uint64_t,uint64_t) const,
-//                            bool negate,
-//                            uint64_t arg0,
-//                            uint64_t arg1)
-//{
-//  return drawCorrelation(getX,
-//                         getY,
-//                         normalizeToAreaX,
-//                         normalizeToAreaY,
-//                         accumulate,
-//                         plotAverage,
-//                         plane,
-//                         side,
-//                         RPC,
-//                         PlotCondition(condition,negate,arg0,arg1));
-//}
-
 template<typename XType, typename YType, typename CondType>
 TMultiGraph *MTRShuttle::drawCorrelations(XType(RunObject::*getX)() const,
                                           YType(RunObject::*getY)() const,
@@ -734,15 +707,17 @@ TMultiGraph *MTRShuttle::drawCorrelations(XType(RunObject::*getX)() const,
                                           bool normalizeToAreaY,
                                           bool accumulate,
                                           bool plotAverage,
-                                          int MT,
+                                          int plane,
+                                          int side,
                                           CondType conditions)
 {
   auto *mg = new TMultiGraph();
 
-  for (int plane=0; plane<kNPlanes; plane++) {
-    if ( MT>=0 && plane!=MT ) continue;
-    for (int side = 0; side < kNSides; side++) {
-      for (int RPC = 0; RPC < kNRPC; RPC++) {
+  for (int iPlane=0; iPlane<kNPlanes; iPlane++) {
+    if ( plane>=0 && iPlane!=plane ) continue;
+    for (int iSide = 0; iSide < kNSides; iSide++) {
+      if ( iSide>=0 && iSide!=side ) continue;
+      for (int iRPC = 0; iRPC < kNRPC; iRPC++) {
         mg->Add(
           drawCorrelation(getX,
                           getY,
@@ -750,9 +725,9 @@ TMultiGraph *MTRShuttle::drawCorrelations(XType(RunObject::*getX)() const,
                           normalizeToAreaY,
                           accumulate,
                           false,
-                          plane,
-                          side,
-                          RPC,
+                          iPlane,
+                          iSide,
+                          iRPC,
                           conditions));
       }
     }
@@ -766,7 +741,7 @@ TMultiGraph *MTRShuttle::drawCorrelations(XType(RunObject::*getX)() const,
                       normalizeToAreaY,
                       accumulate,
                       plotAverage,
-                      MT,
+                      plane,
                       -1,
                       -1,
                       conditions));
@@ -823,6 +798,7 @@ TMultiGraph *MTRShuttle::drawTrends(YType (RunObject::*getY)() const,
                                     bool accumulate,
                                     bool plotAverage,
                                     int plane,
+                                    int side,
                                     CondType conditions)
 {
   return drawCorrelations(&RunObject::getSOR,
@@ -832,6 +808,7 @@ TMultiGraph *MTRShuttle::drawTrends(YType (RunObject::*getY)() const,
                           accumulate,
                           plotAverage,
                           plane,
+                          side,
                           conditions);
 }
 
@@ -841,10 +818,11 @@ MTRShuttle::drawMaxMin(YType (RunObject::*getY)() const,
                        bool normalizeToAreaY,
                        bool accumulate,
                        bool plotAverage,
-                       int MT,
+                       int plane,
+                       int side,
                        CondType conditions)
 {
-  auto mg = drawTrends(getY,normalizeToAreaY,accumulate,plotAverage,MT,conditions);
+  auto mg = drawTrends(getY,normalizeToAreaY,accumulate,plotAverage,plane,side,conditions);
   auto grList = mg->GetListOfGraphs();
 
   auto *mgOut = new TMultiGraph();
@@ -863,7 +841,7 @@ MTRShuttle::drawMaxMin(YType (RunObject::*getY)() const,
   for(int iGraph = 0; iGraph < grList->GetEntries(); iGraph++){
     auto graph = (TGraph*)(grList->At(iGraph));
 
-    if(MT==1 && strcmp(graph->GetName(),"1_6")==0) continue;
+    if(plane==1 && strcmp(graph->GetName(),"1_6")==0) continue;
 
     Double_t dummyX;
     Double_t dummyY;
