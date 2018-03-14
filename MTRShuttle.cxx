@@ -586,7 +586,7 @@ void MTRShuttle::graphMaquillage(int plane, int RPC, TGraph *graph, bool isAvgGr
   }
 }
 
-template<typename XType, typename YType>
+template<typename XType, typename YType, typename CondType>
 TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
                                     YType (RunObject::*getY)() const,
                                     bool normalizeToAreaX,
@@ -596,7 +596,7 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
                                     int plane,
                                     int side,
                                     int RPC,
-                                    std::vector<PlotCondition>  conditions)
+                                    CondType conditions)
 {
   auto *returnedGraph = new TGraph();
   if(!plotAverage){
@@ -644,9 +644,11 @@ TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
   for( auto const &dataIt : dataVector){
 
     bool shouldPlot = true;
-    for (const auto &itCondition : conditions) {
-      shouldPlot &= itCondition(dataIt);
-    }
+    if(VectorChekcer::is_container<CondType>::value) {
+      for (const auto &itCondition : conditions) {
+        shouldPlot &= (dataIt.*(itCondition.fCondition)(itCondition.fArgs...) == itCondition.fNegate);
+      }
+    } else shouldPlot = (dataIt.*(conditions.fCondition)(conditions.fArgs...) == conditions.fNegate);
     if (!shouldPlot) continue;
 
     XType x = (dataIt.*getX)();
