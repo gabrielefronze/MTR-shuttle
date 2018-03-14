@@ -752,7 +752,10 @@ TMultiGraph *MTRShuttle::drawCorrelations(XType(RunObject::*getX)() const,
                       conditions));
   }
 
+  if(!(mg->GetListOfGraphs())) return nullptr;
+
   mg->Draw("ap");
+
 
   if (funcCmp(getX, &RunObject::getSOR) || funcCmp(getX, &RunObject::getEOR)){
     //This time offset is NEEDED to correctly display data from timestamp!
