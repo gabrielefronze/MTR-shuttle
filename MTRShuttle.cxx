@@ -756,7 +756,6 @@ TMultiGraph *MTRShuttle::drawCorrelations(XType(RunObject::*getX)() const,
 
   mg->Draw("ap");
 
-
   if (funcCmp(getX, &RunObject::getSOR) || funcCmp(getX, &RunObject::getEOR)){
     //This time offset is NEEDED to correctly display data from timestamp!
     gStyle->SetTimeOffset(0);
