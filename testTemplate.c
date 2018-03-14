@@ -82,31 +82,14 @@ int testTemplate(){
   auto TS = (uint64_t)1424105780;
   auto TS2017 = (uint64_t)1483291280;
 
-  cond_vector conditions;
+  MTRConditions::cond_vector conditions;
+  MTRConditions::binder(conditions,&RunObject::isAfter,false,TS2017);
+  MTRConditions::binder(conditions,&RunObject::isValidForIDark,false);
 
-  conditions.emplace_back(binder(&RunObject::isAfter,false,TS2017));
-
-  auto graph1 = sciattol.drawTrend(&RunObject::getAvgIDark,false,false,true,-1,-1,-1,conditions);
+//  auto graph1 = sciattol.drawTrend(&RunObject::getAvgIDark,false,false,true,-1,-1,-1,conditions);
   auto graph2 = sciattol.drawTrend(&RunObject::getAvgIDark,false,false,false,3,0,2,conditions);
-//  graph1->SetLineColor(kBlue);
-//  graph2->SetMarkerColor(kBlue);
-  graph1->Draw("alp");
-  graph2->Draw("lp");
-
-//  canv->cd(1);
-//  auto graph1 = sciattol.drawTrend(&RunObject::getAvgIDark,false,false,true,3,0,5,false,&RunObject::isValidForIDark);
-//  auto graph2 = sciattol.drawTrend(&RunObject::getAvgITot,false,false,true,3,0,5,false,&RunObject::isValidForIntCharge);
-//  graph2->SetLineColor(kBlue);
-//  graph2->SetMarkerColor(kBlue);
-//
-//  auto graph1 = sciattol.drawCorrelations(&RunObject::getEOR,&RunObject::getIntCharge,false,true,true,true,-1,false,&RunObject::getTrue);
-//  auto graph2 = sciattol.drawTrend(&RunObject::getIntCharge,true,true,false,3,1,5);
-//  graph2->SetTitle("MT22 OUT 6");
-//  graph2->Draw("ap");
-//  graph1->Draw("ap");
-//  graph2->Draw("alp");
-//  graph1->Draw("lp");
-//  canv->cd(1)->BuildLegend(0.18,0.63,0.35,0.98,"","P")->SetNColumns(1);
+//  graph1->Draw("alp");
+  graph2->Draw("alp");
 
   TCanvas *canv1 = new TCanvas("canv1","canv1");
 

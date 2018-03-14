@@ -8,7 +8,7 @@
 void testMTRShuttle(){
   MTRShuttle sciattol;
 
-  sciattol.parseRunList("w");
+  sciattol.parseRunList("../runlists_Max/allruns_2016-2017.txt");
 //  sciattol.parseRunList("runsTestPropagation");
   sciattol.parseOCDB("local:///Users/Gabriele/cernbox/Dottorato/MTR2017/CDB/####/OCDB");
   sciattol.parseAMANDAiMon("../IMon2017_UTF8.txt");
