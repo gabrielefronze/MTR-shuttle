@@ -15,7 +15,6 @@ set(SOURCE_FILES
         MTRShuttle.cxx
         Parameters.h
         AlienUtils.h
-        VectorChecker.h
         CompileAll.c
         testMTRShuttle.c
         testTemplate.c
