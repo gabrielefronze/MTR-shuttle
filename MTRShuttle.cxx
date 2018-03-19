@@ -897,8 +897,6 @@ TMultiGraph *MTRShuttle::interpreter(TString inputStr){
   else if( inputStr.Contains("MT21") || inputStr.Contains("MT13") ) plane=2;
   else if( inputStr.Contains("MT21") || inputStr.Contains("MT14") ) plane=3;
 
-  std::cout << "Found plane " << plane <<std::endl;
-
   if( inputStr.Contains("IN")
       || inputStr.Contains("INSIDE")
       || inputStr.Contains("in")
@@ -909,16 +907,12 @@ TMultiGraph *MTRShuttle::interpreter(TString inputStr){
       || inputStr.Contains("out")
       || inputStr.Contains("outside") ) side=1;
 
-  std::cout << "Found side " << side <<std::endl;
-
   TRegexp regExp = "RPC[0-9]";
   TString RPCstring;
   if( inputStr.Contains(regExp) ){
     RPCstring = inputStr(regExp);
     sscanf(RPCstring.Data(),"RPC%d",&RPC);
   }
-
-  std::cout << "Found RPC " << RPC <<std::endl;
 
   bool normalizeToArea = false, plotAverage = false, accumulate = false;
   if( inputStr.Contains("avg") || inputStr.Contains("average") ) plotAverage=true;
