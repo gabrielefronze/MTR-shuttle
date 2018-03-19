@@ -889,200 +889,200 @@ MTRShuttle::drawMaxMin(YType (RunObject::*getY)() const,
   return mgOut;
 }
 
-TMultiGraph *MTRShuttle::interpreter(TString inputStr){
-  int plane =-1, RPC = -1, side = -1;
-
-  if( inputStr.Contains("MT11") ) plane=0;
-  else if( inputStr.Contains("MT12") ) plane=1;
-  else if( inputStr.Contains("MT21") || inputStr.Contains("MT13") ) plane=2;
-  else if( inputStr.Contains("MT21") || inputStr.Contains("MT14") ) plane=3;
-
-  if( inputStr.Contains("IN")
-      || inputStr.Contains("INSIDE")
-      || inputStr.Contains("in")
-      || inputStr.Contains("inside") ) side=0;
-  else
-  if( inputStr.Contains("OUT")
-      || inputStr.Contains("OUTSIDE")
-      || inputStr.Contains("out")
-      || inputStr.Contains("outside") ) side=1;
-
-  TRegexp regExpRPC = "RPC[0-9]";
-  TString RPCstring;
-  if( inputStr.Contains(regExpRPC) ){
-    RPCstring = inputStr(regExpRPC);
-    sscanf(RPCstring.Data(),"RPC%d",&RPC);
-  }
-
-  bool normalizeToArea = false, plotAverage = false, accumulate = false;
-  if( inputStr.Contains("avg") || inputStr.Contains("average") ) plotAverage=true;
-  if( inputStr.Contains("norm") || inputStr.Contains("normalize") ) normalizeToArea=true;
-  if( inputStr.Contains("accum") || inputStr.Contains("accumulate") ) accumulate=true;
-
-  TMultiGraph *returnedMultiGraph = new TMultiGraph();
-
-  double (RunObject::*funcX)() const = nullptr;
-  double (RunObject::*funcY)() const = nullptr;
-
-  MTRConditions conditions;
-  TString timestampRegex = "[0-9]+";
-  TString humanDateRegex = "[0-9][0-9]/[0-9][0-9]/[0-9]*[0-9][0-9]";
-
-  if ( inputStr.Contains("TS") ){
-    if ( inputStr.Contains(" TS<") ){
-      TRegexp matchingString = "TS<"+timestampRegex;
-      if ( inputStr.Contains(matchingString) ){
-        uint64_t  maxTS=0LLU;
-        TString cutString=inputStr(matchingString);
-        sscanf(cutString.Data(),"TS<%llu",&maxTS);
-        conditions.addCondition(&RunObject::isBefore,false,maxTS);
-        std::cout << "TS<" << maxTS << std::endl;
-      }
-
-    } else if ( inputStr.Contains("<TS<") ){
-      TRegexp matchingString = timestampRegex+"<TS<"+timestampRegex;
-      if ( inputStr.Contains(matchingString) ) {
-        uint64_t minTS = 0LLU;
-        uint64_t maxTS = 0LLU;
-        TString cutString = inputStr(matchingString);
-        sscanf(cutString.Data(), "%llu<TS<%llu", &minTS, &maxTS);
-        conditions.addCondition(&RunObject::isBetweenTimestamps, false, minTS, maxTS);
-        std::cout << minTS << "<TS<" << maxTS << std::endl;
-      }
-    } else if ( inputStr.Contains("<TS") ){
-      TRegexp matchingString = timestampRegex+"<TS";
-      if ( inputStr.Contains(matchingString) ) {
-        uint64_t minTS = 0LLU;
-        TString cutString = inputStr(matchingString);
-        sscanf(cutString.Data(), "%llu<TS", &minTS);
-        conditions.addCondition(&RunObject::isAfter, false, minTS);
-        std::cout << minTS << "<TS" << std::endl;
-      }
-    }
-  } else if ( inputStr.Contains("Date") ){
-    if ( inputStr.Contains(" Date<") ){
-      TRegexp matchingString = "Date<"+humanDateRegex;
-      if ( inputStr.Contains(matchingString) ){
-
-        std::tm maxDay;
-        maxDay.tm_hour=0;
-        maxDay.tm_min=0;
-        maxDay.tm_sec=0;
-        int dummyYear=0;
-        std::tm maxDayGMT;
-
-        TString cutString=inputStr(matchingString);
-        sscanf(cutString.Data(),"Date<%d/%d/%d",&(maxDay.tm_mday),&(maxDay.tm_mon),&dummyYear);
-
-        maxDay.tm_year=(dummyYear>2000)?dummyYear:dummyYear+2000;
-        maxDay.tm_year-=1900;
-        maxDay.tm_hour++;
-        maxDay.tm_mon--;
-
-        time_t maxGMT=timegm(&maxDay);
-        maxDayGMT=*(gmtime(&maxGMT));
-
-        uint64_t maxTS = (uint64_t)std::mktime(&maxDayGMT);
-
-        conditions.addCondition(&RunObject::isBefore,false,maxTS);
-        std::cout << "Date<" << maxTS << std::endl;
-      }
-
-    } else if ( inputStr.Contains("<Date<") ){
-      TRegexp matchingString = humanDateRegex+"<Date<"+humanDateRegex;
-      if ( inputStr.Contains(matchingString) ) {
-
-        std::tm minDay;
-        minDay.tm_hour=0;
-        minDay.tm_min=0;
-        minDay.tm_sec=0;
-        int dummyMinYear=0;
-        std::tm minDayGMT;
-        std::tm maxDay;
-        maxDay.tm_hour=0;
-        maxDay.tm_min=0;
-        maxDay.tm_sec=0;
-        int dummyMaxYear=0;
-        std::tm maxDayGMT;
-
-
-        TString cutString = inputStr(matchingString);
-        sscanf(cutString.Data(), "%d/%d/%d<Date<%d/%d/%d",&(minDay.tm_mday),&(minDay.tm_mon),&dummyMinYear,&(maxDay.tm_mday),&(maxDay.tm_mon),&dummyMaxYear);
-
-        minDay.tm_year=(dummyMinYear>2000)?dummyMinYear:dummyMinYear+2000;
-        minDay.tm_year-=1900;
-        minDay.tm_hour++;
-        minDay.tm_mon--;
-        maxDay.tm_year=(dummyMaxYear>2000)?dummyMaxYear:dummyMaxYear+2000;
-        maxDay.tm_year-=1900;
-        maxDay.tm_hour++;
-        maxDay.tm_mon--;
-
-        time_t minGMT=timegm(&minDay);
-        minDayGMT=*(gmtime(&minGMT));
-        time_t maxGMT=timegm(&maxDay);
-        maxDayGMT=*(gmtime(&maxGMT));
-
-        uint64_t minTS = (uint64_t)std::mktime(&minDayGMT);
-        uint64_t maxTS = (uint64_t)std::mktime(&maxDayGMT);
-
-        conditions.addCondition(&RunObject::isBetweenTimestamps, false, minTS, maxTS);
-        std::cout << minTS << "<Date<" << maxTS << std::endl;
-      }
-    } else if ( inputStr.Contains("<Date") ){
-      TRegexp matchingString = humanDateRegex+"<Date";
-      if ( inputStr.Contains(matchingString) ) {
-
-        std::tm minDay;
-        minDay.tm_hour=0;
-        minDay.tm_min=0;
-        minDay.tm_sec=0;
-        int dummyYear=0;
-        std::tm minDayGMT;
-
-        TString cutString = inputStr(matchingString);
-        sscanf(cutString.Data(), "%d/%d/%d<Date",&(minDay.tm_mday),&(minDay.tm_mon),&dummyYear);
-
-        minDay.tm_year=(dummyYear>2000)?dummyYear:dummyYear+2000;
-        minDay.tm_year-=1900;
-        minDay.tm_hour++;
-        minDay.tm_mon--;
-
-        time_t minGMT=timegm(&minDay);
-        minDayGMT=*(gmtime(&minGMT));
-
-        uint64_t minTS = (uint64_t)std::mktime(&minDayGMT);
-
-        conditions.addCondition(&RunObject::isAfter, false, minTS);
-        std::cout << minTS << "<Date" << std::endl;
-      }
-    }
-  }
-
-
-  if ( inputStr.Contains("IDark vs") ) funcY = &RunObject::getAvgIDark;
-  else if ( inputStr.Contains("ITot vs") ) funcY = &RunObject::getAvgITot;
-  else if ( inputStr.Contains("INet vs") ) funcY = &RunObject::getAvgINet;
-  else if ( inputStr.Contains("HV vs") ) funcY = &RunObject::getAvgHV;
-  else if ( inputStr.Contains("RateBend vs") ) funcY = &RunObject::getScalBending;
-  else if ( inputStr.Contains("RateNotBend vs") ) funcY = &RunObject::getScalNotBending;
-  else if ( inputStr.Contains("IntCharge vs") ) funcY = &RunObject::getIntCharge;
-
-  if ( inputStr.Contains("vs time") ){
-    if(RPC==-1) returnedMultiGraph->Add(drawTrends(funcY,normalizeToArea,accumulate,plotAverage,plane,side,conditions));
-    else returnedMultiGraph->Add(drawTrend(funcY,normalizeToArea,accumulate,plotAverage,plane,side,RPC,conditions));
-  } else {
-    if ( inputStr.Contains("vs IDark") ) funcX = &RunObject::getAvgIDark;
-    else if ( inputStr.Contains("vs ITot") ) funcX = &RunObject::getAvgITot;
-    else if ( inputStr.Contains("vs INet") ) funcX = &RunObject::getAvgINet;
-    else if ( inputStr.Contains("vs HV") ) funcX = &RunObject::getAvgHV;
-    else if ( inputStr.Contains("vs RateBend") ) funcX = &RunObject::getScalBending;
-    else if ( inputStr.Contains("vs RateNotBend") ) funcX = &RunObject::getScalNotBending;
-    else if ( inputStr.Contains("vs IntCharge") ) funcX = &RunObject::getIntCharge;
-
-    if(RPC==-1) returnedMultiGraph->Add(drawCorrelations(funcX,funcY,normalizeToArea,normalizeToArea,accumulate,plotAverage,plane,side,conditions));
-    else returnedMultiGraph->Add(drawCorrelation(funcX,funcY,normalizeToArea,normalizeToArea,accumulate,plotAverage,plane,side,RPC,conditions));
-  }
-
-  return returnedMultiGraph;
-}
+//TMultiGraph *MTRShuttle::interpreter(TString inputStr){
+//  int plane =-1, RPC = -1, side = -1;
+//
+//  if( inputStr.Contains("MT11") ) plane=0;
+//  else if( inputStr.Contains("MT12") ) plane=1;
+//  else if( inputStr.Contains("MT21") || inputStr.Contains("MT13") ) plane=2;
+//  else if( inputStr.Contains("MT21") || inputStr.Contains("MT14") ) plane=3;
+//
+//  if( inputStr.Contains("IN")
+//      || inputStr.Contains("INSIDE")
+//      || inputStr.Contains("in")
+//      || inputStr.Contains("inside") ) side=0;
+//  else
+//  if( inputStr.Contains("OUT")
+//      || inputStr.Contains("OUTSIDE")
+//      || inputStr.Contains("out")
+//      || inputStr.Contains("outside") ) side=1;
+//
+//  TRegexp regExpRPC = "RPC[0-9]";
+//  TString RPCstring;
+//  if( inputStr.Contains(regExpRPC) ){
+//    RPCstring = inputStr(regExpRPC);
+//    sscanf(RPCstring.Data(),"RPC%d",&RPC);
+//  }
+//
+//  bool normalizeToArea = false, plotAverage = false, accumulate = false;
+//  if( inputStr.Contains("avg") || inputStr.Contains("average") ) plotAverage=true;
+//  if( inputStr.Contains("norm") || inputStr.Contains("normalize") ) normalizeToArea=true;
+//  if( inputStr.Contains("accum") || inputStr.Contains("accumulate") ) accumulate=true;
+//
+//  TMultiGraph *returnedMultiGraph = new TMultiGraph();
+//
+//  double (RunObject::*funcX)() const = nullptr;
+//  double (RunObject::*funcY)() const = nullptr;
+//
+//  MTRConditions conditions;
+//  TString timestampRegex = "[0-9]+";
+//  TString humanDateRegex = "[0-9][0-9]/[0-9][0-9]/[0-9]*[0-9][0-9]";
+//
+//  if ( inputStr.Contains("TS") ){
+//    if ( inputStr.Contains(" TS<") ){
+//      TRegexp matchingString = "TS<"+timestampRegex;
+//      if ( inputStr.Contains(matchingString) ){
+//        uint64_t  maxTS=0LLU;
+//        TString cutString=inputStr(matchingString);
+//        sscanf(cutString.Data(),"TS<%llu",&maxTS);
+//        conditions.addCondition(&RunObject::isBefore,false,maxTS);
+//        std::cout << "TS<" << maxTS << std::endl;
+//      }
+//
+//    } else if ( inputStr.Contains("<TS<") ){
+//      TRegexp matchingString = timestampRegex+"<TS<"+timestampRegex;
+//      if ( inputStr.Contains(matchingString) ) {
+//        uint64_t minTS = 0LLU;
+//        uint64_t maxTS = 0LLU;
+//        TString cutString = inputStr(matchingString);
+//        sscanf(cutString.Data(), "%llu<TS<%llu", &minTS, &maxTS);
+//        conditions.addCondition(&RunObject::isBetweenTimestamps, false, minTS, maxTS);
+//        std::cout << minTS << "<TS<" << maxTS << std::endl;
+//      }
+//    } else if ( inputStr.Contains("<TS") ){
+//      TRegexp matchingString = timestampRegex+"<TS";
+//      if ( inputStr.Contains(matchingString) ) {
+//        uint64_t minTS = 0LLU;
+//        TString cutString = inputStr(matchingString);
+//        sscanf(cutString.Data(), "%llu<TS", &minTS);
+//        conditions.addCondition(&RunObject::isAfter, false, minTS);
+//        std::cout << minTS << "<TS" << std::endl;
+//      }
+//    }
+//  } else if ( inputStr.Contains("Date") ){
+//    if ( inputStr.Contains(" Date<") ){
+//      TRegexp matchingString = "Date<"+humanDateRegex;
+//      if ( inputStr.Contains(matchingString) ){
+//
+//        std::tm maxDay;
+//        maxDay.tm_hour=0;
+//        maxDay.tm_min=0;
+//        maxDay.tm_sec=0;
+//        int dummyYear=0;
+//        std::tm maxDayGMT;
+//
+//        TString cutString=inputStr(matchingString);
+//        sscanf(cutString.Data(),"Date<%d/%d/%d",&(maxDay.tm_mday),&(maxDay.tm_mon),&dummyYear);
+//
+//        maxDay.tm_year=(dummyYear>2000)?dummyYear:dummyYear+2000;
+//        maxDay.tm_year-=1900;
+//        maxDay.tm_hour++;
+//        maxDay.tm_mon--;
+//
+//        time_t maxGMT=timegm(&maxDay);
+//        maxDayGMT=*(gmtime(&maxGMT));
+//
+//        uint64_t maxTS = (uint64_t)std::mktime(&maxDayGMT);
+//
+//        conditions.addCondition(&RunObject::isBefore,false,maxTS);
+//        std::cout << "Date<" << maxTS << std::endl;
+//      }
+//
+//    } else if ( inputStr.Contains("<Date<") ){
+//      TRegexp matchingString = humanDateRegex+"<Date<"+humanDateRegex;
+//      if ( inputStr.Contains(matchingString) ) {
+//
+//        std::tm minDay;
+//        minDay.tm_hour=0;
+//        minDay.tm_min=0;
+//        minDay.tm_sec=0;
+//        int dummyMinYear=0;
+//        std::tm minDayGMT;
+//        std::tm maxDay;
+//        maxDay.tm_hour=0;
+//        maxDay.tm_min=0;
+//        maxDay.tm_sec=0;
+//        int dummyMaxYear=0;
+//        std::tm maxDayGMT;
+//
+//
+//        TString cutString = inputStr(matchingString);
+//        sscanf(cutString.Data(), "%d/%d/%d<Date<%d/%d/%d",&(minDay.tm_mday),&(minDay.tm_mon),&dummyMinYear,&(maxDay.tm_mday),&(maxDay.tm_mon),&dummyMaxYear);
+//
+//        minDay.tm_year=(dummyMinYear>2000)?dummyMinYear:dummyMinYear+2000;
+//        minDay.tm_year-=1900;
+//        minDay.tm_hour++;
+//        minDay.tm_mon--;
+//        maxDay.tm_year=(dummyMaxYear>2000)?dummyMaxYear:dummyMaxYear+2000;
+//        maxDay.tm_year-=1900;
+//        maxDay.tm_hour++;
+//        maxDay.tm_mon--;
+//
+//        time_t minGMT=timegm(&minDay);
+//        minDayGMT=*(gmtime(&minGMT));
+//        time_t maxGMT=timegm(&maxDay);
+//        maxDayGMT=*(gmtime(&maxGMT));
+//
+//        uint64_t minTS = (uint64_t)std::mktime(&minDayGMT);
+//        uint64_t maxTS = (uint64_t)std::mktime(&maxDayGMT);
+//
+//        conditions.addCondition(&RunObject::isBetweenTimestamps, false, minTS, maxTS);
+//        std::cout << minTS << "<Date<" << maxTS << std::endl;
+//      }
+//    } else if ( inputStr.Contains("<Date") ){
+//      TRegexp matchingString = humanDateRegex+"<Date";
+//      if ( inputStr.Contains(matchingString) ) {
+//
+//        std::tm minDay;
+//        minDay.tm_hour=0;
+//        minDay.tm_min=0;
+//        minDay.tm_sec=0;
+//        int dummyYear=0;
+//        std::tm minDayGMT;
+//
+//        TString cutString = inputStr(matchingString);
+//        sscanf(cutString.Data(), "%d/%d/%d<Date",&(minDay.tm_mday),&(minDay.tm_mon),&dummyYear);
+//
+//        minDay.tm_year=(dummyYear>2000)?dummyYear:dummyYear+2000;
+//        minDay.tm_year-=1900;
+//        minDay.tm_hour++;
+//        minDay.tm_mon--;
+//
+//        time_t minGMT=timegm(&minDay);
+//        minDayGMT=*(gmtime(&minGMT));
+//
+//        uint64_t minTS = (uint64_t)std::mktime(&minDayGMT);
+//
+//        conditions.addCondition(&RunObject::isAfter, false, minTS);
+//        std::cout << minTS << "<Date" << std::endl;
+//      }
+//    }
+//  }
+//
+//
+//  if ( inputStr.Contains("IDark vs") ) funcY = &RunObject::getAvgIDark;
+//  else if ( inputStr.Contains("ITot vs") ) funcY = &RunObject::getAvgITot;
+//  else if ( inputStr.Contains("INet vs") ) funcY = &RunObject::getAvgINet;
+//  else if ( inputStr.Contains("HV vs") ) funcY = &RunObject::getAvgHV;
+//  else if ( inputStr.Contains("RateBend vs") ) funcY = &RunObject::getScalBending;
+//  else if ( inputStr.Contains("RateNotBend vs") ) funcY = &RunObject::getScalNotBending;
+//  else if ( inputStr.Contains("IntCharge vs") ) funcY = &RunObject::getIntCharge;
+//
+//  if ( inputStr.Contains("vs time") ){
+//    if(RPC==-1) returnedMultiGraph->Add(drawTrends(funcY,normalizeToArea,accumulate,plotAverage,plane,side,conditions));
+//    else returnedMultiGraph->Add(drawTrend(funcY,normalizeToArea,accumulate,plotAverage,plane,side,RPC,conditions));
+//  } else {
+//    if ( inputStr.Contains("vs IDark") ) funcX = &RunObject::getAvgIDark;
+//    else if ( inputStr.Contains("vs ITot") ) funcX = &RunObject::getAvgITot;
+//    else if ( inputStr.Contains("vs INet") ) funcX = &RunObject::getAvgINet;
+//    else if ( inputStr.Contains("vs HV") ) funcX = &RunObject::getAvgHV;
+//    else if ( inputStr.Contains("vs RateBend") ) funcX = &RunObject::getScalBending;
+//    else if ( inputStr.Contains("vs RateNotBend") ) funcX = &RunObject::getScalNotBending;
+//    else if ( inputStr.Contains("vs IntCharge") ) funcX = &RunObject::getIntCharge;
+//
+//    if(RPC==-1) returnedMultiGraph->Add(drawCorrelations(funcX,funcY,normalizeToArea,normalizeToArea,accumulate,plotAverage,plane,side,conditions));
+//    else returnedMultiGraph->Add(drawCorrelation(funcX,funcY,normalizeToArea,normalizeToArea,accumulate,plotAverage,plane,side,RPC,conditions));
+//  }
+//
+//  return returnedMultiGraph;
+//}

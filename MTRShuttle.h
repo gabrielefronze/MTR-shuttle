@@ -111,7 +111,7 @@ class MTRShuttle
 
     void graphMaquillage(int plane, int RPC, TGraph *graph, bool isAvgGraph);
 
-    TMultiGraph *interpreter(TString inputStr);
+//    TMultiGraph *interpreter(TString inputStr);
 };
 
 #endif //MTR_SHUTTLE_MTRSHUTTLE_H
