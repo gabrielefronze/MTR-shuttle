@@ -907,10 +907,10 @@ TMultiGraph *MTRShuttle::interpreter(TString inputStr){
       || inputStr.Contains("out")
       || inputStr.Contains("outside") ) side=1;
 
-  TRegexp regExp = "RPC[0-9]";
+  TRegexp regExpRPC = "RPC[0-9]";
   TString RPCstring;
-  if( inputStr.Contains(regExp) ){
-    RPCstring = inputStr(regExp);
+  if( inputStr.Contains(regExpRPC) ){
+    RPCstring = inputStr(regExpRPC);
     sscanf(RPCstring.Data(),"RPC%d",&RPC);
   }
 
