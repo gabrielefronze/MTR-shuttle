@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include <fstream>
-#include <utility>
+#include <ctime>
 #include "AliCDBManager.h"
 #include "AliGRPObject.h"
 #include "AliCDBStorage.h"
@@ -929,30 +929,140 @@ TMultiGraph *MTRShuttle::interpreter(TString inputStr){
   double (RunObject::*funcY)() const = nullptr;
 
   MTRConditions conditions;
+  TString timestampRegex = "[0-9]+";
+  TString humanDateRegex = "[0-9][0-9]/[0-9][0-9]/[0-9]*[0-9][0-9]";
 
-  if ( inputStr.Contains(" TS<") ){
-    TRegexp regExpBefore = "TS<[0-9]+";
-    TString beforeString = inputStr(regExpBefore);
-    uint64_t maxTS = 0LLU;
-    sscanf(beforeString.Data(),"TS<%llu",&maxTS);
-    conditions.addCondition(&RunObject::isBefore,false,maxTS);
-    std::cout << "TS<" << maxTS << std::endl;
-  } else if ( inputStr.Contains("<TS<") ){
-    TRegexp regExpBetween = "[0-9]+<TS<[0-9]+";
-    TString betweenString = inputStr(regExpBetween);
-    uint64_t minTS = 0LLU;
-    uint64_t maxTS = 0LLU;
-    sscanf(betweenString.Data(),"%llu<TS<%llu",&minTS,&maxTS);
-    conditions.addCondition(&RunObject::isBetweenTimestamps,false,minTS,maxTS);
-    std::cout << minTS << "<TS<" << maxTS << std::endl;
-  } else if ( inputStr.Contains("<TS") ){
-    TRegexp regExpAfter = "[0-9]+<TS";
-    TString afterString = inputStr(regExpAfter);
-    uint64_t minTS = 0LLU;
-    sscanf(afterString.Data(),"%llu<TS",&minTS);
-    conditions.addCondition(&RunObject::isAfter,false,minTS);
-    std::cout << minTS << "<TS" << std::endl;
+  if ( inputStr.Contains("TS") ){
+    if ( inputStr.Contains(" TS<") ){
+      TRegexp matchingString = "TS<"+timestampRegex;
+      if ( inputStr.Contains(matchingString) ){
+        uint64_t  maxTS=0LLU;
+        TString cutString=inputStr(matchingString);
+        sscanf(cutString.Data(),"TS<%llu",&maxTS);
+        conditions.addCondition(&RunObject::isBefore,false,maxTS);
+        std::cout << "TS<" << maxTS << std::endl;
+      }
+
+    } else if ( inputStr.Contains("<TS<") ){
+      TRegexp matchingString = timestampRegex+"<TS<"+timestampRegex;
+      if ( inputStr.Contains(matchingString) ) {
+        uint64_t minTS = 0LLU;
+        uint64_t maxTS = 0LLU;
+        TString cutString = inputStr(matchingString);
+        sscanf(cutString.Data(), "%llu<TS<%llu", &minTS, &maxTS);
+        conditions.addCondition(&RunObject::isBetweenTimestamps, false, minTS, maxTS);
+        std::cout << minTS << "<TS<" << maxTS << std::endl;
+      }
+    } else if ( inputStr.Contains("<TS") ){
+      TRegexp matchingString = timestampRegex+"<TS";
+      if ( inputStr.Contains(matchingString) ) {
+        uint64_t minTS = 0LLU;
+        TString cutString = inputStr(matchingString);
+        sscanf(cutString.Data(), "%llu<TS", &minTS);
+        conditions.addCondition(&RunObject::isAfter, false, minTS);
+        std::cout << minTS << "<TS" << std::endl;
+      }
+    }
+  } else if ( inputStr.Contains("Date") ){
+    if ( inputStr.Contains(" Date<") ){
+      TRegexp matchingString = "Date<"+humanDateRegex;
+      if ( inputStr.Contains(matchingString) ){
+
+        std::tm maxDay;
+        maxDay.tm_hour=0;
+        maxDay.tm_min=0;
+        maxDay.tm_sec=0;
+        int dummyYear=0;
+        std::tm maxDayGMT;
+
+        TString cutString=inputStr(matchingString);
+        sscanf(cutString.Data(),"Date<%d/%d/%d",&(maxDay.tm_mday),&(maxDay.tm_mon),&dummyYear);
+
+        maxDay.tm_year=(dummyYear>2000)?dummyYear:dummyYear+2000;
+        maxDay.tm_year-=1900;
+        maxDay.tm_hour++;
+        maxDay.tm_mon--;
+
+        time_t maxGMT=timegm(&maxDay);
+        maxDayGMT=*(gmtime(&maxGMT));
+
+        uint64_t maxTS = (uint64_t)std::mktime(&maxDayGMT);
+
+        conditions.addCondition(&RunObject::isBefore,false,maxTS);
+        std::cout << "Date<" << maxTS << std::endl;
+      }
+
+    } else if ( inputStr.Contains("<Date<") ){
+      TRegexp matchingString = humanDateRegex+"<Date<"+humanDateRegex;
+      if ( inputStr.Contains(matchingString) ) {
+
+        std::tm minDay;
+        minDay.tm_hour=0;
+        minDay.tm_min=0;
+        minDay.tm_sec=0;
+        int dummyMinYear=0;
+        std::tm minDayGMT;
+        std::tm maxDay;
+        maxDay.tm_hour=0;
+        maxDay.tm_min=0;
+        maxDay.tm_sec=0;
+        int dummyMaxYear=0;
+        std::tm maxDayGMT;
+
+
+        TString cutString = inputStr(matchingString);
+        sscanf(cutString.Data(), "%d/%d/%d<Date<%d/%d/%d",&(minDay.tm_mday),&(minDay.tm_mon),&dummyMinYear,&(maxDay.tm_mday),&(maxDay.tm_mon),&dummyMaxYear);
+
+        minDay.tm_year=(dummyMinYear>2000)?dummyMinYear:dummyMinYear+2000;
+        minDay.tm_year-=1900;
+        minDay.tm_hour++;
+        minDay.tm_mon--;
+        maxDay.tm_year=(dummyMaxYear>2000)?dummyMaxYear:dummyMaxYear+2000;
+        maxDay.tm_year-=1900;
+        maxDay.tm_hour++;
+        maxDay.tm_mon--;
+
+        time_t minGMT=timegm(&minDay);
+        minDayGMT=*(gmtime(&minGMT));
+        time_t maxGMT=timegm(&maxDay);
+        maxDayGMT=*(gmtime(&maxGMT));
+
+        uint64_t minTS = (uint64_t)std::mktime(&minDayGMT);
+        uint64_t maxTS = (uint64_t)std::mktime(&maxDayGMT);
+
+        conditions.addCondition(&RunObject::isBetweenTimestamps, false, minTS, maxTS);
+        std::cout << minTS << "<Date<" << maxTS << std::endl;
+      }
+    } else if ( inputStr.Contains("<Date") ){
+      TRegexp matchingString = humanDateRegex+"<Date";
+      if ( inputStr.Contains(matchingString) ) {
+
+        std::tm minDay;
+        minDay.tm_hour=0;
+        minDay.tm_min=0;
+        minDay.tm_sec=0;
+        int dummyYear=0;
+        std::tm minDayGMT;
+
+        TString cutString = inputStr(matchingString);
+        sscanf(cutString.Data(), "%d/%d/%d<Date",&(minDay.tm_mday),&(minDay.tm_mon),&dummyYear);
+
+        minDay.tm_year=(dummyYear>2000)?dummyYear:dummyYear+2000;
+        minDay.tm_year-=1900;
+        minDay.tm_hour++;
+        minDay.tm_mon--;
+
+        time_t minGMT=timegm(&minDay);
+        minDayGMT=*(gmtime(&minGMT));
+
+        uint64_t minTS = (uint64_t)std::mktime(&minDayGMT);
+
+        conditions.addCondition(&RunObject::isAfter, false, minTS);
+        std::cout << minTS << "<Date" << std::endl;
+      }
+    }
   }
+
 
   if ( inputStr.Contains("IDark vs") ) funcY = &RunObject::getAvgIDark;
   else if ( inputStr.Contains("ITot vs") ) funcY = &RunObject::getAvgITot;
