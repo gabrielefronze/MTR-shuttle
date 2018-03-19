@@ -13,6 +13,8 @@ set(SOURCE_FILES
         MTRConditions.h
         MTRShuttle.h
         MTRShuttle.cxx
+        MTRBooster.h
+        MTRBooster.cxx
         Parameters.h
         AlienUtils.h
         CompileAll.c
