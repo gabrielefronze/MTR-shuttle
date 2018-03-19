@@ -919,10 +919,6 @@ TMultiGraph *MTRShuttle::interpreter(TString inputStr){
   if( inputStr.Contains("norm") || inputStr.Contains("normalize") ) normalizeToArea=true;
   if( inputStr.Contains("accum") || inputStr.Contains("accumulate") ) accumulate=true;
 
-  std::cout << "Found avg " << plotAverage <<std::endl;
-  std::cout << "Found norm " << normalizeToArea <<std::endl;
-  std::cout << "Found accum " << accumulate <<std::endl;
-
   TMultiGraph *returnedMultiGraph = new TMultiGraph();
 
   double (RunObject::*funcX)() const = nullptr;
