@@ -929,7 +929,30 @@ TMultiGraph *MTRShuttle::interpreter(TString inputStr){
   double (RunObject::*funcY)() const = nullptr;
 
   MTRConditions conditions;
-  conditions.addCondition(&RunObject::isAfter,false,0ULL);
+
+  if ( inputStr.Contains(" TS<") ){
+    TRegexp regExpBefore = "TS<[0-9]+";
+    TString beforeString = inputStr(regExpBefore);
+    uint64_t maxTS = 0LLU;
+    sscanf(beforeString.Data(),"TS<%llu",&maxTS);
+    conditions.addCondition(&RunObject::isBefore,false,maxTS);
+    std::cout << "TS<" << maxTS << std::endl;
+  } else if ( inputStr.Contains("<TS<") ){
+    TRegexp regExpBetween = "[0-9]+<TS<[0-9]+";
+    TString betweenString = inputStr(regExpBetween);
+    uint64_t minTS = 0LLU;
+    uint64_t maxTS = 0LLU;
+    sscanf(betweenString.Data(),"%llu<TS<%llu",&minTS,&maxTS);
+    conditions.addCondition(&RunObject::isBetweenTimestamps,false,minTS,maxTS);
+    std::cout << minTS << "<TS<" << maxTS << std::endl;
+  } else if ( inputStr.Contains("<TS") ){
+    TRegexp regExpAfter = "[0-9]+<TS";
+    TString afterString = inputStr(regExpAfter);
+    uint64_t minTS = 0LLU;
+    sscanf(afterString.Data(),"%llu<TS",&minTS);
+    conditions.addCondition(&RunObject::isAfter,false,minTS);
+    std::cout << minTS << "<TS" << std::endl;
+  }
 
   if ( inputStr.Contains("IDark vs") ) funcY = &RunObject::getAvgIDark;
   else if ( inputStr.Contains("ITot vs") ) funcY = &RunObject::getAvgITot;
