@@ -25,11 +25,6 @@ struct MTRPlotSettings{
     bool fValidSettings=true;
 };
 
-enum funcOpt{
-    kX,
-    kY
-};
-
 class MTRBooster
 {
   public:
@@ -41,36 +36,35 @@ class MTRBooster
 
     void PrintConfig();
 
-    TMultiGraph* Launch(size_t iLaunch);
-    MTRBooster* SetPlane(int HR_plane);
+    void Launch(size_t iLaunch, TMultiGraph* buffer);
+    MTRBooster& SetPlane(int HR_plane);
 
-    MTRBooster* SetSide(std::string HR_side);
-    MTRBooster* SetRPC(int HR_RPC);
-    MTRBooster* SetX(std::string xValues);
+    MTRBooster& SetSide(std::string HR_side);
+    MTRBooster& SetRPC(int HR_RPC);
+    MTRBooster& SetX(std::string xValues);
+    MTRBooster& SetY(std::string xValues);
+    MTRBooster& SetTSRange(uint64_t minTS, uint64_t maxTS);
 
-    MTRBooster* SetY(std::string xValues);
-    MTRBooster* SetTSRange(uint64_t minTS, uint64_t maxTS);
+    MTRBooster& SetMinTS(uint64_t minTS);
+    MTRBooster& SetMaxTS(uint64_t maxTS);
+    MTRBooster& SetDateRange(std::string minDay, std::string maxDay);
 
-    MTRBooster* SetMinTS(uint64_t minTS);
-    MTRBooster* SetMaxTS(uint64_t maxTS);
-    MTRBooster* SetDateRange(std::string minDay, std::string maxDay);
+    MTRBooster& SetMinDate(std::string minDay);
+    MTRBooster& SetMaxDate(std::string maxDay);
+    MTRBooster& SetRunRange(uint64_t minRun, uint64_t maxRun);
 
-    MTRBooster* SetMinDate(std::string minDay);
-    MTRBooster* SetMaxDate(std::string maxDay);
-    MTRBooster* SetRunRange(uint64_t minRun, uint64_t maxRun);
+    MTRBooster& SetMinRun(uint64_t minRun);
+    MTRBooster& SetMaxRun(uint64_t maxRun);
 
-    MTRBooster* SetMinRun(uint64_t minRun);
-    MTRBooster* SetMaxRun(uint64_t maxRun);
+    MTRBooster& OnlyHVOkRuns();
+    MTRBooster& OnlyWithBeamRuns();
+    MTRBooster& OnlyNoBeamRuns();
+    MTRBooster& OnlyDarkCurrentRuns();
+    MTRBooster& OnlyIntegratedChargeRuns();
+    inline MTRBooster& AccumulateY(){ fCurrentPlotSetting.fAccumulate=true; return *this; }
 
-    MTRBooster* OnlyHVOkRuns();
-    MTRBooster* OnlyWithBeamRuns();
-    MTRBooster* OnlyNoBeamRuns();
-    MTRBooster* OnlyDarkCurrentRuns();
-    MTRBooster* OnlyIntegratedChargeRuns();
-    inline MTRBooster* AccumulateY(){ fCurrentPlotSetting.fAccumulate=true; return this; }
-
-    inline MTRBooster* NormalizeToArea(){ fCurrentPlotSetting.fNormalize=true; return this; }
-    inline MTRBooster* PlotAverage();
+    inline MTRBooster& NormalizeToArea(){ fCurrentPlotSetting.fNormalize=true; return *this; }
+    inline MTRBooster& PlotAverage();
     inline void StackStage(){
       if( fCurrentPlotSetting.fValidSettings ){
         fPlotSettings.emplace_back(fCurrentPlotSetting);
@@ -79,7 +73,6 @@ class MTRBooster
     }
 
   private:
-
     MTRShuttle fShuttle;
     bool fLoadedData;
     bool fAverageComputed;
@@ -88,13 +81,14 @@ class MTRBooster
     inline void loadAverage(){ fShuttle.computeAverage(); fAverageComputed=true; }
 
     uint64_t getTSFromString(std::string date);
-    void setGetterFromString(std::string func, funcOpt opt);
+    void setXGetterFromString(std::string func);
+    void setYGetterFromString(std::string func);
 
-    TMultiGraph* correlationWrapper(MTRPlotSettings *setting);
-    TMultiGraph* correlationsWrapper(MTRPlotSettings *setting);
-    TMultiGraph* trendWrapper(MTRPlotSettings *setting);
-    TMultiGraph* trendsWrapper(MTRPlotSettings *setting);
-    TMultiGraph* minmaxWrapper(MTRPlotSettings *setting);
+    void correlationWrapper(MTRPlotSettings &setting, TMultiGraph* buffer);
+    void correlationsWrapper(MTRPlotSettings &setting, TMultiGraph* buffer);
+    void trendWrapper(MTRPlotSettings &setting, TMultiGraph* buffer);
+    void trendsWrapper(MTRPlotSettings &setting, TMultiGraph* buffer);
+    void minmaxWrapper(MTRPlotSettings &setting, TMultiGraph* buffer);
 };
 
 #endif //MTR_SHUTTLE_MTRBOOSTER_H
