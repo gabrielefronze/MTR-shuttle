@@ -11,6 +11,7 @@ set(SOURCE_FILES
         AMANDACurrent.h
         AMANDACurrent.cxx
         MTRConditions.h
+        Enumerators.h
         MTRShuttle.h
         MTRShuttleTemplates.tcc
         MTRShuttle.cxx
