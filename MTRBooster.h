@@ -22,7 +22,6 @@ struct MTRPlotSettings{
     bool isTrend=false;
     bool isMinMax=false;
     MTRConditions fConditions;
-
     bool fValidSettings=true;
 };
 
@@ -39,6 +38,8 @@ class MTRBooster
     explicit MTRBooster(std::string inputData);
     inline MTRShuttle* getShuttle(){ return &fShuttle; };
     std::vector<TMultiGraph*> Launch();
+
+    void PrintConfig();
 
     TMultiGraph* Launch(size_t iLaunch);
     MTRBooster* SetPlane(int HR_plane);

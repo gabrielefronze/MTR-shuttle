@@ -78,6 +78,11 @@ TMultiGraph *MTRBooster::Launch(size_t iLaunch)
   }
 }
 
+void MTRBooster::PrintConfig()
+{
+  printf("\n");
+}
+
 MTRBooster *MTRBooster::SetPlane(int HR_plane)
 {
   switch (HR_plane){
