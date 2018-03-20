@@ -128,7 +128,7 @@ TGraph *drawCorrelation(XType (RunObject::*getX)() const,
                          dummyCond);
 }
 
-template<typename XType, typename YType>
+template<typename XType, typename YType, typename CondType>
 TMultiGraph *drawCorrelations(XType(RunObject::*getX)() const,
                               YType(RunObject::*getY)() const,
                               bool normalizeToAreaX,
@@ -137,7 +137,7 @@ TMultiGraph *drawCorrelations(XType(RunObject::*getX)() const,
                               bool plotAverage,
                               int plane,
                               int side,
-                              MTRConditions conditions)
+                              CondType conditions)
 {
   auto *mg = new TMultiGraph();
 
@@ -200,7 +200,7 @@ TMultiGraph *drawCorrelations(XType(RunObject::*getX)() const,
   return mg;
 }
 
-template<typename YType>
+template<typename YType, typename CondType>
 TGraph *drawTrend(YType (RunObject::*getY)() const,
                   bool normalizeToArea,
                   bool accumulate,
@@ -208,7 +208,7 @@ TGraph *drawTrend(YType (RunObject::*getY)() const,
                   int plane,
                   int side,
                   int RPC,
-                  MTRConditions conditions)
+                  CondType conditions)
 {
   return drawCorrelation(&RunObject::getSOR,
                          getY,
@@ -222,14 +222,14 @@ TGraph *drawTrend(YType (RunObject::*getY)() const,
                          conditions);
 }
 
-template<typename YType>
+template<typename YType, typename CondType>
 TMultiGraph *drawTrends(YType (RunObject::*getY)() const,
                         bool normalizeToArea,
                         bool accumulate,
                         bool plotAverage,
                         int plane,
                         int side,
-                        MTRConditions conditions)
+                        CondType conditions)
 {
   return drawCorrelations(&RunObject::getSOR,
                           getY,
@@ -242,7 +242,7 @@ TMultiGraph *drawTrends(YType (RunObject::*getY)() const,
                           conditions);
 }
 
-template<typename YType>
+template<typename YType, typename CondType>
 TMultiGraph *
 drawMaxMin(YType (RunObject::*getY)() const,
            bool normalizeToAreaY,
@@ -250,7 +250,7 @@ drawMaxMin(YType (RunObject::*getY)() const,
            bool plotAverage,
            int plane,
            int side,
-           MTRConditions conditions)
+           CondType conditions)
 {
   auto mg = drawTrends(getY,normalizeToAreaY,accumulate,plotAverage,plane,side,conditions);
   auto grList = mg->GetListOfGraphs();
