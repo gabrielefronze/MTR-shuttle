@@ -21,6 +21,7 @@
 #include "TLegend.h"
 #include "boost/any.hpp"
 #include "MTRConditions.h"
+#include "Enumerators.h"
 
 void SetStyle(Bool_t graypalette) {
   cout << "Setting style!" << endl;
@@ -95,7 +96,7 @@ int testTemplate(){
   conditions.addCondition(&RunObject::isValidForIDark,false);
 
 //  auto graph1 = sciattol.drawTrend(&RunObject::getAvgIDark,false,false,true,-1,-1,-1,conditions);
-  auto graph2 = sciattol.drawTrend(&RunObject::getAvgIDark,false,false,false,3,0,2,conditions);
+  auto graph2 = sciattol.drawTrend(&RunObject::getAvgIDark,false,false,false,kMT22,kINSIDE,MTRRPCs::k2,conditions);
 //  graph1->Draw("alp");
   graph2->Draw("alp");
 
@@ -106,13 +107,13 @@ int testTemplate(){
   auto pad1 = canv1->cd(1);
   pad1->Divide(2,1);
   pad1->cd(1);
-  auto trends1_in = sciattol.drawTrends(&RunObject::getAvgIDark,false,false,false,0,0,conditions);
+  auto trends1_in = sciattol.drawTrends(&RunObject::getAvgIDark,false,false,false,kMT11,kINSIDE,conditions);
 //  trends1_in->GetYaxis()->SetRangeUser(0.,60.);
   trends1_in->Draw("alp");
   pad1->cd(1)->BuildLegend(0.18,0.63,0.35,0.98,"MT11","P")->SetNColumns(2);
 
   pad1->cd(2);
-  auto trends1_out = sciattol.drawTrends(&RunObject::getAvgIDark,false,false,false,0,1,conditions);
+  auto trends1_out = sciattol.drawTrends(&RunObject::getAvgIDark,false,false,false,kMT11,kOUTSIDE,conditions);
 //  trends1_out->GetYaxis()->SetRangeUser(0.,60.);
   trends1_out->Draw("alp");
   pad1->cd(2)->BuildLegend(0.18,0.63,0.35,0.98,"MT11","P")->SetNColumns(2);
@@ -120,13 +121,13 @@ int testTemplate(){
   auto pad2 = canv1->cd(2);
   pad2->Divide(2,1);
   pad2->cd(1);
-  auto trends2_in = sciattol.drawTrends(&RunObject::getAvgIDark,false,false,false,1,0,conditions);
+  auto trends2_in = sciattol.drawTrends(&RunObject::getAvgIDark,false,false,false,kMT12,kINSIDE,conditions);
 //  trends2_in->GetYaxis()->SetRangeUser(0.,60.);
   trends2_in->Draw("alp");
   pad2->cd(1)->BuildLegend(0.18,0.63,0.35,0.98,"MT12","P")->SetNColumns(2);
 
   pad2->cd(2);
-  auto trends2_out = sciattol.drawTrends(&RunObject::getAvgIDark,false,false,false,1,1,conditions);
+  auto trends2_out = sciattol.drawTrends(&RunObject::getAvgIDark,false,false,false,kMT12,kOUTSIDE,conditions);
 //  trends2_out->GetYaxis()->SetRangeUser(0.,60.);
   trends2_out->Draw("alp");
   pad2->cd(2)->BuildLegend(0.18,0.63,0.35,0.98,"MT12","P")->SetNColumns(2);
@@ -134,13 +135,13 @@ int testTemplate(){
   auto pad3 = canv1->cd(3);
   pad3->Divide(2,1);
   pad3->cd(1);
-  auto trends3_in = sciattol.drawTrends(&RunObject::getAvgIDark,false,false,false,2,0,conditions);
+  auto trends3_in = sciattol.drawTrends(&RunObject::getAvgIDark,false,false,false,kMT21,kINSIDE,conditions);
 //  trends3_in->GetYaxis()->SetRangeUser(0.,60.);
   trends3_in->Draw("alp");
   pad3->cd(1)->BuildLegend(0.18,0.63,0.35,0.98,"MT21","P")->SetNColumns(2);
 
   pad3->cd(2);
-  auto trends3_out = sciattol.drawTrends(&RunObject::getAvgIDark,false,false,false,2,1,conditions);
+  auto trends3_out = sciattol.drawTrends(&RunObject::getAvgIDark,false,false,false,kMT21,kOUTSIDE,conditions);
 //  trends3_out->GetYaxis()->SetRangeUser(0.,60.);
   trends3_out->Draw("alp");
   pad3->cd(2)->BuildLegend(0.18,0.63,0.35,0.98,"MT21","P")->SetNColumns(2);
@@ -148,13 +149,13 @@ int testTemplate(){
   auto pad4 = canv1->cd(4);
   pad4->Divide(2,1);
   pad4->cd(1);
-  auto trends4_in = sciattol.drawTrends(&RunObject::getAvgIDark,false,false,false,3,0,conditions);
+  auto trends4_in = sciattol.drawTrends(&RunObject::getAvgIDark,false,false,false,kMT22,kINSIDE,conditions);
 //  trends4_in->GetYaxis()->SetRangeUser(0.,60.);
   trends4_in->Draw("alp");
   pad4->cd(1)->BuildLegend(0.18,0.63,0.35,0.98,"MT22","P")->SetNColumns(2);
 
   pad4->cd(2);
-  auto trends4_out = sciattol.drawTrends(&RunObject::getAvgIDark,false,false,false,3,1,conditions);
+  auto trends4_out = sciattol.drawTrends(&RunObject::getAvgIDark,false,false,false,kMT22,kOUTSIDE,conditions);
 //  trends4_out->GetYaxis()->SetRangeUser(0.,60.);
   trends4_out->Draw("alp");
   pad4->cd(2)->BuildLegend(0.18,0.63,0.35,0.98,"MT22","P")->SetNColumns(2);
