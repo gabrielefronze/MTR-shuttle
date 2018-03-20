@@ -17,6 +17,7 @@
 #include "AMANDACurrent.h"
 #include "Parameters.h"
 #include "MTRConditions.h"
+#include "Enumerators.h"
 
 class MTRShuttle
 {
@@ -34,9 +35,9 @@ class MTRShuttle
 
   public:
     std::vector<std::pair<int,int>> fRunList;
-    std::vector<RunObject> fRunDataVect[kNPlanes][kNSides][kNRPC];
-    std::vector<RunObject> fRunDataVectAvg[kNPlanes+1];
-    std::vector<AMANDACurrent> fAMANDACurrentsVect[kNPlanes][kNSides][kNRPC];
+    std::vector<RunObject> fRunDataVect[MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
+    std::vector<RunObject> fRunDataVectAvg[MTRPlanes::kNPlanes+1];
+    std::vector<AMANDACurrent> fAMANDACurrentsVect[MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
 
     inline double getM(const AMANDACurrent iStart, const AMANDACurrent iStop) {
       auto deltaI = iStop.getIDark()-iStart.getIDark();
@@ -48,9 +49,8 @@ class MTRShuttle
       return iStart.getIDark();
     };
 
-    void graphMaquillage(int plane, int RPC, TGraph *graph, bool isAvgGraph);
+    void graphMaquillage(MTRPlanes plane, MTRRPCs RPC, TGraph *graph, bool isAvgGraph);
 
-//    TMultiGraph *interpreter(TString inputStr);
   ClassDef(MTRShuttle,1);
 };
 

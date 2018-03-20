@@ -44,9 +44,9 @@ void MTRShuttle::parseRunList(std::string path)
 
   auto nOfRuns = fRunList.size();
 
-  for (int plane=0; plane<kNPlanes; plane++) {
-    for (int side=0; side<kNSides; side++) {
-      for (int RPC=0; RPC<kNRPC; RPC++) {
+  for (MTRPlanes plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
+    for (MTRSides side=kINSIDE; side<MTRSides::kNSides; side++) {
+      for (MTRRPCs RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
         fRunDataVect[plane][side][RPC].reserve(nOfRuns);
       }
     }
@@ -136,14 +136,14 @@ void MTRShuttle::parseOCDB(std::string path)
       continue;
     }
 
-    RunObject runObjectBuffer[kNPlanes][kNSides][kNRPC];
+    RunObject runObjectBuffer[MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
 
     int badHVCounter = 0;
 
     //loop sui piani, i lati (inside e outside) e le RPC (9 per side)
-    for (int plane = 0; plane < kNPlanes; plane++) {
-      for (int side = 0; side < kNSides; side++) {
-        for (int RPC = 0; RPC < kNRPC; RPC++) {
+    for (MTRPlanes plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
+      for (MTRSides side=kINSIDE; side<MTRSides::kNSides; side++) {
+        for (MTRRPCs RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
 
           //creazione di un pointer all'elemento della mappa delle tensioni
           TObjArray *dataArrayVoltage;
@@ -190,7 +190,7 @@ void MTRShuttle::parseOCDB(std::string path)
       }
     }
 
-    if(badHVCounter==kNPlanes*kNSides*kNRPC) {
+    if(badHVCounter==MTRPlanes::kNPlanes*MTRSides::kNSides*MTRRPCs::kNRPCs) {
       printf("\t\tINFO: Run %d has low HV and is skipped\n",runIterator.first);
       continue;
     }
@@ -208,12 +208,12 @@ void MTRShuttle::parseOCDB(std::string path)
       auto *arrayScalers = (TClonesArray *) entryScalers->GetObject();
       if (!arrayScalers) continue;
 
-      uint64_t elapsedTime[kNCathodes][kNSides][kNPlanes][kNRPC];
-      uint64_t scalers[kNCathodes][kNSides][kNPlanes][kNRPC];
+      uint64_t elapsedTime[kNCathodes][MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
+      uint64_t scalers[kNCathodes][MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
 
-      for (int plane = 0; plane < kNPlanes; plane++) {
-        for (int side = 0; side < kNSides; side++) {
-          for (int RPC = 0; RPC < kNRPC; RPC++) {
+      for (MTRPlanes plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
+        for (MTRSides side=kINSIDE; side<MTRSides::kNSides; side++) {
+          for (MTRRPCs RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
             for (int cathode = 0; cathode < kNCathodes; cathode++) {
               scalers[cathode][side][plane][RPC] = 0;
               elapsedTime[cathode][side][plane][RPC] = 0;
@@ -252,9 +252,9 @@ void MTRShuttle::parseOCDB(std::string path)
         }
       }
 
-      for (int plane = 0; plane < kNPlanes; plane++) {
-        for (int side = 0; side < kNSides; side++) {
-          for (int RPC = 0; RPC < kNRPC; RPC++) {
+      for (MTRPlanes plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
+        for (MTRSides side=kINSIDE; side<MTRSides::kNSides; side++) {
+          for (MTRRPCs RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
             double values[2] = {0., 0.};
             for (int cathode = 0; cathode < kNCathodes; cathode++) {
               if (elapsedTime[cathode][side][plane][RPC] > 0) {
@@ -276,18 +276,18 @@ void MTRShuttle::parseOCDB(std::string path)
 
     printf("\t\tINFO: Saving run %d\n",runIterator.first);
 
-    for (int plane=0; plane<kNPlanes; plane++) {
-      for (int side = 0; side < kNSides; side++) {
-        for (int RPC = 0; RPC < kNRPC; RPC++) {
+    for (MTRPlanes plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
+      for (MTRSides side=kINSIDE; side<MTRSides::kNSides; side++) {
+        for (MTRRPCs RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
           fRunDataVect[plane][side][RPC].emplace_back(runObjectBuffer[plane][side][RPC]);
         }
       }
     }
   }
 
-  for (int plane=0; plane<kNPlanes; plane++) {
-    for (int side = 0; side < kNSides; side++) {
-      for (int RPC = 0; RPC < kNRPC; RPC++) {
+  for (MTRPlanes plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
+    for (MTRSides side=kINSIDE; side<MTRSides::kNSides; side++) {
+      for (MTRRPCs RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
         std::sort(fRunDataVect[plane][side][RPC].begin(),
                   fRunDataVect[plane][side][RPC].end(),
                   [](const RunObject &a, const RunObject &b) -> bool {
@@ -338,9 +338,9 @@ void MTRShuttle::parseAMANDAiMon(std::string path)
     } else std::cout << "Unable to open file";
   }
 
-  for (int plane=0; plane<kNPlanes; plane++) {
-    for (int side = 0; side < kNSides; side++) {
-      for (int RPC = 0; RPC < kNRPC; RPC++) {
+  for (MTRPlanes plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
+    for (MTRSides side=kINSIDE; side<MTRSides::kNSides; side++) {
+      for (MTRRPCs RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
         std::sort(fAMANDACurrentsVect[plane][side][RPC].begin(),
                   fAMANDACurrentsVect[plane][side][RPC].end(),
                   [](const AMANDACurrent &a, const AMANDACurrent &b) -> bool {
@@ -355,9 +355,9 @@ void MTRShuttle::parseAMANDAiMon(std::string path)
 
 void MTRShuttle::propagateAMANDA()
 {
-  for (int plane=0; plane<kNPlanes; plane++) {
-    for (int side = 0; side < kNSides; side++) {
-      for (int RPC = 0; RPC < kNRPC; RPC++) {
+  for (MTRPlanes plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
+    for (MTRSides side=kINSIDE; side<MTRSides::kNSides; side++) {
+      for (MTRRPCs RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
 
         printf("MT%d %s RPC%d... Setting isDark... ",kPlanes[plane],kSides[side].c_str(),RPC);
 
@@ -482,7 +482,7 @@ void MTRShuttle::propagateAMANDA()
 void MTRShuttle::computeAverage()
 {
   auto nOfRuns = fRunDataVect[0][0][0].size();
-  auto nOfRPC = kNSides*kNRPC;
+  auto nOfRPC = MTRSides::kNSides*MTRRPCs::kNRPCs;
 
   for(int iRun = 0; iRun < (int)nOfRuns; iRun++){
 
@@ -492,11 +492,10 @@ void MTRShuttle::computeAverage()
     runData.setRunNumber(fRunDataVect[0][0][0][iRun].getRunNumber());
     runData.setfIsDark(fRunDataVect[0][0][0][iRun].isDark());
 
-    for (int plane=0; plane<kNPlanes; plane++) {
+    for (MTRPlanes plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
       fRunDataVectAvg[plane].reserve(nOfRuns);
-
-      for (int side = 0; side < kNSides; side++) {
-        for (int RPC = 0; RPC < kNRPC; RPC++) {
+      for (MTRSides side=kINSIDE; side<MTRSides::kNSides; side++) {
+        for (MTRRPCs RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
           if(runData.isHVOk()) runData = runData + fRunDataVect[plane][side][RPC][iRun];
           else nOfRPC--;
         }
@@ -529,9 +528,9 @@ void MTRShuttle::saveData(std::string path)
 {
   std::ofstream outputFile(path.c_str());
 
-  for (int plane=0; plane<kNPlanes; plane++) {
-    for (int side = 0; side < kNSides; side++) {
-      for (int RPC = 0; RPC < kNRPC; RPC++) {
+  for (MTRPlanes plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
+    for (MTRSides side=kINSIDE; side<MTRSides::kNSides; side++) {
+      for (MTRRPCs RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
         for (const auto &dataIt : fRunDataVect[plane][side][RPC]) {
           outputFile << plane << ";" << side << ";" << RPC << ";" << dataIt << "\n";
 //          std::cout << plane << ";" << side << ";" << RPC << ";" << dataIt << "\n";
@@ -566,7 +565,7 @@ void MTRShuttle::loadData(std::string path)
   else std::cout << "Unable to open file";
 }
 
-void MTRShuttle::graphMaquillage(int plane, int RPC, TGraph *graph, bool isAvgGraph)
+void MTRShuttle::graphMaquillage(MTRPlanes plane, MTRRPCs RPC, TGraph *graph, bool isAvgGraph)
 {
   graph->GetXaxis()->SetLabelSize(0.035);
   graph->GetYaxis()->SetLabelSize(0.035);
@@ -585,502 +584,3 @@ void MTRShuttle::graphMaquillage(int plane, int RPC, TGraph *graph, bool isAvgGr
     graph->SetLineWidth(2);
   }
 }
-
-//template<typename XType, typename YType>
-//TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
-//                                    YType (RunObject::*getY)() const,
-//                                    bool normalizeToAreaX,
-//                                    bool normalizeToAreaY,
-//                                    bool accumulate,
-//                                    bool plotAverage,
-//                                    int plane,
-//                                    int side,
-//                                    int RPC,
-//                                    MTRConditions conditions)
-//{
-//  auto *returnedGraph = new TGraph();
-//  if(!plotAverage){
-//    if (plane<0) returnedGraph->SetNameTitle(Form("%d_%d_%d",plane,side,RPC+1),Form("MT%d %s %d",kPlanes[plane],kSidesShort[side].c_str(),RPC+1));
-//    else returnedGraph->SetNameTitle(Form("%d_%d",side,RPC+1),Form("%s %d",kSidesShort[side].c_str(),RPC+1));
-//  } else {
-//    returnedGraph->SetNameTitle("avg","Average");
-//  }
-//  graphMaquillage(plane, RPC, returnedGraph, plotAverage);
-//
-//  returnedGraph->GetXaxis()->SetTitle(getLabel(getX,normalizeToAreaX).c_str());
-//  returnedGraph->GetYaxis()->SetTitle(getLabel(getY,normalizeToAreaY).c_str());
-//
-//  if (funcCmp(getX, &RunObject::getSOR) || funcCmp(getX, &RunObject::getEOR)){
-//    //This time offset is NEEDED to correctly display data from timestamp!
-//    gStyle->SetTimeOffset(0);
-//    returnedGraph->GetXaxis()->SetTimeDisplay(1);
-//    returnedGraph->GetXaxis()->SetTimeFormat("%d-%m-%y");
-//    returnedGraph->GetXaxis()->SetLabelSize(0.02);
-//    returnedGraph->GetXaxis()->SetTitle("Date");
-//  }
-//
-//  if (funcCmp(getY, &RunObject::getSOR) || funcCmp(getY, &RunObject::getEOR)){
-//    //This time offset is NEEDED to correctly display data from timestamp!
-//    gStyle->SetTimeOffset(0);
-//    returnedGraph->GetYaxis()->SetTimeDisplay(1);
-//    returnedGraph->GetYaxis()->SetTimeFormat("%d-%m-%y");
-//    returnedGraph->GetYaxis()->SetLabelSize(0.02);
-//    returnedGraph->GetYaxis()->SetTitle("Date");
-//  }
-//
-//  int counter = 0;
-//
-//  auto yCumulus = (YType)4000.;
-//
-//  auto dataVector = (!plotAverage)?fRunDataVect[plane][side][RPC]:fRunDataVectAvg[(plane>=0)?plane:4];
-//
-//  bool resetMT12OUTSIDE6 = true;
-//  bool isReplacedRPC = ( plane==1
-//                         && side==1
-//                         && RPC==5
-//                         && funcCmp(getY, &RunObject::getIntCharge)
-//                         && accumulate );
-//
-//  for( auto const &dataIt : dataVector){
-//
-//    bool shouldPlot = true;
-//    for (const auto &itCondition : conditions()) {
-//      shouldPlot &= itCondition(&dataIt);
-//    }
-//    if (!shouldPlot) continue;
-//
-//    XType x = (dataIt.*getX)();
-//    YType y = (dataIt.*getY)();
-//
-//    if ( std::isnan(y) || std::isnan(x) ) continue;
-//
-//    if (normalizeToAreaX){
-//      if(!plotAverage) x=x/kAreas[plane][side][RPC];
-//      else x=x/kAreas[0][0][0];
-//    }
-//
-//    if (normalizeToAreaY){
-//      if(!plotAverage) y=y/kAreas[plane][side][RPC];
-//      else y=y/kAreas[0][0][0];
-//    }
-//
-//    if ( y==(YType)0 ) continue;
-//
-//    if ( isReplacedRPC && resetMT12OUTSIDE6 && dataIt.getSOR()>1477958400 ){
-//      resetMT12OUTSIDE6 = false;
-//      yCumulus = (YType)0;
-//    }
-//    returnedGraph->SetPoint(counter++,(double)x,(double)((accumulate)?(yCumulus+=y):y));
-//  }
-//
-//  return returnedGraph;
-//}
-//
-////template<typename XType, typename YType, class ...Args>
-////TGraph *MTRShuttle::drawCorrelation(XType (RunObject::*getX)() const,
-////                                    YType (RunObject::*getY)() const,
-////                                    bool normalizeToAreaX,
-////                                    bool normalizeToAreaY,
-////                                    bool accumulate,
-////                                    bool plotAverage,
-////                                    int plane,
-////                                    int side,
-////                                    int RPC,
-////                                    bool (RunObject::*condition)(Args...) const,
-////                                    bool negate,
-////                                    Args... args){
-////  MTRConditions dummyCond;
-////  dummyCond.addCondition(condition,negate,args...);
-////  return drawCorrelation(getX,
-////                         getY,
-////                         normalizeToAreaX,
-////                         normalizeToAreaY,
-////                         accumulate,
-////                         plotAverage,
-////                         plane,
-////                         side,
-////                         RPC,
-////                         dummyCond);
-////}
-//
-//template<typename XType, typename YType>
-//TMultiGraph *MTRShuttle::drawCorrelations(XType(RunObject::*getX)() const,
-//                                          YType(RunObject::*getY)() const,
-//                                          bool normalizeToAreaX,
-//                                          bool normalizeToAreaY,
-//                                          bool accumulate,
-//                                          bool plotAverage,
-//                                          int plane,
-//                                          int side,
-//                                          MTRConditions conditions)
-//{
-//  auto *mg = new TMultiGraph();
-//
-//  for (int iPlane=0; iPlane<kNPlanes; iPlane++) {
-//    if ( plane>=0 && iPlane!=plane ) continue;
-//    for (int iSide = 0; iSide < kNSides; iSide++) {
-//      if ( side>=0 && iSide!=side ) continue;
-//      for (int iRPC = 0; iRPC < kNRPC; iRPC++) {
-//        mg->Add(
-//          drawCorrelation(getX,
-//                          getY,
-//                          normalizeToAreaX,
-//                          normalizeToAreaY,
-//                          accumulate,
-//                          false,
-//                          iPlane,
-//                          iSide,
-//                          iRPC,
-//                          conditions));
-//      }
-//    }
-//  }
-//
-//  if (plotAverage) {
-//    mg->Add(
-//      drawCorrelation(getX,
-//                      getY,
-//                      normalizeToAreaX,
-//                      normalizeToAreaY,
-//                      accumulate,
-//                      plotAverage,
-//                      plane,
-//                      -1,
-//                      -1,
-//                      conditions));
-//  }
-//
-//  if(!(mg->GetListOfGraphs())) return nullptr;
-//
-//  mg->Draw("ap");
-//
-//  if (funcCmp(getX, &RunObject::getSOR) || funcCmp(getX, &RunObject::getEOR)){
-//    //This time offset is NEEDED to correctly display data from timestamp!
-//    gStyle->SetTimeOffset(0);
-//    mg->GetXaxis()->SetTimeDisplay(1);
-//    mg->GetXaxis()->SetTimeFormat("%d-%m-%y");
-//    mg->GetXaxis()->SetLabelSize(0.02);
-//    mg->GetXaxis()->SetTitle("Date");
-//  } else mg->GetHistogram()->GetXaxis()->SetTitle(getLabel(getX,normalizeToAreaX).c_str());
-//
-//  if (funcCmp(getY, &RunObject::getSOR) || funcCmp(getY, &RunObject::getEOR)){
-//    //This time offset is NEEDED to correctly display data from timestamp!
-//    gStyle->SetTimeOffset(0);
-//    mg->GetYaxis()->SetTimeDisplay(1);
-//    mg->GetYaxis()->SetTimeFormat("%d-%m-%y");
-//    mg->GetYaxis()->SetLabelSize(0.02);
-//    mg->GetYaxis()->SetTitle("Date");
-//  } else mg->GetHistogram()->GetYaxis()->SetTitle(getLabel(getY,normalizeToAreaY).c_str());
-//
-//  return mg;
-//}
-//
-//template<typename YType>
-//TGraph *MTRShuttle::drawTrend(YType (RunObject::*getY)() const,
-//                              bool normalizeToArea,
-//                              bool accumulate,
-//                              bool plotAverage,
-//                              int plane,
-//                              int side,
-//                              int RPC,
-//                              MTRConditions conditions)
-//{
-//  return drawCorrelation(&RunObject::getSOR,
-//                         getY,
-//                         false,
-//                         normalizeToArea,
-//                         accumulate,
-//                         plotAverage,
-//                         plane,
-//                         side,
-//                         RPC,
-//                         conditions);
-//}
-//
-//template<typename YType>
-//TMultiGraph *MTRShuttle::drawTrends(YType (RunObject::*getY)() const,
-//                                    bool normalizeToArea,
-//                                    bool accumulate,
-//                                    bool plotAverage,
-//                                    int plane,
-//                                    int side,
-//                                    MTRConditions conditions)
-//{
-//  return drawCorrelations(&RunObject::getSOR,
-//                          getY,
-//                          false,
-//                          normalizeToArea,
-//                          accumulate,
-//                          plotAverage,
-//                          plane,
-//                          side,
-//                          conditions);
-//}
-//
-//template<typename YType>
-//TMultiGraph *
-//MTRShuttle::drawMaxMin(YType (RunObject::*getY)() const,
-//                       bool normalizeToAreaY,
-//                       bool accumulate,
-//                       bool plotAverage,
-//                       int plane,
-//                       int side,
-//                       MTRConditions conditions)
-//{
-//  auto mg = drawTrends(getY,normalizeToAreaY,accumulate,plotAverage,plane,side,conditions);
-//  auto grList = mg->GetListOfGraphs();
-//
-//  auto *mgOut = new TMultiGraph();
-//
-//  if(plotAverage){
-//    auto avgGraph = (TGraph*)grList->FindObject("avg");
-//    if (avgGraph) mgOut->Add(avgGraph);
-//  }
-//
-//  TGraph *minGraph = nullptr;
-//  TGraph *maxGraph = nullptr;
-//
-//  Double_t minValue=1e+19;
-//  Double_t maxValue=0.;
-//
-//  for(int iGraph = 0; iGraph < grList->GetEntries(); iGraph++){
-//    auto graph = (TGraph*)(grList->At(iGraph));
-//
-//    if(plane==1 && strcmp(graph->GetName(),"1_6")==0) continue;
-//
-//    Double_t dummyX;
-//    Double_t dummyY;
-//
-//    graph->GetPoint(graph->GetN()-1, dummyX, dummyY);
-//
-//    if (iGraph==0) {
-//      minValue = dummyY;
-//      minGraph = graph;
-//
-//      maxValue = dummyY;
-//      maxGraph = graph;
-//    } else {
-//      if ( dummyY < minValue ){
-//        minValue = dummyY;
-//        minGraph = graph;
-//      }
-//
-//      if ( dummyY > maxValue ){
-//        maxValue = dummyY;
-//        maxGraph = graph;
-//      }
-//    }
-//  }
-//
-//  if (minGraph) mgOut->Add(minGraph);
-//  if (maxGraph) mgOut->Add(maxGraph);
-//
-//  mgOut->Draw("ap");
-//  mgOut->GetHistogram()->GetXaxis()->SetTimeOffset(0);
-//  mgOut->GetHistogram()->GetXaxis()->SetTimeDisplay(1);
-//  mgOut->GetHistogram()->GetXaxis()->SetTimeFormat("%d-%m-%y");
-//  mgOut->GetHistogram()->GetYaxis()->SetLabelSize(0.02);
-//
-//  mgOut->GetHistogram()->GetXaxis()->SetTitle("Date");
-//  mgOut->GetHistogram()->GetYaxis()->SetTitle(getLabel(getY,normalizeToAreaY).c_str());
-//
-//  return mgOut;
-//}
-
-//TMultiGraph *MTRShuttle::interpreter(TString inputStr){
-//  int plane =-1, RPC = -1, side = -1;
-//
-//  if( inputStr.Contains("MT11") ) plane=0;
-//  else if( inputStr.Contains("MT12") ) plane=1;
-//  else if( inputStr.Contains("MT21") || inputStr.Contains("MT13") ) plane=2;
-//  else if( inputStr.Contains("MT21") || inputStr.Contains("MT14") ) plane=3;
-//
-//  if( inputStr.Contains("IN")
-//      || inputStr.Contains("INSIDE")
-//      || inputStr.Contains("in")
-//      || inputStr.Contains("inside") ) side=0;
-//  else
-//  if( inputStr.Contains("OUT")
-//      || inputStr.Contains("OUTSIDE")
-//      || inputStr.Contains("out")
-//      || inputStr.Contains("outside") ) side=1;
-//
-//  TRegexp regExpRPC = "RPC[0-9]";
-//  TString RPCstring;
-//  if( inputStr.Contains(regExpRPC) ){
-//    RPCstring = inputStr(regExpRPC);
-//    sscanf(RPCstring.Data(),"RPC%d",&RPC);
-//  }
-//
-//  bool normalizeToArea = false, plotAverage = false, accumulate = false;
-//  if( inputStr.Contains("avg") || inputStr.Contains("average") ) plotAverage=true;
-//  if( inputStr.Contains("norm") || inputStr.Contains("normalize") ) normalizeToArea=true;
-//  if( inputStr.Contains("accum") || inputStr.Contains("accumulate") ) accumulate=true;
-//
-//  TMultiGraph *returnedMultiGraph = new TMultiGraph();
-//
-//  double (RunObject::*funcX)() const = nullptr;
-//  double (RunObject::*funcY)() const = nullptr;
-//
-//  MTRConditions conditions;
-//  TString timestampRegex = "[0-9]+";
-//  TString humanDateRegex = "[0-9][0-9]/[0-9][0-9]/[0-9]*[0-9][0-9]";
-//
-//  if ( inputStr.Contains("TS") ){
-//    if ( inputStr.Contains(" TS<") ){
-//      TRegexp matchingString = "TS<"+timestampRegex;
-//      if ( inputStr.Contains(matchingString) ){
-//        uint64_t  maxTS=0LLU;
-//        TString cutString=inputStr(matchingString);
-//        sscanf(cutString.Data(),"TS<%llu",&maxTS);
-//        conditions.addCondition(&RunObject::isBefore,false,maxTS);
-//        std::cout << "TS<" << maxTS << std::endl;
-//      }
-//
-//    } else if ( inputStr.Contains("<TS<") ){
-//      TRegexp matchingString = timestampRegex+"<TS<"+timestampRegex;
-//      if ( inputStr.Contains(matchingString) ) {
-//        uint64_t minTS = 0LLU;
-//        uint64_t maxTS = 0LLU;
-//        TString cutString = inputStr(matchingString);
-//        sscanf(cutString.Data(), "%llu<TS<%llu", &minTS, &maxTS);
-//        conditions.addCondition(&RunObject::isBetweenTimestamps, false, minTS, maxTS);
-//        std::cout << minTS << "<TS<" << maxTS << std::endl;
-//      }
-//    } else if ( inputStr.Contains("<TS") ){
-//      TRegexp matchingString = timestampRegex+"<TS";
-//      if ( inputStr.Contains(matchingString) ) {
-//        uint64_t minTS = 0LLU;
-//        TString cutString = inputStr(matchingString);
-//        sscanf(cutString.Data(), "%llu<TS", &minTS);
-//        conditions.addCondition(&RunObject::isAfter, false, minTS);
-//        std::cout << minTS << "<TS" << std::endl;
-//      }
-//    }
-//  } else if ( inputStr.Contains("Date") ){
-//    if ( inputStr.Contains(" Date<") ){
-//      TRegexp matchingString = "Date<"+humanDateRegex;
-//      if ( inputStr.Contains(matchingString) ){
-//
-//        std::tm maxDay;
-//        maxDay.tm_hour=0;
-//        maxDay.tm_min=0;
-//        maxDay.tm_sec=0;
-//        int dummyYear=0;
-//        std::tm maxDayGMT;
-//
-//        TString cutString=inputStr(matchingString);
-//        sscanf(cutString.Data(),"Date<%d/%d/%d",&(maxDay.tm_mday),&(maxDay.tm_mon),&dummyYear);
-//
-//        maxDay.tm_year=(dummyYear>2000)?dummyYear:dummyYear+2000;
-//        maxDay.tm_year-=1900;
-//        maxDay.tm_hour++;
-//        maxDay.tm_mon--;
-//
-//        time_t maxGMT=timegm(&maxDay);
-//        maxDayGMT=*(gmtime(&maxGMT));
-//
-//        uint64_t maxTS = (uint64_t)std::mktime(&maxDayGMT);
-//
-//        conditions.addCondition(&RunObject::isBefore,false,maxTS);
-//        std::cout << "Date<" << maxTS << std::endl;
-//      }
-//
-//    } else if ( inputStr.Contains("<Date<") ){
-//      TRegexp matchingString = humanDateRegex+"<Date<"+humanDateRegex;
-//      if ( inputStr.Contains(matchingString) ) {
-//
-//        std::tm minDay;
-//        minDay.tm_hour=0;
-//        minDay.tm_min=0;
-//        minDay.tm_sec=0;
-//        int dummyMinYear=0;
-//        std::tm minDayGMT;
-//        std::tm maxDay;
-//        maxDay.tm_hour=0;
-//        maxDay.tm_min=0;
-//        maxDay.tm_sec=0;
-//        int dummyMaxYear=0;
-//        std::tm maxDayGMT;
-//
-//
-//        TString cutString = inputStr(matchingString);
-//        sscanf(cutString.Data(), "%d/%d/%d<Date<%d/%d/%d",&(minDay.tm_mday),&(minDay.tm_mon),&dummyMinYear,&(maxDay.tm_mday),&(maxDay.tm_mon),&dummyMaxYear);
-//
-//        minDay.tm_year=(dummyMinYear>2000)?dummyMinYear:dummyMinYear+2000;
-//        minDay.tm_year-=1900;
-//        minDay.tm_hour++;
-//        minDay.tm_mon--;
-//        maxDay.tm_year=(dummyMaxYear>2000)?dummyMaxYear:dummyMaxYear+2000;
-//        maxDay.tm_year-=1900;
-//        maxDay.tm_hour++;
-//        maxDay.tm_mon--;
-//
-//        time_t minGMT=timegm(&minDay);
-//        minDayGMT=*(gmtime(&minGMT));
-//        time_t maxGMT=timegm(&maxDay);
-//        maxDayGMT=*(gmtime(&maxGMT));
-//
-//        uint64_t minTS = (uint64_t)std::mktime(&minDayGMT);
-//        uint64_t maxTS = (uint64_t)std::mktime(&maxDayGMT);
-//
-//        conditions.addCondition(&RunObject::isBetweenTimestamps, false, minTS, maxTS);
-//        std::cout << minTS << "<Date<" << maxTS << std::endl;
-//      }
-//    } else if ( inputStr.Contains("<Date") ){
-//      TRegexp matchingString = humanDateRegex+"<Date";
-//      if ( inputStr.Contains(matchingString) ) {
-//
-//        std::tm minDay;
-//        minDay.tm_hour=0;
-//        minDay.tm_min=0;
-//        minDay.tm_sec=0;
-//        int dummyYear=0;
-//        std::tm minDayGMT;
-//
-//        TString cutString = inputStr(matchingString);
-//        sscanf(cutString.Data(), "%d/%d/%d<Date",&(minDay.tm_mday),&(minDay.tm_mon),&dummyYear);
-//
-//        minDay.tm_year=(dummyYear>2000)?dummyYear:dummyYear+2000;
-//        minDay.tm_year-=1900;
-//        minDay.tm_hour++;
-//        minDay.tm_mon--;
-//
-//        time_t minGMT=timegm(&minDay);
-//        minDayGMT=*(gmtime(&minGMT));
-//
-//        uint64_t minTS = (uint64_t)std::mktime(&minDayGMT);
-//
-//        conditions.addCondition(&RunObject::isAfter, false, minTS);
-//        std::cout << minTS << "<Date" << std::endl;
-//      }
-//    }
-//  }
-//
-//
-//  if ( inputStr.Contains("IDark vs") ) funcY = &RunObject::getAvgIDark;
-//  else if ( inputStr.Contains("ITot vs") ) funcY = &RunObject::getAvgITot;
-//  else if ( inputStr.Contains("INet vs") ) funcY = &RunObject::getAvgINet;
-//  else if ( inputStr.Contains("HV vs") ) funcY = &RunObject::getAvgHV;
-//  else if ( inputStr.Contains("RateBend vs") ) funcY = &RunObject::getScalBending;
-//  else if ( inputStr.Contains("RateNotBend vs") ) funcY = &RunObject::getScalNotBending;
-//  else if ( inputStr.Contains("IntCharge vs") ) funcY = &RunObject::getIntCharge;
-//
-//  if ( inputStr.Contains("vs time") ){
-//    if(RPC==-1) returnedMultiGraph->Add(drawTrends(funcY,normalizeToArea,accumulate,plotAverage,plane,side,conditions));
-//    else returnedMultiGraph->Add(drawTrend(funcY,normalizeToArea,accumulate,plotAverage,plane,side,RPC,conditions));
-//  } else {
-//    if ( inputStr.Contains("vs IDark") ) funcX = &RunObject::getAvgIDark;
-//    else if ( inputStr.Contains("vs ITot") ) funcX = &RunObject::getAvgITot;
-//    else if ( inputStr.Contains("vs INet") ) funcX = &RunObject::getAvgINet;
-//    else if ( inputStr.Contains("vs HV") ) funcX = &RunObject::getAvgHV;
-//    else if ( inputStr.Contains("vs RateBend") ) funcX = &RunObject::getScalBending;
-//    else if ( inputStr.Contains("vs RateNotBend") ) funcX = &RunObject::getScalNotBending;
-//    else if ( inputStr.Contains("vs IntCharge") ) funcX = &RunObject::getIntCharge;
-//
-//    if(RPC==-1) returnedMultiGraph->Add(drawCorrelations(funcX,funcY,normalizeToArea,normalizeToArea,accumulate,plotAverage,plane,side,conditions));
-//    else returnedMultiGraph->Add(drawCorrelation(funcX,funcY,normalizeToArea,normalizeToArea,accumulate,plotAverage,plane,side,RPC,conditions));
-//  }
-//
-//  return returnedMultiGraph;
-//}

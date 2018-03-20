@@ -15,9 +15,9 @@ TGraph *drawCorrelation(XType (RunObject::*getX)() const,
                         bool normalizeToAreaY,
                         bool accumulate,
                         bool plotAverage,
-                        int plane,
-                        int side,
-                        int RPC,
+                        MTRPlanes plane,
+                        MTRSides side,
+                        MTRRPCs RPC,
                         MTRConditions conditions)
 {
   auto *returnedGraph = new TGraph();
@@ -105,9 +105,9 @@ TGraph *drawCorrelation(XType (RunObject::*getX)() const,
                                     bool normalizeToAreaY,
                                     bool accumulate,
                                     bool plotAverage,
-                                    int plane,
-                                    int side,
-                                    int RPC,
+                                    MTRPlanes plane,
+                                    MTRSides side,
+                                    MTRRPCs RPC,
                                     bool (RunObject::*condition)(Args...) const,
                                     bool negate,
                                     Args... args){
@@ -132,17 +132,17 @@ TMultiGraph *drawCorrelations(XType(RunObject::*getX)() const,
                               bool normalizeToAreaY,
                               bool accumulate,
                               bool plotAverage,
-                              int plane,
-                              int side,
+                              MTRPlanes plane,
+                              MTRSides side,
                               CondType conditions)
 {
   auto *mg = new TMultiGraph();
 
-  for (int iPlane=0; iPlane<kNPlanes; iPlane++) {
+  for (MTRPlanes iPlane=MTRPlanes::kMT11; iPlane<MTRPlanes::kNPlanes; iPlane++) {
     if ( plane>=0 && iPlane!=plane ) continue;
-    for (int iSide = 0; iSide < kNSides; iSide++) {
+    for (MTRSides iSide =MTRSides::kINSIDE; iSide < MTRSides::kNSides; iSide++) {
       if ( side>=0 && iSide!=side ) continue;
-      for (int iRPC = 0; iRPC < kNRPC; iRPC++) {
+      for (MTRRPCs iRPC=MTRRPCs::k0; iRPC < MTRRPCs::kNRPCs; iRPC++) {
         mg->Add(
           drawCorrelation(getX,
                           getY,
@@ -167,8 +167,8 @@ TMultiGraph *drawCorrelations(XType(RunObject::*getX)() const,
                       accumulate,
                       plotAverage,
                       plane,
-                      -1,
-                      -1,
+                      MTRSides::kBoth,
+                      kAllRPCs,
                       conditions));
   }
 
@@ -202,9 +202,9 @@ TGraph *drawTrend(YType (RunObject::*getY)() const,
                   bool normalizeToArea,
                   bool accumulate,
                   bool plotAverage,
-                  int plane,
-                  int side,
-                  int RPC,
+                  MTRPlanes plane,
+                  MTRSides side,
+                  MTRRPCs RPC,
                   CondType conditions)
 {
   return drawCorrelation(&RunObject::getSOR,
@@ -224,8 +224,8 @@ TMultiGraph *drawTrends(YType (RunObject::*getY)() const,
                         bool normalizeToArea,
                         bool accumulate,
                         bool plotAverage,
-                        int plane,
-                        int side,
+                        MTRPlanes plane,
+                        MTRSides side,
                         CondType conditions)
 {
   return drawCorrelations(&RunObject::getSOR,
@@ -245,8 +245,8 @@ drawMaxMin(YType (RunObject::*getY)() const,
            bool normalizeToAreaY,
            bool accumulate,
            bool plotAverage,
-           int plane,
-           int side,
+           MTRPlanes plane,
+           MTRSides side,
            CondType conditions)
 {
   auto mg = drawTrends(getY,normalizeToAreaY,accumulate,plotAverage,plane,side,conditions);
@@ -262,16 +262,16 @@ drawMaxMin(YType (RunObject::*getY)() const,
   TGraph *minGraph = nullptr;
   TGraph *maxGraph = nullptr;
 
-  Double_t minValue=1e+19;
-  Double_t maxValue=0.;
+  double minValue=1e+19;
+  double maxValue=0.;
 
   for(int iGraph = 0; iGraph < grList->GetEntries(); iGraph++){
     auto graph = (TGraph*)(grList->At(iGraph));
 
     if(plane==1 && strcmp(graph->GetName(),"1_6")==0) continue;
 
-    Double_t dummyX;
-    Double_t dummyY;
+    double dummyX;
+    double dummyY;
 
     graph->GetPoint(graph->GetN()-1, dummyX, dummyY);
 
