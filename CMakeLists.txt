@@ -12,6 +12,7 @@ set(SOURCE_FILES
         AMANDACurrent.cxx
         MTRConditions.h
         MTRShuttle.h
+        MTRShuttleTemplates.tcc
         MTRShuttle.cxx
         MTRBooster.h
         MTRBooster.cxx

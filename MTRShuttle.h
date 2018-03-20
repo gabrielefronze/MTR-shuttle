@@ -9,6 +9,10 @@
 #include <string>
 #include <TGraph.h>
 #include <TMultiGraph.h>
+#include <TClonesArray.h>
+#include <TAxis.h>
+#include <TStyle.h>
+#include <TH1F.h>
 #include "RunObject.h"
 #include "AMANDACurrent.h"
 #include "Parameters.h"
@@ -26,72 +30,7 @@ class MTRShuttle
     void loadData(std::string path = "MTRShuttle.csv");
     void computeAverage();
 
-    template<typename XType, typename YType>
-    TGraph *drawCorrelation(XType (RunObject::*getX)() const,
-                            YType (RunObject::*getY)() const,
-                            bool normalizeToAreaX,
-                            bool normalizeToAreaY,
-                            bool accumulate,
-                            bool plotAverage,
-                            int plane,
-                            int side,
-                            int RPC,
-                            MTRConditions conditions);
-
-    template<typename XType, typename YType, class ...Args>
-    TGraph *drawCorrelation(XType (RunObject::*getX)() const,
-                            YType (RunObject::*getY)() const,
-                            bool normalizeToAreaX,
-                            bool normalizeToAreaY,
-                            bool accumulate,
-                            bool plotAverage,
-                            int plane,
-                            int side,
-                            int RPC,
-                            bool (RunObject::*condition)(Args...) const,
-                            bool negate,
-                            Args... args);
-
-    template<typename XType, typename YType, typename CondType>
-    TMultiGraph* drawCorrelations(XType(RunObject::*getX)() const,
-                                  YType(RunObject::*getY)() const,
-                                  bool normalizeToAreaX,
-                                  bool normalizeToAreaY,
-                                  bool accumulate,
-                                  bool plotAverage,
-                                  int MT,
-                                  int side,
-                                  CondType conditions);
-
-    template<typename YType, typename CondType>
-    TGraph *drawTrend(YType (RunObject::*getY)() const,
-                      bool normalizeToArea,
-                      bool accumulate,
-                      bool plotAverage,
-                      int plane,
-                      int side,
-                      int RPC,
-                      CondType conditions);
-
-    template<typename YType, typename CondType>
-    TMultiGraph *drawTrends(YType (RunObject::*getY)() const,
-                            bool normalizeToArea,
-                            bool accumulate,
-                            bool plotAverage,
-                            int plane,
-                            int side,
-                            CondType conditions);
-
-    template<typename YType, typename CondType>
-    TMultiGraph* drawMaxMin(YType(RunObject::*getY)() const,
-                            bool normalizeToArea,
-                            bool accumulate,
-                            bool plotAverage,
-                            int plane,
-                            int side,
-                            CondType conditions);
-
-
+    #include "MTRShuttleTemplates.tcc"
 
   public:
     std::vector<std::pair<int,int>> fRunList;
@@ -112,6 +51,7 @@ class MTRShuttle
     void graphMaquillage(int plane, int RPC, TGraph *graph, bool isAvgGraph);
 
 //    TMultiGraph *interpreter(TString inputStr);
+  ClassDef(MTRShuttle,1);
 };
 
 #endif //MTR_SHUTTLE_MTRSHUTTLE_H
