@@ -94,7 +94,7 @@ MTRBooster *MTRBooster::SetPlane(int HR_plane)
     default : fCurrentPlotSetting.fPlane=MTRPlanes::kAll;  break;
   }
 
-  if( fCurrentPlotSetting.fPlane==-1 ) std::cerr << "Plane ID not recognised. Plotting all planes.\n";
+  if( fCurrentPlotSetting.fPlane==kAll ) std::cerr << "Plane ID not recognised. Plotting all planes.\n";
 
   return this;
 }
@@ -107,14 +107,14 @@ MTRBooster *MTRBooster::SetSide(std::string HR_side)
   else if( HR_side.find("IN")!=std::string::npos ) fCurrentPlotSetting.fSide=MTRSides::kINSIDE;
   else fCurrentPlotSetting.fSide=MTRSides::kBoth;
 
-  if( fCurrentPlotSetting.fSide==-1 ) std::cerr << "Side not recognised. Plotting all sides.\n";
+  if( fCurrentPlotSetting.fSide==kBoth ) std::cerr << "Side not recognised. Plotting all sides.\n";
 
   return this;
 }
 
 MTRBooster *MTRBooster::SetRPC(int HR_RPC)
 {
-  if( HR_RPC<=9 && HR_RPC>=1 ) fCurrentPlotSetting.fRPC=HR_RPC-1;
+  if( HR_RPC<=MTRRPCs::kNRPCs && HR_RPC>=1 ) fCurrentPlotSetting.fRPC=(MTRRPCs)(HR_RPC-1);
   else fCurrentPlotSetting.fRPC=kAllRPCs;
 
   if( fCurrentPlotSetting.fRPC==kAllRPCs ) std::cerr << "Wrong RPC ID. Plotting all RPCs.\n";
@@ -124,13 +124,13 @@ MTRBooster *MTRBooster::SetRPC(int HR_RPC)
 
 MTRBooster *MTRBooster::SetX(std::string xValues)
 {
-  setGetterFromString(xValues, fCurrentPlotSetting.funcX);
+  setGetterFromString(xValues, funcOpt::kX);
   return this;
 }
 
 MTRBooster *MTRBooster::SetY(std::string yValues)
 {
-  setGetterFromString(yValues, fCurrentPlotSetting.funcY);
+  setGetterFromString(yValues, funcOpt::kY);
   return this;
 }
 
