@@ -62,6 +62,6 @@ static const uint64_t kFullScale=65535;
 
 //Graph maquillage vectors
 static const Color_t kColors[MTRRPCs::kNRPCs] ={kBlue+2,kRed,kGreen,kBlue,kViolet+7,kMagenta,kCyan,kGray,kOrange};
-static const Style_t kMarkers[MTRSides::kNSides]={20,20,20,20};
+static const Style_t kMarkers[MTRPlanes::kNPlanes]={20,20,20,20};
 
 #endif //MTR_SHUTTLE_PARAMETERS_H
