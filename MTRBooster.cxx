@@ -11,7 +11,8 @@ MTRBooster::MTRBooster() : fLoadedData(false), fAverageComputed(false)
   std::string inputData;
   std::cout << "No input file path provided. Please provide a valid .csv file path below:\n";
   std::cin >> inputData;
-  MTRBooster::MTRBooster(inputData);
+  fShuttle.loadData(std::move(inputData));
+  fLoadedData=true;
 }
 
 MTRBooster::MTRBooster(std::string inputData) : fLoadedData(false), fAverageComputed(false)
