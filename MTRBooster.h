@@ -70,7 +70,12 @@ class MTRBooster
 
     inline MTRBooster* NormalizeToArea(){ fCurrentPlotSetting.fNormalize=true; return this; }
     inline MTRBooster* PlotAverage();
-    inline void StackStage(){ fPlotSettings.emplace_back(fCurrentPlotSetting); fCurrentPlotSetting=MTRPlotSettings(); }
+    inline void StackStage(){
+      if( fCurrentPlotSetting.fValidSettings ){
+        fPlotSettings.emplace_back(fCurrentPlotSetting);
+        fCurrentPlotSetting=MTRPlotSettings();
+      } else std::cerr << "Cannot stack invalid plot configuration.\n";
+    }
 
   private:
 
