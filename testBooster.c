@@ -64,13 +64,18 @@ void SetStyle(Bool_t graypalette) {
 
 }
 
-int testTemplate(){
+int testBooster(){
 
   SetStyle(false);
 
   MTRBooster buster("MTR_2017_test90.csv");
 
-  buster.SetX("Time")->SetY("IntCharge")->SetRPC(5)->SetSide("IN")->SetPlane(4)->StackStage();
+  buster.SetX("Time").SetY("IntCharge").AccumulateY().OnlyIntegratedChargeRuns().SetRPC(5).SetSide("IN").SetPlane(4).StackStage();
+
+  auto mg = buster.Launch();
+
+//  mg[0]->SetDirectory(0);
+  mg[0]->Draw("alp");
 
   return 0;
 }
