@@ -8,9 +8,6 @@
 #include <TH1F.h>
 #include "MTRConditions.h"
 
-#ifndef MTR_SHUTTLE_MTRSHUTTLETEMPLATES_TCC
-#define MTR_SHUTTLE_MTRSHUTTLETEMPLATES_TCC
-
 template<typename XType, typename YType>
 TGraph *drawCorrelation(XType (RunObject::*getX)() const,
                         YType (RunObject::*getY)() const,
@@ -311,5 +308,3 @@ drawMaxMin(YType (RunObject::*getY)() const,
 
   return mgOut;
 }
-
-#endif //MTR_SHUTTLE_MTRSHUTTLETEMPLATES_TCC
