@@ -53,32 +53,28 @@ TMultiGraph *MTRBooster::Launch(size_t iLaunch)
       return nullptr;
     }
 
-    auto returnedMG = new TMultiGraph("","");
-
     if( !fAverageComputed && iSetting->fPlotaverage ) MTRBooster::loadAverage();
 
     if( fCurrentPlotSetting.fRPC>=0 && fCurrentPlotSetting.fSide>=0 && fCurrentPlotSetting.fPlane>=0  ){
       if( iSetting->isTrend ){
         std::cout << "It's a single trend.\n";
-        trendWrapper(iSetting);
+        return trendWrapper(iSetting);
       } else {
         std::cout << "It's a single correlation.\n";
-        correlationWrapper(iSetting);
+        return correlationWrapper(iSetting);
       }
     } else {
       if ( iSetting->isTrend ) {
         std::cout << "It's a multiple trend.\n";
-        trendsWrapper(iSetting);
+        return trendsWrapper(iSetting);
       } else if ( iSetting->isMinMax ){
         std::cout << "It's a min-max trend.\n";
-        minmaxWrapper(iSetting);
+        return minmaxWrapper(iSetting);
       } else {
         std::cout << "It's a multiple correlation.\n";
-        correlationsWrapper(iSetting);
+        return correlationsWrapper(iSetting);
       }
     }
-
-    return returnedMG;
   }
 }
 
