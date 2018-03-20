@@ -44,9 +44,9 @@ void MTRShuttle::parseRunList(std::string path)
 
   auto nOfRuns = fRunList.size();
 
-  for (MTRPlanes plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
-    for (MTRSides side=kINSIDE; side<MTRSides::kNSides; side++) {
-      for (MTRRPCs RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
+  for (int plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
+    for (int side=kINSIDE; side<MTRSides::kNSides; side++) {
+      for (int RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
         fRunDataVect[plane][side][RPC].reserve(nOfRuns);
       }
     }
@@ -141,9 +141,9 @@ void MTRShuttle::parseOCDB(std::string path)
     int badHVCounter = 0;
 
     //loop sui piani, i lati (inside e outside) e le RPC (9 per side)
-    for (MTRPlanes plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
-      for (MTRSides side=kINSIDE; side<MTRSides::kNSides; side++) {
-        for (MTRRPCs RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
+    for (int plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
+      for (int side=kINSIDE; side<MTRSides::kNSides; side++) {
+        for (int RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
 
           //creazione di un pointer all'elemento della mappa delle tensioni
           TObjArray *dataArrayVoltage;
@@ -211,9 +211,9 @@ void MTRShuttle::parseOCDB(std::string path)
       uint64_t elapsedTime[kNCathodes][MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
       uint64_t scalers[kNCathodes][MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
 
-      for (MTRPlanes plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
-        for (MTRSides side=kINSIDE; side<MTRSides::kNSides; side++) {
-          for (MTRRPCs RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
+      for (int plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
+        for (int side=kINSIDE; side<MTRSides::kNSides; side++) {
+          for (int RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
             for (int cathode = 0; cathode < kNCathodes; cathode++) {
               scalers[cathode][side][plane][RPC] = 0;
               elapsedTime[cathode][side][plane][RPC] = 0;
@@ -252,9 +252,9 @@ void MTRShuttle::parseOCDB(std::string path)
         }
       }
 
-      for (MTRPlanes plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
-        for (MTRSides side=kINSIDE; side<MTRSides::kNSides; side++) {
-          for (MTRRPCs RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
+      for (int plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
+        for (int side=kINSIDE; side<MTRSides::kNSides; side++) {
+          for (int RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
             double values[2] = {0., 0.};
             for (int cathode = 0; cathode < kNCathodes; cathode++) {
               if (elapsedTime[cathode][side][plane][RPC] > 0) {
@@ -276,18 +276,18 @@ void MTRShuttle::parseOCDB(std::string path)
 
     printf("\t\tINFO: Saving run %d\n",runIterator.first);
 
-    for (MTRPlanes plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
-      for (MTRSides side=kINSIDE; side<MTRSides::kNSides; side++) {
-        for (MTRRPCs RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
+    for (int plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
+      for (int side=kINSIDE; side<MTRSides::kNSides; side++) {
+        for (int RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
           fRunDataVect[plane][side][RPC].emplace_back(runObjectBuffer[plane][side][RPC]);
         }
       }
     }
   }
 
-  for (MTRPlanes plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
-    for (MTRSides side=kINSIDE; side<MTRSides::kNSides; side++) {
-      for (MTRRPCs RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
+  for (int plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
+    for (int side=kINSIDE; side<MTRSides::kNSides; side++) {
+      for (int RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
         std::sort(fRunDataVect[plane][side][RPC].begin(),
                   fRunDataVect[plane][side][RPC].end(),
                   [](const RunObject &a, const RunObject &b) -> bool {
@@ -338,9 +338,9 @@ void MTRShuttle::parseAMANDAiMon(std::string path)
     } else std::cout << "Unable to open file";
   }
 
-  for (MTRPlanes plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
-    for (MTRSides side=kINSIDE; side<MTRSides::kNSides; side++) {
-      for (MTRRPCs RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
+  for (int plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
+    for (int side=kINSIDE; side<MTRSides::kNSides; side++) {
+      for (int RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
         std::sort(fAMANDACurrentsVect[plane][side][RPC].begin(),
                   fAMANDACurrentsVect[plane][side][RPC].end(),
                   [](const AMANDACurrent &a, const AMANDACurrent &b) -> bool {
@@ -355,9 +355,9 @@ void MTRShuttle::parseAMANDAiMon(std::string path)
 
 void MTRShuttle::propagateAMANDA()
 {
-  for (MTRPlanes plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
-    for (MTRSides side=kINSIDE; side<MTRSides::kNSides; side++) {
-      for (MTRRPCs RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
+  for (int plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
+    for (int side=kINSIDE; side<MTRSides::kNSides; side++) {
+      for (int RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
 
         printf("MT%d %s RPC%d... Setting isDark... ",kPlanes[plane],kSides[side].c_str(),RPC);
 
@@ -492,10 +492,10 @@ void MTRShuttle::computeAverage()
     runData.setRunNumber(fRunDataVect[0][0][0][iRun].getRunNumber());
     runData.setfIsDark(fRunDataVect[0][0][0][iRun].isDark());
 
-    for (MTRPlanes plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
+    for (int plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
       fRunDataVectAvg[plane].reserve(nOfRuns);
-      for (MTRSides side=kINSIDE; side<MTRSides::kNSides; side++) {
-        for (MTRRPCs RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
+      for (int side=kINSIDE; side<MTRSides::kNSides; side++) {
+        for (int RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
           if(runData.isHVOk()) runData = runData + fRunDataVect[plane][side][RPC][iRun];
           else nOfRPC--;
         }
@@ -528,9 +528,9 @@ void MTRShuttle::saveData(std::string path)
 {
   std::ofstream outputFile(path.c_str());
 
-  for (MTRPlanes plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
-    for (MTRSides side=kINSIDE; side<MTRSides::kNSides; side++) {
-      for (MTRRPCs RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
+  for (int plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
+    for (int side=kINSIDE; side<MTRSides::kNSides; side++) {
+      for (int RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
         for (const auto &dataIt : fRunDataVect[plane][side][RPC]) {
           outputFile << plane << ";" << side << ";" << RPC << ";" << dataIt << "\n";
 //          std::cout << plane << ";" << side << ";" << RPC << ";" << dataIt << "\n";

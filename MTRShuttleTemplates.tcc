@@ -134,11 +134,11 @@ TMultiGraph *drawCorrelations(XType(RunObject::*getX)() const,
 {
   auto *mg = new TMultiGraph();
 
-  for (MTRPlanes iPlane=MTRPlanes::kMT11; iPlane<MTRPlanes::kNPlanes; iPlane++) {
+  for (int iPlane=MTRPlanes::kMT11; iPlane<MTRPlanes::kNPlanes; iPlane++) {
     if ( plane>=0 && iPlane!=plane ) continue;
-    for (MTRSides iSide =MTRSides::kINSIDE; iSide < MTRSides::kNSides; iSide++) {
+    for (int iSide =MTRSides::kINSIDE; iSide < MTRSides::kNSides; iSide++) {
       if ( side>=0 && iSide!=side ) continue;
-      for (MTRRPCs iRPC=MTRRPCs::k0; iRPC < MTRRPCs::kNRPCs; iRPC++) {
+      for (int iRPC=MTRRPCs::k0; iRPC < MTRRPCs::kNRPCs; iRPC++) {
         mg->Add(
           drawCorrelation(getX,
                           getY,
@@ -146,9 +146,9 @@ TMultiGraph *drawCorrelations(XType(RunObject::*getX)() const,
                           normalizeToAreaY,
                           accumulate,
                           false,
-                          iPlane,
-                          iSide,
-                          iRPC,
+                          (MTRPlanes)iPlane,
+                          (MTRSides)iSide,
+                          (MTRRPCs)iRPC,
                           conditions));
       }
     }
