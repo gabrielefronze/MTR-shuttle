@@ -3,10 +3,6 @@
 //
 
 #include "MTRShuttle.h"
-#include <TAxis.h>
-#include <TStyle.h>
-#include <TH1F.h>
-#include "MTRConditions.h"
 
 template<typename XType, typename YType>
 TGraph *drawCorrelation(XType (RunObject::*getX)() const,

@@ -13,6 +13,7 @@
 #include <TAxis.h>
 #include <TStyle.h>
 #include <TH1F.h>
+#include <TList.h>
 #include "RunObject.h"
 #include "AMANDACurrent.h"
 #include "Parameters.h"
