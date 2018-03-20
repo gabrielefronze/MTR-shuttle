@@ -22,6 +22,7 @@ set(SOURCE_FILES
         CompileAll.c
         testMTRShuttle.c
         testTemplate.c
+        testBooster.c
         )
 
 add_executable(alice_MTR_utils ${SOURCE_FILES})
