@@ -18,7 +18,7 @@ class MTRConditions
     cond_type* operator[](size_t i){ return &(fConditions[i]); }
     size_t size(){ return fConditions.size(); }
     template<class ...Args> void addCondition(bool (RunObject::*condition)(Args...) const, bool negate, Args... args){
-      fConditions.push_back([=](RunObject const * rObj) -> bool { return (rObj->*condition)(args...) == !negate; });
+      fConditions.emplace_back([=](RunObject const * rObj) -> bool { return (rObj->*condition)(args...) == !negate; });
     }
 
   private:
