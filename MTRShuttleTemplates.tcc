@@ -135,9 +135,9 @@ TMultiGraph *drawCorrelations(XType(RunObject::*getX)() const,
   auto *mg = new TMultiGraph();
 
   for (int iPlane=MTRPlanes::kMT11; iPlane<MTRPlanes::kNPlanes; iPlane++) {
-    if ( plane>=0 && iPlane!=plane ) continue;
+    if ( plane!=MTRPlanes::kAll && iPlane!=plane ) continue;
     for (int iSide =MTRSides::kINSIDE; iSide < MTRSides::kNSides; iSide++) {
-      if ( side>=0 && iSide!=side ) continue;
+      if ( side!=MTRSides::kBoth && iSide!=side ) continue;
       for (int iRPC=MTRRPCs::k0; iRPC < MTRRPCs::kNRPCs; iRPC++) {
         mg->Add(
           drawCorrelation(getX,
