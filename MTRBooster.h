@@ -37,22 +37,22 @@ class MTRBooster
     void PrintConfig();
 
     void Launch(size_t iLaunch, TMultiGraph* buffer);
-    MTRBooster& SetPlane(int HR_plane);
 
+    MTRBooster& SetPlane(int HR_plane);
     MTRBooster& SetSide(std::string HR_side);
     MTRBooster& SetRPC(int HR_RPC);
     MTRBooster& SetX(std::string xValues);
     MTRBooster& SetY(std::string xValues);
-    MTRBooster& SetTSRange(uint64_t minTS, uint64_t maxTS);
 
+    MTRBooster& SetTSRange(uint64_t minTS, uint64_t maxTS);
     MTRBooster& SetMinTS(uint64_t minTS);
     MTRBooster& SetMaxTS(uint64_t maxTS);
-    MTRBooster& SetDateRange(std::string minDay, std::string maxDay);
 
+    MTRBooster& SetDateRange(std::string minDay, std::string maxDay);
     MTRBooster& SetMinDate(std::string minDay);
     MTRBooster& SetMaxDate(std::string maxDay);
-    MTRBooster& SetRunRange(uint64_t minRun, uint64_t maxRun);
 
+    MTRBooster& SetRunRange(uint64_t minRun, uint64_t maxRun);
     MTRBooster& SetMinRun(uint64_t minRun);
     MTRBooster& SetMaxRun(uint64_t maxRun);
 
@@ -61,6 +61,7 @@ class MTRBooster
     MTRBooster& OnlyNoBeamRuns();
     MTRBooster& OnlyDarkCurrentRuns();
     MTRBooster& OnlyIntegratedChargeRuns();
+
     inline MTRBooster& AccumulateY(){ fCurrentPlotSetting.fAccumulate=true; return *this; }
 
     inline MTRBooster& NormalizeToArea(){ fCurrentPlotSetting.fNormalize=true; return *this; }
