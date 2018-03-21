@@ -321,15 +321,15 @@ void MTRBooster::correlationWrapper(MTRPlotSettings &setting, TMultiGraph* buffe
 void MTRBooster::correlationsWrapper(MTRPlotSettings &setting, TMultiGraph* buffer)
 {
 //  std::cout<<"START\n";
-  buffer = fShuttle.drawCorrelations(setting.funcX,
-                                     setting.funcY,
-                                     setting.fNormalize,
-                                     setting.fNormalize,
-                                     setting.fAccumulate,
-                                     setting.fPlotaverage,
-                                     setting.fPlane,
-                                     setting.fSide,
-                                     setting.fConditions);
+  buffer->Add(fShuttle.drawCorrelations(setting.funcX,
+                                        setting.funcY,
+                                        setting.fNormalize,
+                                        setting.fNormalize,
+                                        setting.fAccumulate,
+                                        setting.fPlotaverage,
+                                        setting.fPlane,
+                                        setting.fSide,
+                                        setting.fConditions));
   return;
 }
 
@@ -349,23 +349,23 @@ void MTRBooster::trendWrapper(MTRPlotSettings &setting, TMultiGraph* buffer)
 void MTRBooster::trendsWrapper(MTRPlotSettings &setting, TMultiGraph* buffer)
 {
 //  std::cout<<"START\n";
-  buffer = fShuttle.drawTrends(setting.funcY,
-                               setting.fNormalize,
-                               setting.fAccumulate,
-                               setting.fPlotaverage,
-                               setting.fPlane,
-                               setting.fSide,
-                               setting.fConditions);
+  buffer->Add(fShuttle.drawTrends(setting.funcY,
+                                  setting.fNormalize,
+                                  setting.fAccumulate,
+                                  setting.fPlotaverage,
+                                  setting.fPlane,
+                                  setting.fSide,
+                                  setting.fConditions));
 }
 
 void MTRBooster::minmaxWrapper(MTRPlotSettings &setting, TMultiGraph* buffer)
 {
 //  std::cout<<"START\n";
-  buffer = fShuttle.drawMaxMin(setting.funcY,
-                               setting.fNormalize,
-                               setting.fAccumulate,
-                               setting.fPlotaverage,
-                               setting.fPlane,
-                               setting.fSide,
-                               setting.fConditions);
+  buffer->Add(fShuttle.drawMaxMin(setting.funcY,
+                                  setting.fNormalize,
+                                  setting.fAccumulate,
+                                  setting.fPlotaverage,
+                                  setting.fPlane,
+                                  setting.fSide,
+                                  setting.fConditions));
 }
