@@ -60,7 +60,7 @@ void MTRBooster::Launch(size_t iLaunch, TMultiGraph* buffer)
 
     if( !fAverageComputed && iSetting.fPlotaverage ) MTRBooster::loadAverage();
 
-    if( fCurrentPlotSetting.fRPC>=0 && fCurrentPlotSetting.fSide>=0 && fCurrentPlotSetting.fPlane>=0  ){
+    if( iSetting.fRPC!=MTRRPCs::kAllRPCs ){
       if( iSetting.isTrend ){
         std::cout << "It's a single trend.\n";
         trendWrapper(iSetting, buffer);
