@@ -32,10 +32,10 @@ class MTRBooster
     MTRBooster();
     explicit MTRBooster(std::string inputData);
     inline MTRShuttle* getShuttle(){ return &fShuttle; };
-    std::vector<TMultiGraph*> Launch();
-
     void PrintConfig();
 
+    std::vector<TMultiGraph*> Launch();
+    inline void Launch(std::vector<TMultiGraph*>& vect){ vect=Launch(); };
     void Launch(size_t iLaunch, TMultiGraph* buffer);
 
     MTRBooster& SetPlane(int HR_plane);
