@@ -70,7 +70,16 @@ int testBooster(){
 
   MTRBooster buster("MTR_2017_test90.csv");
 
-  buster.SetX("Time").SetY("IntCharge").AccumulateY().OnlyIntegratedChargeRuns().SetRPC(5).SetSide("IN").SetPlane(4).StackStage();
+  buster.SetX("Time")
+        .SetY("IntCharge")
+        .AccumulateY()
+        .OnlyIntegratedChargeRuns()
+//        .SetRPC(5)
+//        .SetSide("OUT")
+        .SetPlane(11)
+        .StackStage();
+
+  TCanvas *canv=new TCanvas("canv","canv");
 
   auto mg = buster.Launch();
 
