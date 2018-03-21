@@ -170,25 +170,25 @@ TMultiGraph *drawCorrelations(XType(RunObject::*getX)() const,
 
   if(!(mg->GetListOfGraphs())) return nullptr;
 
-  mg->Draw("ap");
-
-  if (funcCmp(getX, &RunObject::getSOR) || funcCmp(getX, &RunObject::getEOR)){
-    //This time offset is NEEDED to correctly display data from timestamp!
-    gStyle->SetTimeOffset(0);
-    mg->GetXaxis()->SetTimeDisplay(1);
-    mg->GetXaxis()->SetTimeFormat("%d-%m-%y");
-    mg->GetXaxis()->SetLabelSize(0.02);
-    mg->GetXaxis()->SetTitle("Date");
-  } else mg->GetHistogram()->GetXaxis()->SetTitle(getLabel(getX,normalizeToAreaX).c_str());
-
-  if (funcCmp(getY, &RunObject::getSOR) || funcCmp(getY, &RunObject::getEOR)){
-    //This time offset is NEEDED to correctly display data from timestamp!
-    gStyle->SetTimeOffset(0);
-    mg->GetYaxis()->SetTimeDisplay(1);
-    mg->GetYaxis()->SetTimeFormat("%d-%m-%y");
-    mg->GetYaxis()->SetLabelSize(0.02);
-    mg->GetYaxis()->SetTitle("Date");
-  } else mg->GetHistogram()->GetYaxis()->SetTitle(getLabel(getY,normalizeToAreaY).c_str());
+//  mg->Draw("ap");
+//
+//  if (funcCmp(getX, &RunObject::getSOR) || funcCmp(getX, &RunObject::getEOR)){
+//    //This time offset is NEEDED to correctly display data from timestamp!
+//    gStyle->SetTimeOffset(0);
+//    mg->GetXaxis()->SetTimeDisplay(1);
+//    mg->GetXaxis()->SetTimeFormat("%d-%m-%y");
+//    mg->GetXaxis()->SetLabelSize(0.02);
+//    mg->GetXaxis()->SetTitle("Date");
+//  } else mg->GetHistogram()->GetXaxis()->SetTitle(getLabel(getX,normalizeToAreaX).c_str());
+//
+//  if (funcCmp(getY, &RunObject::getSOR) || funcCmp(getY, &RunObject::getEOR)){
+//    //This time offset is NEEDED to correctly display data from timestamp!
+//    gStyle->SetTimeOffset(0);
+//    mg->GetYaxis()->SetTimeDisplay(1);
+//    mg->GetYaxis()->SetTimeFormat("%d-%m-%y");
+//    mg->GetYaxis()->SetLabelSize(0.02);
+//    mg->GetYaxis()->SetTitle("Date");
+//  } else mg->GetHistogram()->GetYaxis()->SetTitle(getLabel(getY,normalizeToAreaY).c_str());
 
   return mg;
 }
@@ -293,14 +293,14 @@ drawMaxMin(YType (RunObject::*getY)() const,
   if (minGraph) mgOut->Add(minGraph);
   if (maxGraph) mgOut->Add(maxGraph);
 
-  mgOut->Draw("ap");
-  mgOut->GetHistogram()->GetXaxis()->SetTimeOffset(0);
-  mgOut->GetHistogram()->GetXaxis()->SetTimeDisplay(1);
-  mgOut->GetHistogram()->GetXaxis()->SetTimeFormat("%d-%m-%y");
-  mgOut->GetHistogram()->GetYaxis()->SetLabelSize(0.02);
-
-  mgOut->GetHistogram()->GetXaxis()->SetTitle("Date");
-  mgOut->GetHistogram()->GetYaxis()->SetTitle(getLabel(getY,normalizeToAreaY).c_str());
+//  mgOut->Draw("ap");
+//  mgOut->GetHistogram()->GetXaxis()->SetTimeOffset(0);
+//  mgOut->GetHistogram()->GetXaxis()->SetTimeDisplay(1);
+//  mgOut->GetHistogram()->GetXaxis()->SetTimeFormat("%d-%m-%y");
+//  mgOut->GetHistogram()->GetYaxis()->SetLabelSize(0.02);
+//
+//  mgOut->GetHistogram()->GetXaxis()->SetTitle("Date");
+//  mgOut->GetHistogram()->GetYaxis()->SetTitle(getLabel(getY,normalizeToAreaY).c_str());
 
   return mgOut;
 }
