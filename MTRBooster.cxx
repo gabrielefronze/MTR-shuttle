@@ -102,9 +102,9 @@ void MTRBooster::AutoDraw(size_t iLaunch, TVirtualPad* pad, Option_t* opt, bool 
       requiredPlot->GetXaxis()->SetTimeFormat("%d/%m/%y");
       requiredPlot->GetXaxis()->SetLabelSize(0.027);
       requiredPlot->GetXaxis()->SetTitle("Date");
-    } else requiredPlot->GetHistogram()->GetXaxis()->SetTitle(getAxisLabel(settings.funcX, settings.fNormalize).c_str());
+    } else requiredPlot->GetHistogram()->GetXaxis()->SetTitle(generateLabel(settings.funcX, settings.fNormalize).c_str());
 
-    requiredPlot->GetHistogram()->GetYaxis()->SetTitle(getAxisLabel(settings.funcY, settings.fNormalize).c_str());
+    requiredPlot->GetHistogram()->GetYaxis()->SetTitle(generateLabel(settings.funcY, settings.fNormalize).c_str());
 
     if( drawLegend ){
       TString legTitle = (settings.fPlane<MTRPlanes::kNPlanes)?Form("MT%d",kPlanes[settings.fPlane]):"";

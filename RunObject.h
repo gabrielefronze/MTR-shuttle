@@ -150,7 +150,7 @@ template<typename Type> inline bool isIntCharge(Type(RunObject::*getter)() const
   return funcCmp(getter, &RunObject::getIntCharge);
 }
 
-template<typename Type> inline std::string getAxisLabel(Type(RunObject::*getter)() const, bool normalizedToArea){
+template<typename Type> inline std::string generateLabel(Type(RunObject::*getter)() const, bool normalizedToArea){
   std::string label="";
 
   if(isTimestamp(getter)) label="Timestamp [s]";
