@@ -91,6 +91,15 @@ void MTRBooster::AutoDraw(size_t iLaunch, TVirtualPad* pad, Option_t* opt, bool 
     if ( settings.fSide!=MTRSides::kBoth ) graphTitle.Append(Form("%s ",kSides[settings.fSide].c_str()));
     if ( settings.fRPC!=MTRRPCs::kAllRPCs ) graphTitle.Append(Form("%d ",settings.fRPC+1));
 
+    if ( settings.isTrend || settings.isMinMax ){
+      graphTitle.Append(generateTitle(settings.funcY));
+      graphTitle.Append(" vs time");
+    } else {
+      graphTitle.Append(generateTitle(settings.funcY));
+      graphTitle.Append(" vs ");
+      graphTitle.Append(generateTitle(settings.funcX));
+    }
+
     requiredPlot->SetTitle(graphTitle);
 
     requiredPlot->Draw(opt);
