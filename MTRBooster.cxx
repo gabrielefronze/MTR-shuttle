@@ -30,8 +30,6 @@ void MTRBooster::Launch()
     fPlots.emplace_back(new TMultiGraph(Form("%zu",iSetting),Form("%zu",iSetting)));
     MTRBooster::Launch(iSetting,fPlots.back());
   }
-
-  return;
 }
 
 void MTRBooster::Launch(size_t iLaunch, TMultiGraph* buffer)
@@ -316,7 +314,6 @@ void MTRBooster::correlationsWrapper(MTRPlotSettings &setting, TMultiGraph* buff
                                         setting.fPlane,
                                         setting.fSide,
                                         setting.fConditions));
-  return;
 }
 
 void MTRBooster::trendWrapper(MTRPlotSettings &setting, TMultiGraph* buffer)
@@ -329,7 +326,6 @@ void MTRBooster::trendWrapper(MTRPlotSettings &setting, TMultiGraph* buffer)
                                  setting.fSide,
                                  setting.fRPC,
                                  setting.fConditions));
-  return;
 }
 
 void MTRBooster::trendsWrapper(MTRPlotSettings &setting, TMultiGraph* buffer)
