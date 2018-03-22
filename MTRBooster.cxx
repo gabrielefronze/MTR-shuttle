@@ -50,9 +50,6 @@ void MTRBooster::Launch(size_t iLaunch, TMultiGraph* buffer)
   else {
     auto iSetting = (fPlotSettings[iLaunch]);
 
-    std::cout<<"getX is "<< iSetting.funcX <<"\n";
-    std::cout<<"getY is "<< iSetting.funcY <<"\n";
-
     if( !iSetting.fValidSettings ){
       std::cerr << "Configuration " << iLaunch << " is not valid! Aborting.\n";
       return;
@@ -62,27 +59,17 @@ void MTRBooster::Launch(size_t iLaunch, TMultiGraph* buffer)
 
     if( iSetting.fRPC!=MTRRPCs::kAllRPCs ){
       if( iSetting.isTrend ){
-        std::cout << "It's a single trend.\n";
         trendWrapper(iSetting, buffer);
-        std::cout<<"DONE\n";
       } else {
-        std::cout << "It's a single correlation.\n";
         correlationWrapper(iSetting, buffer);
-        std::cout<<"DONE\n";
       }
     } else {
       if ( iSetting.isTrend ) {
-        std::cout << "It's a multiple trend.\n";
         trendsWrapper(iSetting, buffer);
-        std::cout<<"DONE\n";
       } else if ( iSetting.isMinMax ){
-        std::cout << "It's a min-max trend.\n";
         minmaxWrapper(iSetting, buffer);
-        std::cout<<"DONE\n";
       } else {
-        std::cout << "It's a multiple correlation.\n";
         correlationsWrapper(iSetting, buffer);
-        std::cout<<"DONE\n";
       }
     }
 
@@ -320,7 +307,7 @@ void MTRBooster::correlationWrapper(MTRPlotSettings &setting, TMultiGraph* buffe
 
 void MTRBooster::correlationsWrapper(MTRPlotSettings &setting, TMultiGraph* buffer)
 {
-//  std::cout<<"START\n";
+//
   buffer->Add(fShuttle.drawCorrelations(setting.funcX,
                                         setting.funcY,
                                         setting.fNormalize,
@@ -348,7 +335,7 @@ void MTRBooster::trendWrapper(MTRPlotSettings &setting, TMultiGraph* buffer)
 
 void MTRBooster::trendsWrapper(MTRPlotSettings &setting, TMultiGraph* buffer)
 {
-//  std::cout<<"START\n";
+//
   buffer->Add(fShuttle.drawTrends(setting.funcY,
                                   setting.fNormalize,
                                   setting.fAccumulate,
@@ -360,7 +347,7 @@ void MTRBooster::trendsWrapper(MTRPlotSettings &setting, TMultiGraph* buffer)
 
 void MTRBooster::minmaxWrapper(MTRPlotSettings &setting, TMultiGraph* buffer)
 {
-//  std::cout<<"START\n";
+//
   buffer->Add(fShuttle.drawMaxMin(setting.funcY,
                                   setting.fNormalize,
                                   setting.fAccumulate,
