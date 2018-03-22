@@ -25,8 +25,8 @@ TGraph *drawCorrelation(XType (RunObject::*getX)() const,
   }
   graphMaquillage(plane, RPC, returnedGraph, plotAverage);
 
-  returnedGraph->GetXaxis()->SetTitle(getLabel(getX,normalizeToAreaX).c_str());
-  returnedGraph->GetYaxis()->SetTitle(getLabel(getY,normalizeToAreaY).c_str());
+  returnedGraph->GetXaxis()->SetTitle(getAxisLabel(getX, normalizeToAreaX).c_str());
+  returnedGraph->GetYaxis()->SetTitle(getAxisLabel(getY, normalizeToAreaY).c_str());
 
   if (funcCmp(getX, &RunObject::getSOR) || funcCmp(getX, &RunObject::getEOR)){
     //This time offset is NEEDED to correctly display data from timestamp!
@@ -179,7 +179,7 @@ TMultiGraph *drawCorrelations(XType(RunObject::*getX)() const,
 //    mg->GetXaxis()->SetTimeFormat("%d-%m-%y");
 //    mg->GetXaxis()->SetLabelSize(0.02);
 //    mg->GetXaxis()->SetTitle("Date");
-//  } else mg->GetHistogram()->GetXaxis()->SetTitle(getLabel(getX,normalizeToAreaX).c_str());
+//  } else mg->GetHistogram()->GetXaxis()->SetTitle(getAxisLabel(getX,normalizeToAreaX).c_str());
 //
 //  if (funcCmp(getY, &RunObject::getSOR) || funcCmp(getY, &RunObject::getEOR)){
 //    //This time offset is NEEDED to correctly display data from timestamp!
@@ -188,7 +188,7 @@ TMultiGraph *drawCorrelations(XType(RunObject::*getX)() const,
 //    mg->GetYaxis()->SetTimeFormat("%d-%m-%y");
 //    mg->GetYaxis()->SetLabelSize(0.02);
 //    mg->GetYaxis()->SetTitle("Date");
-//  } else mg->GetHistogram()->GetYaxis()->SetTitle(getLabel(getY,normalizeToAreaY).c_str());
+//  } else mg->GetHistogram()->GetYaxis()->SetTitle(getAxisLabel(getY,normalizeToAreaY).c_str());
 
   return mg;
 }
@@ -300,7 +300,7 @@ drawMaxMin(YType (RunObject::*getY)() const,
 //  mgOut->GetHistogram()->GetYaxis()->SetLabelSize(0.02);
 //
 //  mgOut->GetHistogram()->GetXaxis()->SetTitle("Date");
-//  mgOut->GetHistogram()->GetYaxis()->SetTitle(getLabel(getY,normalizeToAreaY).c_str());
+//  mgOut->GetHistogram()->GetYaxis()->SetTitle(getAxisLabel(getY,normalizeToAreaY).c_str());
 
   return mgOut;
 }
