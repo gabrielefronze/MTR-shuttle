@@ -167,7 +167,7 @@ template<typename Type> inline std::string generateLabel(Type(RunObject::*getter
   return label;
 }
 
-template<typename Type> inline std::string getTitle(Type(RunObject::*getter)() const){
+template<typename Type> inline std::string generateTitle(Type(RunObject::*getter)() const){
   std::string label="";
 
   if(isHV(getter)) label="HV";
