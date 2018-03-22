@@ -3,7 +3,10 @@
 //
 
 #include "MTRBooster.h"
+#include "Parameters.h"
+#include "TString.h"
 #include "TCanvas.h"
+#include "TLegend.h"
 #include "RunObject.h"
 #include <utility>
 
@@ -27,7 +30,8 @@ void MTRBooster::Launch()
   fPlots.reserve(fPlotSettings.size());
 
   for (size_t iSetting = 0; iSetting < fPlotSettings.size(); ++iSetting) {
-    fPlots.emplace_back(new TMultiGraph(Form("%zu",iSetting),Form("%zu",iSetting)));
+
+    fPlots.emplace_back(new TMultiGraph(Form("%zu",iSetting),""));
     MTRBooster::Launch(iSetting,fPlots.back());
   }
 }
@@ -71,6 +75,50 @@ void MTRBooster::Launch(size_t iLaunch, TMultiGraph* buffer)
     }
 
     return;
+  }
+}
+
+void MTRBooster::AutoDraw(size_t iLaunch, TVirtualPad* pad, Option_t* opt, bool drawLegend, Option_t* legOpt)
+{
+  auto requiredPlot = fPlots[iLaunch];
+  auto settings = fPlotSettings[iLaunch];
+
+  if( pad && requiredPlot ){
+    pad->cd();
+
+    TString graphTitle="";
+    if ( settings.fPlane!=MTRPlanes::kAll ) graphTitle.Append(Form("MT%d ",kPlanes[settings.fPlane]));
+    if ( settings.fSide!=MTRSides::kBoth ) graphTitle.Append(Form("%s ",kSides[settings.fSide].c_str()));
+    if ( settings.fRPC!=MTRRPCs::kAllRPCs ) graphTitle.Append(Form("%d ",settings.fRPC+1));
+
+    requiredPlot->SetTitle(graphTitle);
+
+    requiredPlot->Draw(opt);
+
+    if ( settings.isMinMax || settings.isTrend ){
+      //This time offset is NEEDED to correctly display data from timestamp!
+      gStyle->SetTimeOffset(0);
+      requiredPlot->GetXaxis()->SetTimeDisplay(1);
+      requiredPlot->GetXaxis()->SetTimeFormat("%d/%m/%y");
+      requiredPlot->GetXaxis()->SetLabelSize(0.027);
+      requiredPlot->GetXaxis()->SetTitle("Date");
+    } else requiredPlot->GetHistogram()->GetXaxis()->SetTitle(getAxisLabel(settings.funcX, settings.fNormalize).c_str());
+
+    requiredPlot->GetHistogram()->GetYaxis()->SetTitle(getAxisLabel(settings.funcY, settings.fNormalize).c_str());
+
+    if( drawLegend ){
+      TString legTitle = (settings.fPlane<MTRPlanes::kNPlanes)?Form("MT%d",kPlanes[settings.fPlane]):"";
+
+      auto legend = pad->BuildLegend(0.18,0.63,0.35,0.98,legTitle,legOpt);
+      legend->SetDrawOption(legOpt);
+      legend->SetName(legTitle);
+      legend->SetFillStyle(0);
+      auto nGraphs = requiredPlot->GetListOfGraphs()->GetEntries();
+      if( nGraphs>5 ){
+        if( nGraphs%2==0 ) legend->SetNColumns(2);
+        if( nGraphs%3==0 ) legend->SetNColumns(3);
+      }
+    }
   }
 }
 
