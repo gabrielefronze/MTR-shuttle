@@ -34,8 +34,7 @@ class MTRBooster
     inline MTRShuttle* getShuttle(){ return &fShuttle; };
     void PrintConfig();
 
-    std::vector<TMultiGraph*> Launch();
-    inline void Launch(std::vector<TMultiGraph*>& vect){ vect=Launch(); };
+    void Launch();
     void Launch(size_t iLaunch, TMultiGraph* buffer);
 
     MTRBooster& SetPlane(int HR_plane);
@@ -79,6 +78,7 @@ class MTRBooster
     bool fAverageComputed;
     std::vector<MTRPlotSettings> fPlotSettings;
     MTRPlotSettings fCurrentPlotSetting;
+    std::vector<TMultiGraph*> fPlots;
     inline void loadAverage(){ fShuttle.computeAverage(); fAverageComputed=true; }
 
     uint64_t getTSFromString(std::string date);

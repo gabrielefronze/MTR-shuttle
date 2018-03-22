@@ -22,18 +22,16 @@ MTRBooster::MTRBooster(std::string inputData) : fLoadedData(false), fAverageComp
   fLoadedData=true;
 }
 
-std::vector<TMultiGraph *> MTRBooster::Launch()
+void MTRBooster::Launch()
 {
-  std::vector<TMultiGraph *> mgVector;
-
-  mgVector.reserve(fPlotSettings.size());
+  fPlots.reserve(fPlotSettings.size());
 
   for (size_t iSetting = 0; iSetting < fPlotSettings.size(); ++iSetting) {
-    mgVector.emplace_back(new TMultiGraph(Form("%zu",iSetting),Form("%zu",iSetting)));
-    MTRBooster::Launch(iSetting,mgVector.back());
+    fPlots.emplace_back(new TMultiGraph(Form("%zu",iSetting),Form("%zu",iSetting)));
+    MTRBooster::Launch(iSetting,fPlots.back());
   }
 
-  return mgVector;
+  return;
 }
 
 void MTRBooster::Launch(size_t iLaunch, TMultiGraph* buffer)
