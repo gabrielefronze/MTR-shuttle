@@ -167,5 +167,20 @@ template<typename Type> inline std::string getAxisLabel(Type(RunObject::*getter)
   return label;
 }
 
+template<typename Type> inline std::string getTitle(Type(RunObject::*getter)() const){
+  std::string label="";
+
+  if(isHV(getter)) label="HV";
+  else if(isIntCharge(getter)) label="Integrated charge";
+  else if(isScaler(getter)) label="Hits";
+  else if(isCurrent(getter)) {
+    label="urrent";
+    if(funcCmp(getter, &RunObject::getAvgITot)) label="Total c"+label;
+    else if(funcCmp(getter, &RunObject::getAvgINet)) label="Net c"+label;
+    else label="Dark c"+label;
+  }
+
+  return label;
+}
 
 #endif //MTR_SHUTTLE_RUNOBJECT_H
