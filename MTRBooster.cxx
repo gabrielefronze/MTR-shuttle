@@ -49,7 +49,8 @@ void MTRBooster::Launch(size_t iLaunch, TMultiGraph* buffer)
     auto iSetting = (fPlotSettings[iLaunch]);
 
     if( !iSetting.fValidSettings ){
-      std::cerr << "Configuration " << iLaunch << " is not valid! Aborting.\n";
+      std::cerr << "Configuration " << iLaunch << " is not valid! The setting will be removed.\n";
+      fPlotSettings.erase(fPlotSettings.begin()+iLaunch);
       return;
     }
 
