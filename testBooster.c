@@ -3,6 +3,7 @@
 //
 
 #include <Riostream.h>
+
 #ifdef APPLE
 #include <_types/_uint8_t.h>
 #include <_types/_uint16_t.h>
@@ -11,6 +12,7 @@
 #else
 #include <stdint.h>
 #endif
+
 #include <fstream>
 #include "MTRBooster.h"
 #include "RunObject.h"
