@@ -160,6 +160,7 @@ template<typename Type> inline std::string getAxisLabel(Type(RunObject::*getter)
   else if(isCurrent(getter)) {
     label=(normalizedToArea)?"urrent [#muA/cm^{2}]":"urrent [#muA]";
     if(funcCmp(getter, &RunObject::getAvgITot)) label="Total c"+label;
+    else if(funcCmp(getter, &RunObject::getAvgINet)) label="Net c"+label;
     else label="Dark c"+label;
   }
 
