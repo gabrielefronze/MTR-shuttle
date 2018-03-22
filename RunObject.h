@@ -168,19 +168,19 @@ template<typename Type> inline std::string generateLabel(Type(RunObject::*getter
 }
 
 template<typename Type> inline std::string generateTitle(Type(RunObject::*getter)() const){
-  std::string label="";
+  std::string title="";
 
-  if(isHV(getter)) label="HV";
-  else if(isIntCharge(getter)) label="Integrated charge";
-  else if(isScaler(getter)) label="Hits";
+  if(isHV(getter)) title="HV";
+  else if(isIntCharge(getter)) title="Integrated charge";
+  else if(isScaler(getter)) title="Hits";
   else if(isCurrent(getter)) {
-    label="urrent";
-    if(funcCmp(getter, &RunObject::getAvgITot)) label="Total c"+label;
-    else if(funcCmp(getter, &RunObject::getAvgINet)) label="Net c"+label;
-    else label="Dark c"+label;
+    title="urrent";
+    if(funcCmp(getter, &RunObject::getAvgITot)) title="Total c"+title;
+    else if(funcCmp(getter, &RunObject::getAvgINet)) title="Net c"+title;
+    else title="Dark c"+title;
   }
 
-  return label;
+  return title;
 }
 
 #endif //MTR_SHUTTLE_RUNOBJECT_H
