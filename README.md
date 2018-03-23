@@ -74,8 +74,6 @@ This suite of utilities contains useful methods to interface with Alien in order
 2. Processing of data and stacking of new data on top of previously processed information;
 3. Representation of data.
 
-It contains, as data members, several `stl` containers to handle 
-
 **Data retrieving**
 
 Several methods constitute the procedure to retrieve data from OCDB and DCS.
