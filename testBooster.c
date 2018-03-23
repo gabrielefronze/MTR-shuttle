@@ -29,48 +29,48 @@ int testBooster(){
 
   buster.SetX("Time").SetY("IDark").OnlyDarkCurrentRuns().SetRPC(5).SetSide("OUT").SetPlane(11).StackStage();
 
-  buster.SetX("Time").SetY("IntCharge").OnlyIntegratedChargeRuns().AccumulateY().SetPlane(11).SetSide("IN").StackStage();
-  buster.SetX("Time").SetY("IntCharge").OnlyIntegratedChargeRuns().AccumulateY().SetPlane(11).SetSide("OUT").StackStage();
+  buster.SetX("Time").SetY("IntCharge").OnlyIntegratedChargeRuns().AccumulateY().PlotAverage().SetPlane(11).SetSide("IN").PlotMinMax().StackStage();
+  buster.SetX("Time").SetY("IntCharge").OnlyIntegratedChargeRuns().AccumulateY().PlotAverage().SetPlane(11).SetSide("OUT").PlotMinMax().StackStage();
 
-  buster.SetX("Time").SetY("IntCharge").OnlyIntegratedChargeRuns().AccumulateY().SetPlane(12).SetSide("IN").StackStage();
-  buster.SetX("Time").SetY("IntCharge").OnlyIntegratedChargeRuns().AccumulateY().SetPlane(12).SetSide("OUT").StackStage();
+  buster.SetX("Time").SetY("IntCharge").OnlyIntegratedChargeRuns().AccumulateY().PlotAverage().SetPlane(12).SetSide("IN").PlotMinMax().StackStage();
+  buster.SetX("Time").SetY("IntCharge").OnlyIntegratedChargeRuns().AccumulateY().PlotAverage().SetPlane(12).SetSide("OUT").PlotMinMax().StackStage();
 
-  buster.SetX("Time").SetY("IntCharge").OnlyIntegratedChargeRuns().AccumulateY().SetPlane(21).SetSide("IN").StackStage();
-  buster.SetX("Time").SetY("IntCharge").OnlyIntegratedChargeRuns().AccumulateY().SetPlane(21).SetSide("OUT").StackStage();
+  buster.SetX("Time").SetY("IntCharge").OnlyIntegratedChargeRuns().AccumulateY().PlotAverage().SetPlane(21).SetSide("IN").PlotMinMax().StackStage();
+  buster.SetX("Time").SetY("IntCharge").OnlyIntegratedChargeRuns().AccumulateY().PlotAverage().SetPlane(21).SetSide("OUT").PlotMinMax().StackStage();
 
-  buster.SetX("Time").SetY("IntCharge").OnlyIntegratedChargeRuns().AccumulateY().SetPlane(22).SetSide("IN").StackStage();
-  buster.SetX("Time").SetY("IntCharge").OnlyIntegratedChargeRuns().AccumulateY().SetPlane(22).SetSide("OUT").StackStage();
+  buster.SetX("Time").SetY("IntCharge").OnlyIntegratedChargeRuns().AccumulateY().PlotAverage().SetPlane(22).SetSide("IN").PlotMinMax().StackStage();
+  buster.SetX("Time").SetY("IntCharge").OnlyIntegratedChargeRuns().AccumulateY().PlotAverage().SetPlane(22).SetSide("OUT").PlotMinMax().StackStage();
 
   buster.Launch();
 
   TCanvas *canv_single=new TCanvas("single_plot","single_plot");
-  buster.AutoDraw(0,canv_single->cd(),"alp");
+  buster.AutoDraw(0,canv_single->cd());
 
   TCanvas *canv_multiple=new TCanvas("multiple_plot","multiple_plot");
   canv_multiple->Divide(2,2);
 
   auto pad1 = canv_multiple->cd(1);
   pad1->Divide(2,1);
-  buster.AutoDraw(1,pad1->cd(1));
-  buster.AutoDraw(2,pad1->cd(2));
+  buster.AutoDraw(1,pad1->cd(1),true);
+  buster.AutoDraw(2,pad1->cd(2),true);
 
 
   auto pad2 = canv_multiple->cd(2);
   pad2->Divide(2,1);
-  buster.AutoDraw(3,pad2->cd(1));
-  buster.AutoDraw(4,pad2->cd(2));
+  buster.AutoDraw(3,pad2->cd(1),true);
+  buster.AutoDraw(4,pad2->cd(2),true);
 
 
   auto pad3 = canv_multiple->cd(3);
   pad3->Divide(2,1);
-  buster.AutoDraw(5,pad3->cd(1));
-  buster.AutoDraw(6,pad3->cd(2));
+  buster.AutoDraw(5,pad3->cd(1),true);
+  buster.AutoDraw(6,pad3->cd(2),true);
 
 
   auto pad4 = canv_multiple->cd(4);
   pad4->Divide(2,1);
-  buster.AutoDraw(7,pad4->cd(1));
-  buster.AutoDraw(8,pad4->cd(2));
+  buster.AutoDraw(7,pad4->cd(1),true);
+  buster.AutoDraw(8,pad4->cd(2),true);
 
   return 0;
 }
