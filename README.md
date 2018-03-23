@@ -46,6 +46,15 @@ DCS readings are characterised by a timestamp. `AMANDAData` is a `struct` that c
 
 `AMANDACurrent` is a derived class (from `AMANDAData`) that extends the base class to contain information about total, dark and net current. A `isDarkCurrent` flag is available to keep track of the presence of the beam in the LHC during the current reading. This class is also intended to be a sample implementation to add other DCS measurement types to the framework. 
 
+### `RunObject`
+`RunObject` contains a set of measurements performed during a run, plus a set of information retrieved from the OCDB, such as run number, SOR or EOR. Each data member is intended to be the averaged value over time for the given parameter during the given run.
+
+A getter has to be implemented for any additional data member, in order to make it plottable.
+
+The class implements several `bool`-returning methods which are used at plotting time to filter the dataset.
+
+
+
 ## Acknowledgements
 This project has been rewamped several times, growing and extending its capabilities at each iteration.
 
