@@ -7,7 +7,8 @@ A common framework has several advantages over reinventing the wheel at each new
 1. **Bug detection:** a larger user base helps detecting bugs;
 2. **Bug fixing:** bugs that have been fixed for one user are automatically fixed for everyone;
 3. **Shared development:** new features and functions automatically become available for the whole MTR community;
-4. **A well established wheel:** no need to reinvent it every now and then!
+4. **A well established wheel:** no need to reinvent it every now and then;
+5. **Portable and compact data:** the output file has to be light, complete and easily shareable;
 
 Monitoring the MTR performance is an important task to ensure the Resistive Plate Chambers (RPCs) are in good shape for data acquisition. Their noise levels can arise due to both ageing and environmental conditions and a constant monitoring is needed.
 
