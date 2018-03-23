@@ -533,7 +533,6 @@ void MTRShuttle::saveData(std::string path)
       for (int RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
         for (const auto &dataIt : fRunDataVect[plane][side][RPC]) {
           outputFile << plane << ";" << side << ";" << RPC << ";" << dataIt << "\n";
-//          std::cout << plane << ";" << side << ";" << RPC << ";" << dataIt << "\n";
         }
       }
     }
