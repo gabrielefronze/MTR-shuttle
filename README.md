@@ -14,7 +14,7 @@ Monitoring the MTR performance is an important task to ensure the Resistive Plat
 ### Data sources
 Two data sources can be used for the retrieval of the measurements and data: the Online Run Condition Database (OCDB) and the DCS database system (formerly AMANDA, soon DARMA). 
 
-The OCDB provides beam status information, run information (run number, Start of Run and End of Run, run type...), a redundant copy of DCS readings and a cadenced dump of raw scalers readings. OCDB objects are generated and stored only during data acquisition. 
+The OCDB provides beam status information, run information (run number, Start of Run [SOR] and End of Run [EOR], run type...), a redundant copy of DCS readings and a cadenced dump of raw scalers readings. OCDB objects are generated and stored only during data acquisition. 
 
 The DCS infrastructure is connected to a pletora of subsystems and sensors whose readings are polled during the whole activity of the ALICE experiment, even when there is no data acquisition ongoing. The DCS data present in the OCDB is a subsample of the readings stored in the DCS database, but no information on run and beam status can be found in the DCS database.
 
