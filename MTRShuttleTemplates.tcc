@@ -21,7 +21,7 @@ TGraph *drawCorrelation(XType (RunObject::*getX)() const,
     if (plane<0) returnedGraph->SetNameTitle(Form("%d_%d_%d",plane,side,RPC+1),Form("MT%d %s %d",kPlanes[plane],kSidesShort[side].c_str(),RPC+1));
     else returnedGraph->SetNameTitle(Form("%d_%d",side,RPC+1),Form("%s %d",kSidesShort[side].c_str(),RPC+1));
   } else {
-    returnedGraph->SetNameTitle("avg","Average");
+    returnedGraph->SetNameTitle(Form("avg_%d",kPlanes[plane]),Form("Average MT%d",kPlanes[plane]));
   }
   graphMaquillage(plane, RPC, returnedGraph, plotAverage);
 
@@ -251,7 +251,7 @@ drawMaxMin(YType (RunObject::*getY)() const,
   auto *mgOut = new TMultiGraph();
 
   if(plotAverage){
-    auto avgGraph = (TGraph*)grList->FindObject("avg");
+    auto avgGraph = (TGraph*)grList->FindObject(Form("avg_%d",kPlanes[plane]));
     if (avgGraph) mgOut->Add(avgGraph);
   }
 
