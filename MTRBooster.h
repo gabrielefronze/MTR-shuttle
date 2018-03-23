@@ -42,7 +42,7 @@ class MTRBooster
 
     void Launch();
     void Launch(size_t iLaunch, TMultiGraph* buffer);
-    void AutoDraw(size_t iLaunch, TVirtualPad* pad, Option_t* opt="alp", bool drawLegend=false, Option_t* legOpt="P");
+    void AutoDraw(size_t iLaunch, TVirtualPad* pad, bool drawLegend=false, Option_t* opt="alp", Option_t* legOpt="P");
 
     MTRBooster& SetPlane(int HR_plane);
     MTRBooster& SetSide(std::string HR_side);
