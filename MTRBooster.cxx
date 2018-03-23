@@ -32,7 +32,7 @@ void MTRBooster::Launch()
   for (size_t iSetting = 0; iSetting < fPlotSettings.size(); ++iSetting) {
 
     fPlots.emplace_back(new TMultiGraph(Form("%zu",iSetting),""));
-    MTRBooster::Launch(iSetting,fPlots.back());
+    MTRBooster::Launch(iSetting,fPlots[iSetting]);
   }
 }
 
