@@ -35,4 +35,7 @@ enum MTRRPCs{
     kAllRPCs
 };
 
+static const int kNLocalBoards=234;
+static const int kNCathodes=2;
+
 #endif //MTR_SHUTTLE_ENUMERATORS_H

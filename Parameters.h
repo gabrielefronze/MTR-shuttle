@@ -10,9 +10,6 @@
 #include <Rtypes.h>
 #include "Enumerators.h"
 
-static const int kNLocalBoards=234;
-static const int kNCathodes=2;
-
 // Naming arrays to read AMANDA and create plot titles
 static const std::string kSides[MTRSides::kNSides]={"INSIDE","OUTSIDE"};
 static const std::string kSidesShort[MTRSides::kNSides]={"IN","OUT"};
