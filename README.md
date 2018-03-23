@@ -64,6 +64,44 @@ This class is a wrapper of a vector of `bool`-returning methods belonging to `Ru
 
 Technically it uses the `std::bind` method to push in the vector the condition methods with embedded eventual parameters, passed as a template parameter pack.
 
+### `AlienUtilis`
+This suite of utilities contains useful methods to interface with Alien in order to retrieve data from the GRID.
+
+### `MTRShuttle`
+`MTRShuttle` is the class that implements the three crucial aspects of the framework:
+
+1. Retrieving and merging of OCDB and DCS data;
+2. Processing of data and stacking of new data on top of previously processed information;
+3. Representation of data.
+
+It contains, as data members, several `stl` containers to handle 
+
+**Data retrieving**
+
+Several methods constitute the procedure to retrieve data from OCDB and DCS.
+
+* `parseRunList` parses a provided text file containing the run numbers of the runs one wants to obtain from OCDB;
+* `parseOCDB` requires a string as argument which corresponds to the path on which the OCDB can be found. Please not that the path can either be a local one or a remote (Alien) one;
+* `parseAMANDAiMon` requires a path to the DCS database dump file. This method parses the file acquiring the `iMon` readings. Additional methods have to be implemented to parse DCS measurements described using other aliases;
+
+**Data processing**
+
+Once data has been obtained parsing OCDB and DCS files it can be processed using the following methods.
+
+* `propagateAMANDA` propagates DCS information to the `RunObject`s created while parsing the OCDB. The DCS has no knowing of the ongoing run, hence the propagation of the DCS information has to be performed using the timestamps of DCS reading and SOR and EOR timestamps from OCDB;
+* `saveData` dumps the `RunObject` vectors to a `.csv` file with provided path;
+* `loadData` loads the `RunObject` vectors from a `.csv` file with provided path;
+* `computeAverage` fills several `RunObject` vectors with the average behaviour of the RPCs, grouped by plane. In order to reduce the information redundancy the average vectors are not saved. Calling `computeAverage` is hence necessary after `loadData` if one intends to plot the average behaviours.
+
+**Data representation**
+
+The processed data can now be represented as a "trend", a "correlation" or a "minmax" plot.
+Please note that all the plotting methods are specialised calls of a base method called `drawCorrelation`, which contains the drawing algorithm implementation.
+
+* `drawTrend` and `drawTrends` are two methods that allow one to plot a "trend" for a single RPC or for a full plane or side respectively. They require as an argument a reference to one of the `RunObject` getters as Y values. X values are the runs EOR timestamps. Several options allow to superimpose the average trend, to accumulate the Y value or to normalise to the RPC area X and Y values separately;
+* `drawCorrelation` and `drawCorrelations` are two methods that allow one to plot a "correlation" for a single RPC or for a full plane or side respectively. They require as first two arguments two references to `RunObject` getters, for X and Y point coordinates respectively. Several options allow to superimpose the average correlation, to accumulate the Y value or to normalise to the RPC area X and Y values separately;
+* `drawMaxMin` is called similarly to `drawTrends`, but provides a trend graph for a whole plane or side with only the maximum and minimum behaving RPCs are shown. It requires as an argument a reference to one of the `RunObject` getters as Y values. X values are the runs EOR timestamps. Several options allow to superimpose the average trend, to accumulate the Y value or to normalise to the RPC area X and Y values separately;
+
 ## Acknowledgements
 This project has been rewamped several times, growing and extending its capabilities at each iteration.
 
