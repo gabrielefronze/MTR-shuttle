@@ -41,6 +41,11 @@ The framework has been developed keeping in mind the possibility to integrate ne
 
 An overview of the classes is presented below.
 
+### `AMANDAData` and `AMANDACurrent`
+DCS readings are characterised by a timestamp. `AMANDAData` is a `struct` that contains the timestamp and appropriate class-like getters, setters and constructor. All additional DCS data types have to inherit from `AMANDAData`.
+
+`AMANDACurrent` is a derived class (from `AMANDAData`) that extends the base class to contain information about total, dark and net current. A `isDarkCurrent` flag is available to keep track of the presence of the beam in the LHC during the current reading. This class is also intended to be a sample implementation to add other DCS measurement types to the framework. 
+
 ## Acknowledgements
 This project has been rewamped several times, growing and extending its capabilities at each iteration.
 
