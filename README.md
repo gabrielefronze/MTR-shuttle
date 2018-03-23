@@ -41,7 +41,7 @@ The framework has been developed keeping in mind the possibility to integrate ne
 
 An overview of the classes is presented below.
 
-### Acknowledgements
+## Acknowledgements
 This project has been rewamped several times, growing and extending its capabilities at each iteration.
 
 I would like to thank Diego and Martino for introducing me to the retrieval and visualisation of MTR performances, and for their deep and wise checks of both code and produced results.
