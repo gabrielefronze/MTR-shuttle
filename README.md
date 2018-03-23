@@ -58,7 +58,10 @@ A getter has to be implemented for any additional data member, in order to make 
 
 The class implements several `bool`-returning methods which are used at plotting time to filter the dataset.
 
+### `MTRConditions`
+This class is a wrapper of a vector of `bool`-returning methods belonging to `RunObject`. This has been done to allow the application of several filters to the data sample at plotting time. 
 
+Technically it uses the `std::bind` method to push in the vector the condition methods with embedded eventual parameters, passed as a template parameter pack.
 
 ## Acknowledgements
 This project has been rewamped several times, growing and extending its capabilities at each iteration.
