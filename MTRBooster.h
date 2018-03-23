@@ -14,15 +14,20 @@
 struct MTRPlotSettings{
     double (RunObject::*funcX)() const = nullptr;
     double (RunObject::*funcY)() const = nullptr;
+
     MTRPlanes fPlane=kAll;
     MTRSides fSide=kBoth;
     MTRRPCs fRPC=kAllRPCs;
+
     bool fNormalize=false;
     bool fAccumulate=false;
     bool fPlotaverage=false;
+
     bool isTrend=false;
     bool isMinMax=false;
+
     MTRConditions fConditions;
+
     bool fValidSettings=true;
 };
 
