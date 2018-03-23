@@ -69,9 +69,8 @@ class MTRBooster
     MTRBooster& OnlyIntegratedChargeRuns();
 
     inline MTRBooster& AccumulateY(){ fCurrentPlotSetting.fAccumulate=true; return *this; }
-
     inline MTRBooster& NormalizeToArea(){ fCurrentPlotSetting.fNormalize=true; return *this; }
-    inline MTRBooster& PlotAverage();
+    inline MTRBooster& PlotAverage(){ fCurrentPlotSetting.fPlotaverage=true; return *this; }
     inline void StackStage(){
       if( fCurrentPlotSetting.fValidSettings ){
         fPlotSettings.emplace_back(fCurrentPlotSetting);

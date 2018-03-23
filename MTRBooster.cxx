@@ -273,12 +273,6 @@ MTRBooster& MTRBooster::OnlyIntegratedChargeRuns()
   return *this;
 }
 
-MTRBooster& MTRBooster::PlotAverage()
-{
-  fCurrentPlotSetting.fPlotaverage=true;
-  return *this;
-}
-
 uint64_t MTRBooster::getTSFromString(std::string date)
 {
   std::tm timeStruct{};
