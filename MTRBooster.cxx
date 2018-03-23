@@ -155,7 +155,10 @@ MTRBooster& MTRBooster::SetPlane(int HR_plane)
     default : fCurrentPlotSetting.fPlane=MTRPlanes::kAll;  break;
   }
 
-  if( fCurrentPlotSetting.fPlane==kAll ) std::cerr << "Plane ID not recognised. Plotting all planes.\n";
+  if( fCurrentPlotSetting.fPlane==kAll ) {
+    std::cerr << "Plane ID not recognised. Plotting all planes.\n";
+    std::cerr << "Recognised IDs are: {1,2,3,4} or {11,12,13,14} or {11,12,21,22}\n";
+  }
 
   return *this;
 }
@@ -168,8 +171,10 @@ MTRBooster& MTRBooster::SetSide(std::string HR_side)
   else if( HR_side.find("IN")!=std::string::npos ) fCurrentPlotSetting.fSide=MTRSides::kINSIDE;
   else fCurrentPlotSetting.fSide=MTRSides::kBoth;
 
-  if( fCurrentPlotSetting.fSide==kBoth ) std::cerr << "Side not recognised. Plotting all sides.\n";
-
+  if( fCurrentPlotSetting.fSide==kBoth ) {
+    std::cerr << "Side not recognised. Plotting all sides.\n";
+    std::cerr << "Available options are: {IN,OUT}[SIDE] or {in,out}[side]\n";
+  }
   return *this;
 }
 
@@ -178,8 +183,10 @@ MTRBooster& MTRBooster::SetRPC(int HR_RPC)
   if( HR_RPC<=MTRRPCs::kNRPCs && HR_RPC>=1 ) fCurrentPlotSetting.fRPC=(MTRRPCs)(HR_RPC-1);
   else fCurrentPlotSetting.fRPC=kAllRPCs;
 
-  if( fCurrentPlotSetting.fRPC==kAllRPCs ) std::cerr << "Wrong RPC ID. Plotting all RPCs.\n";
-
+  if( fCurrentPlotSetting.fRPC==kAllRPCs ) {
+    std::cerr << "Wrong RPC ID. Plotting all RPCs.\n";
+    std::cerr << "Recognised IDs are between 1 and 9\n";
+  }
   return *this;
 }
 
@@ -312,6 +319,7 @@ void MTRBooster::setXGetterFromString(std::string func)
     fCurrentPlotSetting.funcX = nullptr;
     fCurrentPlotSetting.fValidSettings = false;
     std::cerr << "Requested function specifier " << func << " has not been recognised as valid. Configuration will be skipped.\n";
+    std::cerr << "Valid specifiers are: IDark, ITot, INet, HV, RateBend, RateNotBend, IntCharge, Time\n";
     return;
   }
 
@@ -335,6 +343,7 @@ void MTRBooster::setYGetterFromString(std::string func)
     fCurrentPlotSetting.funcY = nullptr;
     fCurrentPlotSetting.fValidSettings = false;
     std::cerr << "Requested function specifier " << func << " has not been recognised as valid. Configuration will be skipped.\n";
+    std::cerr << "Valid specifiers are: IDark, ITot, INet, HV, RateBend, RateNotBend, IntCharge, Time\n";
     return;
   }
 
