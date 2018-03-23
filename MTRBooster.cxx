@@ -66,9 +66,9 @@ void MTRBooster::Launch(size_t iLaunch, TMultiGraph* buffer)
       }
     } else {
       if ( iSetting.isTrend ) {
-        trendsWrapper(iSetting, buffer);
-      } else if ( iSetting.isMinMax ){
-        minmaxWrapper(iSetting, buffer);
+        if ( iSetting.isMinMax ) {
+          minmaxWrapper(iSetting, buffer);
+        } else trendsWrapper(iSetting, buffer);
       } else {
         correlationsWrapper(iSetting, buffer);
       }
