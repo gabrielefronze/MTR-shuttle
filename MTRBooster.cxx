@@ -104,12 +104,15 @@ void MTRBooster::AutoDraw(size_t iLaunch, TVirtualPad* pad, bool drawLegend, Opt
 
     requiredPlot->Draw(opt);
 
+    requiredPlot->GetXaxis()->SetLabelSize(0.027);
+    requiredPlot->GetYaxis()->SetLabelSize(0.027);
+    requiredPlot->GetYaxis()->SetTitleOffset(1.5);
+
     if ( settings.isMinMax || settings.isTrend ){
       //This time offset is NEEDED to correctly display data from timestamp!
       gStyle->SetTimeOffset(0);
       requiredPlot->GetXaxis()->SetTimeDisplay(1);
       requiredPlot->GetXaxis()->SetTimeFormat("%d/%m/%y");
-      requiredPlot->GetXaxis()->SetLabelSize(0.027);
       requiredPlot->GetXaxis()->SetTitle("Date");
     } else requiredPlot->GetHistogram()->GetXaxis()->SetTitle(generateLabel(settings.funcX, settings.fNormalize).c_str());
 
@@ -118,10 +121,10 @@ void MTRBooster::AutoDraw(size_t iLaunch, TVirtualPad* pad, bool drawLegend, Opt
     if( drawLegend ){
       TString legTitle = (settings.fPlane<MTRPlanes::kNPlanes)?Form("MT%d",kPlanes[settings.fPlane]):"";
 
-      auto legend = pad->BuildLegend(0.18,0.63,0.35,0.98,legTitle,legOpt);
+      auto legend = pad->BuildLegend(0.125,0.73,0.38,0.90,legTitle,legOpt);
       legend->SetDrawOption(legOpt);
       legend->SetName(legTitle);
-      legend->SetFillStyle(0);
+//      legend->SetFillStyle(0);
       auto nGraphs = requiredPlot->GetListOfGraphs()->GetEntries();
       if( nGraphs>5 ){
         if( nGraphs%2==0 ) legend->SetNColumns(2);
