@@ -53,7 +53,10 @@ A getter has to be implemented for any additional data member, in order to make 
 
 The class implements several `bool`-returning methods which are used at plotting time to filter the dataset.
 
+### `Enumerators` and `Parameters`
+`Enumerators` contains the definition of the topology of the MTR system. Three `enum`s have been implemented to describe planes, sides and RPCs. The whole framework uses this convention and avoid hard-coded IDs to limit possible bugs.
 
+`Parameters` contains conversion arrays, useful constants such as threshold or max values and plots settings such as color and marker styles.
 
 ## Acknowledgements
 This project has been rewamped several times, growing and extending its capabilities at each iteration.
