@@ -36,41 +36,45 @@ void MTRBooster::Launch()
   }
 }
 
-void MTRBooster::Launch(size_t iLaunch, TMultiGraph* buffer)
+void MTRBooster::Launch(size_t iSetting, TMultiGraph* buffer)
 {
   if( !fLoadedData ){
     std::cerr << "Input data not defined. Aborting.\n";
     return;
   }
 
-  if( iLaunch >= fPlotSettings.size() ) {
+  if( iSetting >= fPlotSettings.size() ) {
     std::cerr << "Plot settings index out of range. Aborting.\n";
     return;
   }
   else {
-    auto iSetting = (fPlotSettings[iLaunch]);
+    auto currentSetting = (fPlotSettings[iSetting]);
 
-    if( !iSetting.fValidSettings ){
-      std::cerr << "Configuration " << iLaunch << " is not valid! The setting will be removed.\n";
-      fPlotSettings.erase(fPlotSettings.begin()+iLaunch);
+    if( !buffer ) buffer = new TMultiGraph(Form("%zu",iSetting),"");
+
+    if( !currentSetting.fValidSettings ){
+      std::cerr << "Configuration " << iSetting << " is not valid! The setting will be removed and the graph set to 0x0.\n";
+      fPlotSettings.erase(fPlotSettings.begin()+iSetting);
+      delete buffer;
+      buffer = nullptr;
       return;
     }
 
-    if( !fAverageComputed && iSetting.fPlotaverage ) MTRBooster::loadAverage();
+    if( !fAverageComputed && currentSetting.fPlotaverage ) MTRBooster::loadAverage();
 
-    if( iSetting.fRPC!=MTRRPCs::kAllRPCs ){
-      if( iSetting.isTrend ){
-        trendWrapper(iSetting, buffer);
+    if( currentSetting.fRPC!=MTRRPCs::kAllRPCs ){
+      if( currentSetting.isTrend ){
+        trendWrapper(currentSetting, buffer);
       } else {
-        correlationWrapper(iSetting, buffer);
+        correlationWrapper(currentSetting, buffer);
       }
     } else {
-      if ( iSetting.isTrend ) {
-        if ( iSetting.isMinMax ) {
-          minmaxWrapper(iSetting, buffer);
-        } else trendsWrapper(iSetting, buffer);
+      if ( currentSetting.isTrend ) {
+        if ( currentSetting.isMinMax ) {
+          minmaxWrapper(currentSetting, buffer);
+        } else trendsWrapper(currentSetting, buffer);
       } else {
-        correlationsWrapper(iSetting, buffer);
+        correlationsWrapper(currentSetting, buffer);
       }
     }
 
