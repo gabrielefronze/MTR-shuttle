@@ -82,10 +82,10 @@ void MTRBooster::Launch(size_t iSetting, TMultiGraph* buffer)
   }
 }
 
-void MTRBooster::AutoDraw(size_t iLaunch, TVirtualPad* pad, bool drawLegend, Option_t* opt, Option_t* legOpt)
+void MTRBooster::AutoDraw(size_t iPlot, TVirtualPad* pad, bool drawLegend, Option_t* opt, Option_t* legOpt)
 {
-  auto requiredPlot = fPlots[iLaunch];
-  auto settings = fPlotSettings[iLaunch];
+  auto requiredPlot = fPlots[iPlot];
+  auto settings = fPlotSettings[iPlot];
 
   if( pad && requiredPlot ){
     pad->cd();
