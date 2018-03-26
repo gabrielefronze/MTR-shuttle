@@ -73,20 +73,20 @@ If needed, a set of conditions (in the form of a `MTRConditions` object) should 
   conditions.addCondition(&RunObject::isValidForIDark,false); //To select data from dark runs with provided HV
 ```
 
-At this point one may want to generate a trend for a single RPC:
+At this point one may want to generate a trend for a single RPC's dark current:
 
 ```cpp
 TGraph* trend_MT11_IN_3_iDark = sciattol.drawTrend(&RunObject::getAvgIDark,false,false,false,MTRPlanes::kMT11,MTRSides::kINSIDE,MTRRPCs::k3,conditions);
 ```
 
-Or for a group of RPC:
+Or HV for a group of RPC:
 
 ```cpp
 TMultiGraph* trend_MT11_IN_HV = sciattol.drawTrends(&RunObject::getAvgHV,false,false,false,MTRPlanes::kMT11,MTRSides::kINSIDE,MTRRPCs::kAllRPCs,conditions);
 TMultiGraph* trend_MT11_HV = sciattol.drawTrends(&RunObject::getAvgHV,false,false,false,MTRPlanes::kMT11,MTRSides::kBoth,MTRRPCs:: kAllRPCs,conditions);
 ```
 
-Or plot only the RPCs reaching the maximum and minimum values at the end of the period:
+Or plot only the RPCs reaching the maximum and minimum net currents values at the end of the period:
 
 ```cpp
 TMultiGraph* maxmin_MT11_IN_iNet = sciattol.drawMaxMin(&RunObject::getAvgINet,false,false,false,MTRPlanes::kMT11,MTRSides::kINSIDE,conditions);
@@ -122,6 +122,92 @@ TMultiGraph* trend_MT11_IN_HV_avg = sciattol.drawTrends(&RunObject::getAvgHV,fal
 ```
 
 ### `MTRBooster` plotting in brief
+
+First step is to create a `MTRBooster` object:
+
+```cpp
+MTRBooster booster("path/to/data.csv");
+```
+
+The conditions will be passed at each setup ina  human readable form.
+
+At this point one may want to generate a trend for a single RPC's dark current:
+
+```cpp
+//This will generate plot with index 0
+booster.SetX("Time").SetY("iDark").SetPlane(MTRPlanes::kMT11).SetSide(MTRSides::kINSIDE).SetRPC(MTRRPCs::k3).SetMinDate("01/01/17");
+```
+
+Or HV for a group of RPC:
+
+```cpp
+//This will generate plot with index 1
+booster.SetX("Time").SetY("HV").SetPlane(MTRPlanes::kMT11).SetSide(MTRSides::kINSIDE).SetMinDate("01/01/17");
+
+//This will generate plot with index 2
+booster.SetX("Time").SetY("HV").SetPlane(MTRPlanes::kMT11).SetMinDate("01/01/17");
+```
+
+Or plot only the RPCs reaching the maximum and minimum net current values at the end of the period:
+
+```cpp
+//This will generate plot with index 3
+booster.SetX("Time").SetY("iNet").SetPlane(MTRPlanes::kMT11).SetSide(MTRSides::kINSIDE).SetMinDate("01/01/17");
+
+//This will generate plot with index 4
+booster.SetX("Time").SetY("iNet").SetPlane(MTRPlanes::kMT11).SetMinDate("01/01/17");
+```
+
+Same goes for correlations, even if `MTRShuttle::drawMaxMin` cannot apply to correlations:
+
+```cpp
+//This will generate plot with index 5
+booster.SetX("iDark").SetY("HV").SetPlane(MTRPlanes::kMT11).SetSide(MTRSides::kINSIDE).SetRPC(MTRRPCs::k3).SetMinDate("01/01/17");
+
+//This will generate plot with index 6
+booster.SetX("HV").SetY("rateBend").SetPlane(MTRPlanes::kMT11).SetSide(MTRSides::kINSIDE).SetRPC(MTRRPCs::k3).SetMinDate("01/01/17");
+```
+
+The whole set of examples might be modified to normalise to the RPC area the values:
+
+```cpp
+//This will generate plot with index 8, same as 0 but normalised
+booster.SetX("Time").SetY("iDark").SetPlane(MTRPlanes::kMT11).SetSide(MTRSides::kINSIDE).SetRPC(MTRRPCs::k3).NormalizeToArea().SetMinDate("01/01/17");
+```
+
+Or to integrate over X:
+
+```cpp
+//This will generate plot with index 9
+booster.SetX("Time").SetY("IntCharge").SetPlane(MTRPlanes::kMT11).SetSide(MTRSides::kINSIDE).SetRPC(MTRRPCs::k3).AccumulateY().SetMinDate("01/01/17");
+```
+
+Or to superimpose the average trend:
+
+```cpp
+//This will generate plot with index 10
+booster.SetX("Time").SetY("HV").SetPlane(MTRPlanes::kMT11).SetSide(MTRSides::kINSIDE).PlotAverage().SetMinDate("01/01/17");
+```
+
+Once everything has bee setup just call:
+
+```cpp
+booster.Launch();
+```
+
+And, if one wants to get the n-th `TMultiGraph`, e.g the 0-th:
+
+```cpp
+auto trend_MT11_IN_3_iDark = booster.GetPlot(0);
+```
+
+In addition one can plot it directly:
+
+```cpp
+auto canv = new TCanvas("canv1","canv1");
+booster.AutoDraw(0, canv); //without legend
+booster.AutoDraw(0, canv, true); //with automatic legend generation
+```
 
 ### Classes and code taxonomy
 The framework has been developed keeping in mind the possibility to integrate new data sources and to be flexible enough to cope with ALICE upgrade. A highly template-ised code is necessary to provide enough degrees of freedom to be ready for unpredictable upgrades.
