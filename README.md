@@ -12,6 +12,21 @@ A common framework has several advantages over reinventing the wheel at each new
 
 Monitoring the MTR performance is an important task to ensure the Resistive Plate Chambers (RPCs) are in good shape for data acquisition. Their noise levels can arise due to both ageing and environmental conditions and a constant monitoring is needed.
 
+### Table of contents
++ [Data sources](#data-sources)
++ [Fantastic Observables and How to Plot Them](#fantastic-observables-and-how-to-plot-them)
++ [`MTRShuttle` plotting brief (but not so)](#-mtrshuttle--brief-guide)
++ [`MTRBooster` plotting brief](#-mtrbooster--brief-guide)
++ [Classes and code taxonomy](#classes-and-code-taxonomy)
+  - [`Enumerators` and `Parameters`](#-enumerators--and--parameters-)
+  - [`AMANDAData` and `AMANDACurrent`](#-amandadata--and--amandacurrent-)
+  - [`RunObject`](#-runobject-)
+  - [`MTRConditions`](#-mtrconditions-)
+  - [`AlienUtilis`](#-alienutilis-)
+  - [`MTRShuttle`](#-mtrshuttle-)
+  - [`MTRBooster`](#-mtrbooster-)
++ [Acknowledgements](#acknowledgements)
+
 ### Data sources
 Two data sources can be used for the retrieval of the measurements and data: the Online Run Condition Database (OCDB) and the DCS database system (formerly AMANDA, soon DARMA). 
 
