@@ -1,6 +1,3 @@
-# MTRShuttle and MTRBooster
-#### Advanced framework for rocket-fast ALICE MTR performance analysis
-
 ### Introduction
 This project is aimed at providing  consistent approach to the study of the ALICE Muon Trigger System performance.
 A common framework has several advantages over reinventing the wheel at each new implementation:
