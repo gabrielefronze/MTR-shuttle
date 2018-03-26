@@ -1,11 +1,1 @@
-# theme: jekyll-theme-minimal
-remote_theme: swanson/lagom
-
-# # Build settings
-# markdown: kramdown
-
-# kramdown:
-#   input: GFM
-#   hard_wrap: false
-#   parse_block_html: true
 theme: jekyll-theme-midnight
