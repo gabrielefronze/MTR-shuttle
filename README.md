@@ -104,6 +104,29 @@ Please note that all the plotting methods are specialised calls of a base method
 * `drawCorrelation` and `drawCorrelations` are two methods that allow one to plot a "correlation" for a single RPC or for a full plane or side respectively. They require as first two arguments two references to `RunObject` getters, for X and Y point coordinates respectively. Several options allow to superimpose the average correlation, to accumulate the Y value or to normalise to the RPC area X and Y values separately;
 * `drawMaxMin` is called similarly to `drawTrends`, but provides a trend graph for a whole plane or side with only the maximum and minimum behaving RPCs are shown. It requires as an argument a reference to one of the `RunObject` getters as Y values. X values are the runs EOR timestamps. Several options allow to superimpose the average trend, to accumulate the Y value or to normalise to the RPC area X and Y values separately.
 
+#### `MTRBooster`
+`MTRBooster` is an interface class aimed at simplifying the usage of `MTRShuttle` for **data representation**. 
+**Data retrieving** and **data processing** functions are only accessible through `MTRShuttle` directly, or using the `MTRBooster::getShuttle` method, as this class owns a `MTRShuttle` data member.
+
+`MTRBooster` strongly relies on a set of methods that can be concatenated in order to specify the settings for the generation of a given plot.
+Plot settings are stored in a `MTRPlotSettings` vector.
+Several kinds of set-up methods are available:
+
+* **X-Y data selectors**: these methods allow to automatically set the data members to plot in the X and Y axes. One call for each axis has to be made before stacking the stage;
+* **Plane, side and RPC selectors**: these methods are intended to select the wanted RPC(s) to plot. One can select only a plane, a side or a combination of a plane and a side (leaving unset the RPC ID), obtaining a `TMultigraph` that contains the overlapped plots for all the RPCs satisfying the selection;
+* **Time and run range selectors**: these methods are wrappers of the `RunObject` methods. By calling them one can select time or run number limits. Note that both open and closed intervals can be set (lass than, more than, between);
+* **Run type and run conditions selectors**: these methods are meant to select runs which are significant for rather specific plots, e.g. dark runs with provided HV, runs with or without beam presence, etc. They wrap around `RunObject` methods;
+* **Plot specific methods**: particular plotting functions are implemented through these methods. They allow to superimpose the average behaviour plot (`MTRBooster::PlotAverage`), to normalise Y (and X for correlation plots) to RPCs areas (`MTRBooster::NormalizeToArea`), integrate over Y (each point is added to the previous and plotted, `MTRBooster::AccumulateY`) or to plot only the trends of the RPCs reaching maximum and minimum values at the end of the selected time windows (`MTRBooster::PlotMinMax`).
+
+All the listed methods interface with a `MTRPlotSettings` object which packs the settings.
+
+After having called the selected chain of methods **is mandatory** to call `MTRBooster::StackStage`, as this call pushes the packed settings in the settings vector and prepares `MTRBooster` to accept a new settings package.
+The ordering of the output graphs is the same of the `MTRBooster::StackStage` calls.
+
+Once all the desired stages (aka `MTRPlotSettings`) have been stacked by calling `MTRBooster::StackStage`, the `MTRBooster::Launch` methods allow to generate all the graphs corresponding to the pushed settings. Note that `MTRBooster::Launch` can be called without arguments (generating all the set-up graphs, stored in an internal `vector`) or with a integer argument and a `TMultiGraph` pointer in order to generate the i-th graph and use the provided pointer to reference the generated plot.
+
+The setup of graph style, axis labels, plot name and legend generation are automatically handled by the `MTRBooster::AutoDraw` method. Using this method to draw the graphs allows one to have consistent color coding between several calls. Additionally this method allows to automatically generate a legend of the superimposed plots.
+
 ### Acknowledgements
 This project has been revamped several times, growing and extending its capabilities at each iteration.
 
