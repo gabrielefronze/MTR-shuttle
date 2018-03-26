@@ -102,10 +102,10 @@ Please note that all the plotting methods are specialised calls of a base method
 
 * `drawTrend` and `drawTrends` are two methods that allow one to plot a "trend" for a single RPC or for a full plane or side respectively. They require as an argument a reference to one of the `RunObject` getters as Y values. X values are the runs EOR timestamps. Several options allow to superimpose the average trend, to accumulate the Y value or to normalise to the RPC area X and Y values separately;
 * `drawCorrelation` and `drawCorrelations` are two methods that allow one to plot a "correlation" for a single RPC or for a full plane or side respectively. They require as first two arguments two references to `RunObject` getters, for X and Y point coordinates respectively. Several options allow to superimpose the average correlation, to accumulate the Y value or to normalise to the RPC area X and Y values separately;
-* `drawMaxMin` is called similarly to `drawTrends`, but provides a trend graph for a whole plane or side with only the maximum and minimum behaving RPCs are shown. It requires as an argument a reference to one of the `RunObject` getters as Y values. X values are the runs EOR timestamps. Several options allow to superimpose the average trend, to accumulate the Y value or to normalise to the RPC area X and Y values separately;
+* `drawMaxMin` is called similarly to `drawTrends`, but provides a trend graph for a whole plane or side with only the maximum and minimum behaving RPCs are shown. It requires as an argument a reference to one of the `RunObject` getters as Y values. X values are the runs EOR timestamps. Several options allow to superimpose the average trend, to accumulate the Y value or to normalise to the RPC area X and Y values separately.
 
 ### Acknowledgements
-This project has been rewamped several times, growing and extending its capabilities at each iteration.
+This project has been revamped several times, growing and extending its capabilities at each iteration.
 
 I would like to thank Diego and Martino for introducing me to the retrieval and visualisation of MTR performances, and for their deep and wise checks of both code and produced results.
 
