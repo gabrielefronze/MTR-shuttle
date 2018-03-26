@@ -22,7 +22,6 @@ enum MTRSides{
 };
 
 enum MTRRPCs{
-    k0,
     k1,
     k2,
     k3,
@@ -31,6 +30,7 @@ enum MTRRPCs{
     k6,
     k7,
     k8,
+    k9,
     kNRPCs,
     kAllRPCs
 };

@@ -46,7 +46,7 @@ void MTRShuttle::parseRunList(std::string path)
 
   for (int plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
     for (int side=kINSIDE; side<MTRSides::kNSides; side++) {
-      for (int RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
+      for (int RPC=k1; RPC<MTRRPCs::kNRPCs; RPC++) {
         fRunDataVect[plane][side][RPC].reserve(nOfRuns);
       }
     }
@@ -143,7 +143,7 @@ void MTRShuttle::parseOCDB(std::string path)
     //loop sui piani, i lati (inside e outside) e le RPC (9 per side)
     for (int plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
       for (int side=kINSIDE; side<MTRSides::kNSides; side++) {
-        for (int RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
+        for (int RPC=k1; RPC<MTRRPCs::kNRPCs; RPC++) {
 
           //creazione di un pointer all'elemento della mappa delle tensioni
           TObjArray *dataArrayVoltage;
@@ -213,7 +213,7 @@ void MTRShuttle::parseOCDB(std::string path)
 
       for (int plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
         for (int side=kINSIDE; side<MTRSides::kNSides; side++) {
-          for (int RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
+          for (int RPC=k1; RPC<MTRRPCs::kNRPCs; RPC++) {
             for (int cathode = 0; cathode < kNCathodes; cathode++) {
               scalers[cathode][side][plane][RPC] = 0;
               elapsedTime[cathode][side][plane][RPC] = 0;
@@ -254,7 +254,7 @@ void MTRShuttle::parseOCDB(std::string path)
 
       for (int plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
         for (int side=kINSIDE; side<MTRSides::kNSides; side++) {
-          for (int RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
+          for (int RPC=k1; RPC<MTRRPCs::kNRPCs; RPC++) {
             double values[2] = {0., 0.};
             for (int cathode = 0; cathode < kNCathodes; cathode++) {
               if (elapsedTime[cathode][side][plane][RPC] > 0) {
@@ -278,7 +278,7 @@ void MTRShuttle::parseOCDB(std::string path)
 
     for (int plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
       for (int side=kINSIDE; side<MTRSides::kNSides; side++) {
-        for (int RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
+        for (int RPC=k1; RPC<MTRRPCs::kNRPCs; RPC++) {
           fRunDataVect[plane][side][RPC].emplace_back(runObjectBuffer[plane][side][RPC]);
         }
       }
@@ -287,7 +287,7 @@ void MTRShuttle::parseOCDB(std::string path)
 
   for (int plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
     for (int side=kINSIDE; side<MTRSides::kNSides; side++) {
-      for (int RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
+      for (int RPC=k1; RPC<MTRRPCs::kNRPCs; RPC++) {
         std::sort(fRunDataVect[plane][side][RPC].begin(),
                   fRunDataVect[plane][side][RPC].end(),
                   [](const RunObject &a, const RunObject &b) -> bool {
@@ -340,7 +340,7 @@ void MTRShuttle::parseAMANDAiMon(std::string path)
 
   for (int plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
     for (int side=kINSIDE; side<MTRSides::kNSides; side++) {
-      for (int RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
+      for (int RPC=k1; RPC<MTRRPCs::kNRPCs; RPC++) {
         std::sort(fAMANDACurrentsVect[plane][side][RPC].begin(),
                   fAMANDACurrentsVect[plane][side][RPC].end(),
                   [](const AMANDACurrent &a, const AMANDACurrent &b) -> bool {
@@ -357,7 +357,7 @@ void MTRShuttle::propagateAMANDA()
 {
   for (int plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
     for (int side=kINSIDE; side<MTRSides::kNSides; side++) {
-      for (int RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
+      for (int RPC=k1; RPC<MTRRPCs::kNRPCs; RPC++) {
 
         printf("MT%d %s RPC%d... Setting isDark... ",kPlanes[plane],kSides[side].c_str(),RPC);
 
@@ -495,7 +495,7 @@ void MTRShuttle::computeAverage()
     for (int plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
       fRunDataVectAvg[plane].reserve(nOfRuns);
       for (int side=kINSIDE; side<MTRSides::kNSides; side++) {
-        for (int RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
+        for (int RPC=k1; RPC<MTRRPCs::kNRPCs; RPC++) {
           if(runData.isHVOk()) runData = runData + fRunDataVect[plane][side][RPC][iRun];
           else nOfRPC--;
         }
@@ -530,7 +530,7 @@ void MTRShuttle::saveData(std::string path)
 
   for (int plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
     for (int side=kINSIDE; side<MTRSides::kNSides; side++) {
-      for (int RPC=k0; RPC<MTRRPCs::kNRPCs; RPC++) {
+      for (int RPC=k1; RPC<MTRRPCs::kNRPCs; RPC++) {
         for (const auto &dataIt : fRunDataVect[plane][side][RPC]) {
           outputFile << plane << ";" << side << ";" << RPC << ";" << dataIt << "\n";
         }
