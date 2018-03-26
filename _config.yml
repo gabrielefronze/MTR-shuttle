@@ -8,3 +8,4 @@ remote_theme: swanson/lagom
 #   input: GFM
 #   hard_wrap: false
 #   parse_block_html: true
+theme: jekyll-theme-midnight
