@@ -1,4 +1,4 @@
-theme: jekyll-theme-midnight
+theme: gabrielefronze/midnight
 
 title: MTRShuttle and MTRBooster
 description: A rocket-fast framework for ALICE MTR performance analysis
