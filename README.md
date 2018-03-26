@@ -1,7 +1,7 @@
 # MTRShuttle and MTRBooster
-### advanced framework for rocket-fast ALICE MTR performance analysis
+## advanced framework for rocket-fast ALICE MTR performance analysis
 
-## Introduction
+### Introduction
 This project is aimed at providing  consistent approach to the study of the ALICE Muon Trigger System performance.
 A common framework has several advantages over reinventing the wheel at each new implementation:
 
@@ -13,24 +13,22 @@ A common framework has several advantages over reinventing the wheel at each new
 
 Monitoring the MTR performance is an important task to ensure the Resistive Plate Chambers (RPCs) are in good shape for data acquisition. Their noise levels can arise due to both ageing and environmental conditions and a constant monitoring is needed.
 
-## Table of contents
-- [Data sources](#data-sources)
-- [Fantastic Observables and How to Plot Them](#fantastic-observables-and-how-to-plot-them)
-- [`MTRShuttle` plotting in brief (but not so)](#-mtrshuttle--plotting-in-brief--but-not-so-)
-- [`MTRBooster` plotting in brief](#-mtrbooster--plotting-in-brief)
-- [Classes and code taxonomy](#classes-and-code-taxonomy)
-  * [`Enumerators` and `Parameters`](#-enumerators--and--parameters-)
-  * [`AMANDAData` and `AMANDACurrent`](#-amandadata--and--amandacurrent-)
-  * [`RunObject`](#-runobject-)
-  * [`MTRConditions`](#-mtrconditions-)
-  * [`AlienUtilis`](#-alienutilis-)
-  * [`MTRShuttle`](#-mtrshuttle-)
-  * [`MTRBooster`](#-mtrbooster-)
-- [Acknowledgements](#acknowledgements)
+### Table of contents
++ [Data sources](#data-sources)
++ [Fantastic Observables and How to Plot Them](#fantastic-observables-and-how-to-plot-them)
++ [`MTRShuttle` plotting in brief (but not so)](#-mtrshuttle--brief-guide)
++ [`MTRBooster` plotting in brief](#-mtrbooster--brief-guide)
++ [Classes and code taxonomy](#classes-and-code-taxonomy)
+  - [`Enumerators` and `Parameters`](#-enumerators--and--parameters-)
+  - [`AMANDAData` and `AMANDACurrent`](#-amandadata--and--amandacurrent-)
+  - [`RunObject`](#-runobject-)
+  - [`MTRConditions`](#-mtrconditions-)
+  - [`AlienUtilis`](#-alienutilis-)
+  - [`MTRShuttle`](#-mtrshuttle-)
+  - [`MTRBooster`](#-mtrbooster-)
++ [Acknowledgements](#acknowledgements)
 
-
-## Data sources
-======
+### Data sources
 Two data sources can be used for the retrieval of the measurements and data: the Online Run Condition Database (OCDB) and the DCS database system (formerly AMANDA, soon DARMA). 
 
 The OCDB provides beam status information, run information (run number, Start of Run [SOR] and End of Run [EOR], run type...), a redundant copy of DCS readings and a cadenced dump of raw scalers readings. OCDB objects are generated and stored only during data acquisition. 
@@ -39,8 +37,7 @@ The DCS infrastructure is connected to a pletora of subsystems and sensors whose
 
 These two data sources have complementary sets of information that can be combined to get the best coverage possible of the MTR running performances.
 
-## Fantastic Observables and How to Plot Them
-======
+### Fantastic Observables and How to Plot Them
 Several observables are of crucial importance for the diagnosis of the status of the RPCs. Some of them are:
 
 * _Total current:_ the total current provided by the power supply to the detector;
@@ -56,8 +53,7 @@ These three plotting styles will be called "trend", "correlation" and "minmax".
 
 Another important aspect is the possibility to plot the average behaviour of a given parameter alongside that of a specific RPC.
 
-## `MTRShuttle` plotting in brief (but not so)
-======
+### `MTRShuttle` plotting in brief (but not so)
 First step is creating a `MTRShuttle` object and load the wanted data `csv` file, then compute the average values if needed:
 
 ```cpp
@@ -125,8 +121,8 @@ TMultiGraph* trend_MT11_IN_HV = sciattol.drawTrends(&RunObject::getAvgHV,false,f
 TMultiGraph* trend_MT11_IN_HV_avg = sciattol.drawTrends(&RunObject::getAvgHV,false,false,true,MTRPlanes::kMT11,MTRSides::kINSIDE,MTRRPCs::kAllRPCs,conditions);
 ```
 
-## `MTRBooster` plotting in brief
-======
+### `MTRBooster` plotting in brief
+
 First step is to create a `MTRBooster` object:
 
 ```cpp
@@ -213,38 +209,37 @@ booster.AutoDraw(0, canv); //without legend
 booster.AutoDraw(0, canv, true); //with automatic legend generation
 ```
 
-## Classes and code taxonomy
-======
+### Classes and code taxonomy
 The framework has been developed keeping in mind the possibility to integrate new data sources and to be flexible enough to cope with ALICE upgrade. A highly template-ised code is necessary to provide enough degrees of freedom to be ready for unpredictable upgrades.
 
 An overview of the classes is presented below.
 
-### `Enumerators` and `Parameters`
+#### `Enumerators` and `Parameters`
 `Enumerators` contains the definition of the topology of the MTR system. Three `enum`s have been implemented to describe planes, sides and RPCs. The whole framework uses this convention and avoid hard-coded IDs to limit possible bugs.
 
 `Parameters` contains conversion arrays, useful constants such as threshold or max values and plots settings such as color and marker styles.
 
-### `AMANDAData` and `AMANDACurrent`
+#### `AMANDAData` and `AMANDACurrent`
 DCS readings are characterised by a timestamp. `AMANDAData` is a `struct` that contains the timestamp and appropriate class-like getters, setters and constructor. All additional DCS data types have to inherit from `AMANDAData`.
 
 `AMANDACurrent` is a derived class (from `AMANDAData`) that extends the base class to contain information about total, dark and net current. A `isDarkCurrent` flag is available to keep track of the presence of the beam in the LHC during the current reading. This class is also intended to be a sample implementation to add other DCS measurement types to the framework. 
 
-### `RunObject`
+#### `RunObject`
 `RunObject` contains a set of measurements performed during a run, plus a set of information retrieved from the OCDB, such as run number, SOR or EOR. Each data member is intended to be the averaged value over time for the given parameter during the given run.
 
 A getter has to be implemented for any additional data member, in order to make it plottable.
 
 The class implements several `bool`-returning methods which are used at plotting time to filter the dataset.
 
-### `MTRConditions`
+#### `MTRConditions`
 This class is a wrapper of a vector of `bool`-returning methods belonging to `RunObject`. This has been done to allow the application of several filters to the data sample at plotting time. 
 
 Technically it uses the `std::bind` method to push in the vector the condition methods with embedded eventual parameters, passed as a template parameter pack.
 
-### `AlienUtilis`
+#### `AlienUtilis`
 This suite of utilities contains useful methods to interface with Alien in order to retrieve data from the GRID.
 
-### `MTRShuttle`
+#### `MTRShuttle`
 `MTRShuttle` is the class that implements the three crucial aspects of the framework:
 
 1. Retrieving and merging of OCDB and DCS data;
@@ -277,7 +272,7 @@ Please note that all the plotting methods are specialised calls of a base method
 * `drawCorrelation` and `drawCorrelations` are two methods that allow one to plot a "correlation" for a single RPC or for a full plane or side respectively. They require as first two arguments two references to `RunObject` getters, for X and Y point coordinates respectively. Several options allow to superimpose the average correlation, to accumulate the Y value or to normalise to the RPC area X and Y values separately;
 * `drawMaxMin` is called similarly to `drawTrends`, but provides a trend graph for a whole plane or side with only the maximum and minimum behaving RPCs are shown. It requires as an argument a reference to one of the `RunObject` getters as Y values. X values are the runs EOR timestamps. Several options allow to superimpose the average trend, to accumulate the Y value or to normalise to the RPC area X and Y values separately.
 
-### `MTRBooster`
+#### `MTRBooster`
 `MTRBooster` is an interface class aimed at simplifying the usage of `MTRShuttle` for **data representation**. 
 **Data retrieving** and **data processing** functions are only accessible through `MTRShuttle` directly, or using the `MTRBooster::getShuttle` method, as this class owns a `MTRShuttle` data member.
 
