@@ -1,1 +1,5 @@
 theme: jekyll-theme-midnight
+
+title: MTR-Shuttle and MTR-Booster
+description: A rocket-fast framework for ALICE MTR performance analysis
+show_downloads: true
