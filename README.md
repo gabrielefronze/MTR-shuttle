@@ -37,7 +37,73 @@ These three plotting styles will be called "trend", "correlation" and "minmax".
 
 Another important aspect is the possibility to plot the average behaviour of a given parameter alongside that of a specific RPC.
 
-### `MTRShuttle` brief guide
+### `MTRShuttle` plotting in brief (but not so)
+First step is creating a `MTRShuttle` object and load the wanted data `csv` file, then compute the average values if needed:
+
+```cpp
+  MTRShuttle shuttle;
+
+  shuttle.loadData("path/to/data.csv");
+  shuttle.computeAverage(); //needed if the average data is required later
+```
+
+If needed, a set of conditions (in the form of a `MTRConditions` object) should to be filled with the wanted conditions:
+
+```cpp
+  auto TS2017 = (uint64_t)1483291280;
+
+  MTRConditions conditions;
+  conditions.addCondition(&RunObject::isAfter,false,TS2017); //To select data points from 1/1/2017
+  conditions.addCondition(&RunObject::isValidForIDark,false); //To select data from dark runs with provided HV
+```
+
+At this point one may want to generate a trend for a single RPC:
+
+```cpp
+TGraph* trend_MT11_IN_3_iDark = sciattol.drawTrend(&RunObject::getAvgIDark,false,false,false,MTRPlanes::kMT11,MTRSides::kINSIDE,MTRRPCs::k3,conditions);
+```
+
+Or for a group of RPC:
+
+```cpp
+TMultiGraph* trend_MT11_IN_HV = sciattol.drawTrends(&RunObject::getAvgHV,false,false,false,MTRPlanes::kMT11,MTRSides::kINSIDE,MTRRPCs::kAllRPCs,conditions);
+TMultiGraph* trend_MT11_HV = sciattol.drawTrends(&RunObject::getAvgHV,false,false,false,MTRPlanes::kMT11,MTRSides::kBoth,MTRRPCs:: kAllRPCs,conditions);
+```
+
+Or plot only the RPCs reaching the maximum and minimum values at the end of the period:
+
+```cpp
+TMultiGraph* maxmin_MT11_IN_iNet = sciattol.drawMaxMin(&RunObject::getAvgINet,false,false,false,MTRPlanes::kMT11,MTRSides::kINSIDE,conditions);
+TMultiGraph* maxmin_MT11_iNet = sciattol.drawMaxMin(&RunObject::getAvgINet,false,false,false,MTRPlanes::kMT11,MTRSides::kBoth,conditions);
+```
+
+Same goes for correlations, even if `MTRShuttle::drawMaxMin` cannot apply to correlations:
+
+```cpp
+TMultiGraph* corr_MT11_IN_3_iDark_HV = sciattol.drawTrend(&RunObject::getAvgIDark,&RunObject::getAvgHV,false,false,false,false,MTRPlanes::kMT11,MTRSides::kINSIDE,MTRRPCs::k3,conditions);
+TMultiGraph* corr_MT11_IN_HV_rateBend = sciattol.drawTrends(&RunObject::getAvgHV,&RunObject::getRateBend,false,false,false,false,MTRPlanes::kMT11,MTRSides::kINSIDE,MTRRPCs::kAllRPCs,conditions);
+```
+
+The whole set of examples might be modified to normalise to the RPC area the values:
+
+```cpp
+TGraph* trend_MT11_IN_3_iDark = sciattol.drawTrend(&RunObject::getAvgIDark,false,false,false,MTRPlanes::kMT11,MTRSides::kINSIDE,MTRRPCs::k3,conditions);
+TGraph* trend_MT11_IN_3_iDark_norm = sciattol.drawTrend(&RunObject::getAvgIDark,true,false,false,MTRPlanes::kMT11,MTRSides::kINSIDE,MTRRPCs::k3,conditions);
+```
+
+Or to integrate over X:
+
+```cpp
+TGraph* trend_MT11_IN_3_intCharge = sciattol.drawTrend(&RunObject::getIntCharge,false,false,false,MTRPlanes::kMT11,MTRSides::kINSIDE,MTRRPCs::k3,conditions);
+TGraph* trend_MT11_IN_3_intCharge_integrated = sciattol.drawTrend(&RunObject::getAvgIDark,false,true,false,MTRPlanes::kMT11,MTRSides::kINSIDE,MTRRPCs::k3,conditions);
+```
+
+Or to superimpose the average trend:
+
+```cpp
+TMultiGraph* trend_MT11_IN_HV = sciattol.drawTrends(&RunObject::getAvgHV,false,false,false,MTRPlanes::kMT11,MTRSides::kINSIDE,MTRRPCs::kAllRPCs,conditions);
+TMultiGraph* trend_MT11_IN_HV_avg = sciattol.drawTrends(&RunObject::getAvgHV,false,false,true,MTRPlanes::kMT11,MTRSides::kINSIDE,MTRRPCs::kAllRPCs,conditions);
+```
 
 ### `MTRBooster` brief guide
 
