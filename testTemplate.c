@@ -96,7 +96,7 @@ int testTemplate(){
   conditions.addCondition(&RunObject::isValidForIDark,false);
 
 //  auto graph1 = sciattol.drawTrend(&RunObject::getAvgIDark,false,false,true,-1,-1,-1,conditions);
-  auto graph2 = sciattol.drawTrend(&RunObject::getAvgIDark,false,false,false,kMT22,kINSIDE,MTRRPCs::k2,conditions);
+  auto graph2 = sciattol.drawTrend(&RunObject::getAvgIDark,false,false,false,kMT22,kINSIDE,MTRRPCs::k3,conditions);
 //  graph1->Draw("alp");
   graph2->Draw("alp");
 
