@@ -1,6 +1,7 @@
 # MTRShuttle and MTRBooster
 ## advanced framework for rocket-fast ALICE MTR performance analysis
 
+### Introduction
 This project is aimed at providing  consistent approach to the study of the ALICE Muon Trigger System performance.
 A common framework has several advantages over reinventing the wheel at each new implementation:
 
@@ -15,8 +16,8 @@ Monitoring the MTR performance is an important task to ensure the Resistive Plat
 ### Table of contents
 + [Data sources](#data-sources)
 + [Fantastic Observables and How to Plot Them](#fantastic-observables-and-how-to-plot-them)
-+ [`MTRShuttle` plotting brief (but not so)](#-mtrshuttle--brief-guide)
-+ [`MTRBooster` plotting brief](#-mtrbooster--brief-guide)
++ [`MTRShuttle` plotting in brief (but not so)](#-mtrshuttle--brief-guide)
++ [`MTRBooster` plotting in brief](#-mtrbooster--brief-guide)
 + [Classes and code taxonomy](#classes-and-code-taxonomy)
   - [`Enumerators` and `Parameters`](#-enumerators--and--parameters-)
   - [`AMANDAData` and `AMANDACurrent`](#-amandadata--and--amandacurrent-)
@@ -120,7 +121,7 @@ TMultiGraph* trend_MT11_IN_HV = sciattol.drawTrends(&RunObject::getAvgHV,false,f
 TMultiGraph* trend_MT11_IN_HV_avg = sciattol.drawTrends(&RunObject::getAvgHV,false,false,true,MTRPlanes::kMT11,MTRSides::kINSIDE,MTRRPCs::kAllRPCs,conditions);
 ```
 
-### `MTRBooster` brief guide
+### `MTRBooster` plotting in brief
 
 ### Classes and code taxonomy
 The framework has been developed keeping in mind the possibility to integrate new data sources and to be flexible enough to cope with ALICE upgrade. A highly template-ised code is necessary to provide enough degrees of freedom to be ready for unpredictable upgrades.
