@@ -41,7 +41,7 @@ class MTRBooster
     void PrintConfig();
 
     void Launch();
-    void Launch(size_t iLaunch, TMultiGraph* buffer);
+    void Launch(size_t iSetting, TMultiGraph* buffer);
     void AutoDraw(size_t iLaunch, TVirtualPad* pad, bool drawLegend=false, Option_t* opt="alp", Option_t* legOpt="P");
 
     MTRBooster& SetPlane(int HR_plane);
