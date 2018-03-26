@@ -37,7 +37,7 @@ These three plotting styles will be called "trend", "correlation" and "minmax".
 
 Another important aspect is the possibility to plot the average behaviour of a given parameter alongside that of a specific RPC.
 
-## Algorithmic and code structure
+## Files taxonomy
 The framework has been developed keeping in mind the possibility to integrate new data sources and to be flexible enough to cope with ALICE upgrade. A highly template-ised code is necessary to provide enough degrees of freedom to be ready for unpredictable upgrades.
 
 An overview of the classes is presented below.
