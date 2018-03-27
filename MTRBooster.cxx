@@ -365,7 +365,7 @@ void MTRBooster::correlationWrapper(MTRPlotSettings &setting, TMultiGraph* buffe
                                        setting.fPlane,
                                        setting.fSide,
                                        setting.fRPC,
-                                       setting.fConditions));
+                                       &(setting.fConditions)));
 
 }
 
@@ -380,7 +380,7 @@ void MTRBooster::correlationsWrapper(MTRPlotSettings &setting, TMultiGraph* buff
                                         setting.fPlotaverage,
                                         setting.fPlane,
                                         setting.fSide,
-                                        setting.fConditions));
+                                        &(setting.fConditions)));
 }
 
 void MTRBooster::trendWrapper(MTRPlotSettings &setting, TMultiGraph* buffer)
@@ -392,7 +392,7 @@ void MTRBooster::trendWrapper(MTRPlotSettings &setting, TMultiGraph* buffer)
                                  setting.fPlane,
                                  setting.fSide,
                                  setting.fRPC,
-                                 setting.fConditions));
+                                 &(setting.fConditions)));
 }
 
 void MTRBooster::trendsWrapper(MTRPlotSettings &setting, TMultiGraph* buffer)
@@ -404,7 +404,7 @@ void MTRBooster::trendsWrapper(MTRPlotSettings &setting, TMultiGraph* buffer)
                                   setting.fPlotaverage,
                                   setting.fPlane,
                                   setting.fSide,
-                                  setting.fConditions));
+                                  &(setting.fConditions)));
 }
 
 void MTRBooster::minmaxWrapper(MTRPlotSettings &setting, TMultiGraph* buffer)
@@ -416,5 +416,5 @@ void MTRBooster::minmaxWrapper(MTRPlotSettings &setting, TMultiGraph* buffer)
                                   setting.fPlotaverage,
                                   setting.fPlane,
                                   setting.fSide,
-                                  setting.fConditions));
+                                  &(setting.fConditions)));
 }

@@ -7,14 +7,14 @@
 template<typename XType, typename YType>
 TGraph *drawCorrelation(XType (RunObject::*getX)() const,
                         YType (RunObject::*getY)() const,
-                        bool normalizeToAreaX,
-                        bool normalizeToAreaY,
-                        bool accumulate,
-                        bool plotAverage,
-                        MTRPlanes plane,
-                        MTRSides side,
-                        MTRRPCs RPC,
-                        MTRConditions conditions)
+                        bool normalizeToAreaX=false,
+                        bool normalizeToAreaY=false,
+                        bool accumulate=false,
+                        bool plotAverage=false,
+                        MTRPlanes plane=MTRPlanes::kAll,
+                        MTRSides side=MTRSides::kBoth,
+                        MTRRPCs RPC=MTRRPCs::kAllRPCs,
+                        MTRConditions *conditions=new MTRConditions())
 {
   auto *returnedGraph = new TGraph();
   if(!plotAverage){
@@ -62,7 +62,7 @@ TGraph *drawCorrelation(XType (RunObject::*getX)() const,
   for( auto const &dataIt : dataVector){
 
     bool shouldPlot = true;
-    for (const auto &itCondition : conditions()) {
+    for (const auto &itCondition : (*conditions)()) {
       shouldPlot &= itCondition(&dataIt);
     }
     if (!shouldPlot) continue;
@@ -118,19 +118,19 @@ TGraph *drawCorrelation(XType (RunObject::*getX)() const,
                          plane,
                          side,
                          RPC,
-                         dummyCond);
+                         &dummyCond);
 }
 
 template<typename XType, typename YType, typename CondType>
 TMultiGraph *drawCorrelations(XType(RunObject::*getX)() const,
                               YType(RunObject::*getY)() const,
-                              bool normalizeToAreaX,
-                              bool normalizeToAreaY,
-                              bool accumulate,
-                              bool plotAverage,
-                              MTRPlanes plane,
-                              MTRSides side,
-                              CondType conditions)
+                              bool normalizeToAreaX=false,
+                              bool normalizeToAreaY=false,
+                              bool accumulate=false,
+                              bool plotAverage=false,
+                              MTRPlanes plane=MTRPlanes::kAll,
+                              MTRSides side=MTRSides::kBoth,
+                              CondType *conditions=nullptr)
 {
   auto *mg = new TMultiGraph();
 
@@ -196,12 +196,12 @@ TMultiGraph *drawCorrelations(XType(RunObject::*getX)() const,
 template<typename YType, typename CondType>
 TGraph *drawTrend(YType (RunObject::*getY)() const,
                   bool normalizeToArea,
-                  bool accumulate,
-                  bool plotAverage,
-                  MTRPlanes plane,
-                  MTRSides side,
-                  MTRRPCs RPC,
-                  CondType conditions)
+                  bool accumulate=false,
+                  bool plotAverage=false,
+                  MTRPlanes plane=MTRPlanes::kAll,
+                  MTRSides side=MTRSides::kBoth,
+                  MTRRPCs RPC=MTRRPCs::kAllRPCs,
+                  CondType *conditions=nullptr)
 {
   return drawCorrelation(&RunObject::getSOR,
                          getY,
@@ -218,11 +218,11 @@ TGraph *drawTrend(YType (RunObject::*getY)() const,
 template<typename YType, typename CondType>
 TMultiGraph *drawTrends(YType (RunObject::*getY)() const,
                         bool normalizeToArea,
-                        bool accumulate,
-                        bool plotAverage,
-                        MTRPlanes plane,
-                        MTRSides side,
-                        CondType conditions)
+                        bool accumulate=false,
+                        bool plotAverage=false,
+                        MTRPlanes plane=MTRPlanes::kAll,
+                        MTRSides side=MTRSides::kBoth,
+                        CondType *conditions=nullptr)
 {
   return drawCorrelations(&RunObject::getSOR,
                           getY,
@@ -238,12 +238,12 @@ TMultiGraph *drawTrends(YType (RunObject::*getY)() const,
 template<typename YType, typename CondType>
 TMultiGraph *
 drawMaxMin(YType (RunObject::*getY)() const,
-           bool normalizeToAreaY,
-           bool accumulate,
-           bool plotAverage,
-           MTRPlanes plane,
-           MTRSides side,
-           CondType conditions)
+           bool normalizeToAreaY=false,
+           bool accumulate=false,
+           bool plotAverage=false,
+           MTRPlanes plane=MTRPlanes::kAll,
+           MTRSides side=MTRSides::kBoth,
+           CondType *conditions=nullptr)
 {
   auto mg = drawTrends(getY,normalizeToAreaY,accumulate,plotAverage,plane,side,conditions);
   auto grList = mg->GetListOfGraphs();
