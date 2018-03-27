@@ -76,49 +76,49 @@ If needed, a set of conditions (in the form of a `MTRConditions` object) should 
 At this point one may want to generate a trend for a single RPC's dark current:
 
 ```cpp
-TGraph* trend_MT11_IN_3_iDark = sciattol.drawTrend(&RunObject::getAvgIDark,false,false,false,MTRPlanes::kMT11,MTRSides::kINSIDE,MTRRPCs::k3,conditions);
+TGraph* trend_MT11_IN_3_iDark = sciattol.drawTrend(&RunObject::getAvgIDark,false,false,false,kMT11,kINSIDE,k3,conditions);
 ```
 
-Or HV for a group of RPC:
+Or HV for a group of RPC plotting without conditions:
 
 ```cpp
-TMultiGraph* trend_MT11_IN_HV = sciattol.drawTrends(&RunObject::getAvgHV,false,false,false,MTRPlanes::kMT11,MTRSides::kINSIDE,MTRRPCs::kAllRPCs,conditions);
-TMultiGraph* trend_MT11_HV = sciattol.drawTrends(&RunObject::getAvgHV,false,false,false,MTRPlanes::kMT11,MTRSides::kBoth,MTRRPCs:: kAllRPCs,conditions);
+TMultiGraph* trend_MT11_IN_HV = sciattol.drawTrends(&RunObject::getAvgHV,false,false,false,kMT11,kINSIDE);
+TMultiGraph* trend_MT11_HV = sciattol.drawTrends(&RunObject::getAvgHV,false,false,false,kMT11);
 ```
 
 Or plot only the RPCs reaching the maximum and minimum net currents values at the end of the period:
 
 ```cpp
-TMultiGraph* maxmin_MT11_IN_iNet = sciattol.drawMaxMin(&RunObject::getAvgINet,false,false,false,MTRPlanes::kMT11,MTRSides::kINSIDE,conditions);
-TMultiGraph* maxmin_MT11_iNet = sciattol.drawMaxMin(&RunObject::getAvgINet,false,false,false,MTRPlanes::kMT11,MTRSides::kBoth,conditions);
+TMultiGraph* maxmin_MT11_IN_iNet = sciattol.drawMaxMin(&RunObject::getAvgINet,false,false,false,kMT11,kINSIDE,conditions);
+TMultiGraph* maxmin_MT11_iNet = sciattol.drawMaxMin(&RunObject::getAvgINet,false,false,false,kMT11,kBoth,conditions);
 ```
 
 Same goes for correlations, even if `MTRShuttle::drawMaxMin` cannot apply to correlations:
 
 ```cpp
-TMultiGraph* corr_MT11_IN_3_iDark_HV = sciattol.drawTrend(&RunObject::getAvgIDark,&RunObject::getAvgHV,false,false,false,false,MTRPlanes::kMT11,MTRSides::kINSIDE,MTRRPCs::k3,conditions);
-TMultiGraph* corr_MT11_IN_HV_rateBend = sciattol.drawTrends(&RunObject::getAvgHV,&RunObject::getRateBend,false,false,false,false,MTRPlanes::kMT11,MTRSides::kINSIDE,MTRRPCs::kAllRPCs,conditions);
+TMultiGraph* corr_MT11_IN_3_iDark_HV = sciattol.drawTrend(&RunObject::getAvgIDark,&RunObject::getAvgHV,false,false,false,false,kMT11,kINSIDE,k3,conditions);
+TMultiGraph* corr_MT11_IN_HV_rateBend = sciattol.drawTrends(&RunObject::getAvgHV,&RunObject::getRateBend,false,false,false,false,kMT11,kINSIDE,kAllRPCs,conditions);
 ```
 
 The whole set of examples might be modified to normalise to the RPC area the values:
 
 ```cpp
-TGraph* trend_MT11_IN_3_iDark = sciattol.drawTrend(&RunObject::getAvgIDark,false,false,false,MTRPlanes::kMT11,MTRSides::kINSIDE,MTRRPCs::k3,conditions);
-TGraph* trend_MT11_IN_3_iDark_norm = sciattol.drawTrend(&RunObject::getAvgIDark,true,false,false,MTRPlanes::kMT11,MTRSides::kINSIDE,MTRRPCs::k3,conditions);
+TGraph* trend_MT11_IN_3_iDark = sciattol.drawTrend(&RunObject::getAvgIDark,false,false,false,kMT11,kINSIDE,k3,conditions);
+TGraph* trend_MT11_IN_3_iDark_norm = sciattol.drawTrend(&RunObject::getAvgIDark,true,false,false,kMT11,kINSIDE,k3,conditions);
 ```
 
 Or to integrate over X:
 
 ```cpp
-TGraph* trend_MT11_IN_3_intCharge = sciattol.drawTrend(&RunObject::getIntCharge,false,false,false,MTRPlanes::kMT11,MTRSides::kINSIDE,MTRRPCs::k3,conditions);
-TGraph* trend_MT11_IN_3_intCharge_integrated = sciattol.drawTrend(&RunObject::getAvgIDark,false,true,false,MTRPlanes::kMT11,MTRSides::kINSIDE,MTRRPCs::k3,conditions);
+TGraph* trend_MT11_IN_3_intCharge = sciattol.drawTrend(&RunObject::getIntCharge,false,false,false,kMT11,kINSIDE,k3,conditions);
+TGraph* trend_MT11_IN_3_intCharge_integrated = sciattol.drawTrend(&RunObject::getAvgIDark,false,true,false,kMT11,kINSIDE,k3,conditions);
 ```
 
 Or to superimpose the average trend:
 
 ```cpp
-TMultiGraph* trend_MT11_IN_HV = sciattol.drawTrends(&RunObject::getAvgHV,false,false,false,MTRPlanes::kMT11,MTRSides::kINSIDE,MTRRPCs::kAllRPCs,conditions);
-TMultiGraph* trend_MT11_IN_HV_avg = sciattol.drawTrends(&RunObject::getAvgHV,false,false,true,MTRPlanes::kMT11,MTRSides::kINSIDE,MTRRPCs::kAllRPCs,conditions);
+TMultiGraph* trend_MT11_IN_HV = sciattol.drawTrends(&RunObject::getAvgHV,false,false,false,kMT11,kINSIDE,kAllRPCs,conditions);
+TMultiGraph* trend_MT11_IN_HV_avg = sciattol.drawTrends(&RunObject::getAvgHV,false,false,true,kMT11,kINSIDE,kAllRPCs,conditions);
 ```
 
 ### MTRBooster plotting in brief
