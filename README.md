@@ -302,6 +302,6 @@ The setup of graph style, axis labels, plot name and legend generation are autom
 > 
 > I would like to thank Max for the countless cross-checks and discussions.
 > 
-> I would like to thank Filippo for pushing the whole project to a new level, introducing new algorithms and advanced C++ coding to improve usability and maintainability of the whole framework.
-> 
 > I would like to thank Laurent for the countless coding suggestions and tips that really made the project to a new level of abstraction and end-user usability.
+> 
+> I would like to thank Filippo for pushing the whole project to a new level, developing good part of the plotting algorithms and data storage instructions.
