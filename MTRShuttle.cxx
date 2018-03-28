@@ -298,6 +298,76 @@ void MTRShuttle::parseOCDB(std::string path)
   }
 }
 
+void MTRShuttle::parseOCDBiMon(std::string path){
+
+  AlienUtils::connectIfNeeded(path);
+
+  AliCDBManager *managerCDB = AliCDBManager::Instance();
+
+  int previousRunYear = 0;
+  std::string CDBpath;
+
+  for (const auto &runIterator : fRunList) {
+
+    AliCDBStorage *defStorage = managerCDB->GetDefaultStorage();
+    if (!defStorage) continue;
+
+    managerCDB->SetRun(runIterator.first);
+    defStorage->QueryCDB(runIterator.first);
+
+    if (!AlienUtils::checkCDB(runIterator.first, defStorage, "MUON/Calib/TriggerDCS", false)) {
+      printf("\t\tERROR: TriggerDCS not found for run %d\n", runIterator.first);
+      continue;
+    } else {
+      printf("\t\tINFO: TriggerDCS found for run %d\n", runIterator.first);
+    }
+
+    //inizializzazione dell'entry contente i valori di corrente
+    AliCDBEntry *entryDCS = managerCDB->Get("MUON/Calib/TriggerDCS");
+    if (!entryDCS) {
+      printf("\t\tERROR: AliCDBEntry not found for run %d\n", runIterator.first);
+      continue;
+    }
+
+    //mappa delle correnti
+    auto mapDCS = (TMap *) entryDCS->GetObject();
+    if (!mapDCS) {
+      printf("\t\tERROR: mapDCS not found for run %d\n", runIterator.first);
+      continue;
+    }
+
+    RunObject runObjectBuffer[MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
+
+    int badHVCounter = 0;
+
+    //loop sui piani, i lati (inside e outside) e le RPC (9 per side)
+    for (int plane = MTRPlanes::kMT11; plane < MTRPlanes::kNPlanes; plane++) {
+      for (int side = kINSIDE; side < MTRSides::kNSides; side++) {
+        for (int RPC = k1; RPC < MTRRPCs::kNRPCs; RPC++) {
+
+          //creazione di un pointer all'elemento della mappa delle tensioni
+          TObjArray *dataArrayVoltage;
+          dataArrayVoltage = (TObjArray *) (mapDCS->GetValue(
+            Form("MTR_%s_MT%d_RPC%d_HV.iMon", kSides[side].c_str(), kPlanes[plane], RPC + 1)));
+
+          if (!dataArrayVoltage) {
+            printf(" Problems getting dataArrayCurrent\n");
+            break;
+          }
+
+          //loop sulle entry del vettore di misure di tensione
+          for (int arrayIndex = 0; arrayIndex < (dataArrayVoltage->GetEntries()); arrayIndex++) {
+            auto *value = (AliDCSValue *) dataArrayVoltage->At(arrayIndex);
+
+            value->GetTimeStamp();
+            fAMANDACurrentsVect[plane][side][RPC].emplace_back(AMANDACurrent((uint64_t)value->GetTimeStamp(),value->GetFloat(),0.,true));
+          }
+        }
+      }
+    }
+  }
+}
+
 void MTRShuttle::parseAMANDAiMon(std::string path)
 {
   int linesCounter = 0;
@@ -438,6 +508,7 @@ void MTRShuttle::propagateAMANDA()
           double iDarkCumulus = 0.;
           double iTotCumulus = 0.;
           double totalT = 0.;
+          int iCounter = 0;
 
           double integratedCharge = 0;
           uint64_t previousTS = currentIt->getTimeStamp();
@@ -459,18 +530,25 @@ void MTRShuttle::propagateAMANDA()
               // If SOR<TS<EOR then set IDark
             } else {
               auto deltaT = currentIt->getTimeStamp()-previousTS;
-              iDarkCumulus+=currentIt->getIDark()*(double)deltaT;
-              iTotCumulus+=currentIt->getITot()*(double)deltaT;
-              integratedCharge+=currentIt->getINet()*(double)deltaT;
+//              iDarkCumulus+=currentIt->getIDark()*(double)deltaT;
+//              iTotCumulus+=currentIt->getITot()*(double)deltaT;
+//              integratedCharge+=currentIt->getINet()*(double)deltaT;
 
+              iDarkCumulus+=currentIt->getIDark();
+              iTotCumulus+=currentIt->getITot();
+              integratedCharge+=currentIt->getINet()*deltaT;
+
+              iCounter++;
               totalT+=deltaT;
 
               previousTS = TS;
             }
           }
 
-          runObjectIt.setAvgIDark((totalT>0)?iDarkCumulus/(double)totalT:0.);
-          runObjectIt.setAvgITot((totalT>0)?iTotCumulus/(double)totalT:0.);
+//          runObjectIt.setAvgIDark((totalT>0)?iDarkCumulus/(double)totalT:0.);
+//          runObjectIt.setAvgITot((totalT>0)?iTotCumulus/(double)totalT:0.);
+          runObjectIt.setAvgIDark((iCounter>0)?iDarkCumulus/(double)iCounter:0.);
+          runObjectIt.setAvgITot((iCounter>0)?iTotCumulus/(double)iCounter:0.);
           runObjectIt.setIntCharge(integratedCharge);
         }
       }

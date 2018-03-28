@@ -26,6 +26,7 @@ class MTRShuttle
     void parseRunList(std::string path="");
     void parseOCDB(std::string path="");
     void parseAMANDAiMon(std::string path = "");
+    void parseOCDBiMon(std::string path = "");
 //TODO:    void parseAMANDAVeff(std::string path = "");
     void propagateAMANDA();
     void saveData(std::string path = "MTRShuttle.csv");
