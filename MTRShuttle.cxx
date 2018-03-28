@@ -482,9 +482,10 @@ void MTRShuttle::propagateAMANDA()
             const double TS0 = lastDarkIt->getTimeStamp();
 
             // Assigning dark current values from interpolation to the not-dark readings
-            if ( lastDarkIt+1 <= darkCurrentIt-1 ) {
-              std::for_each(lastDarkIt+1,darkCurrentIt-1,[&m,&q,&TS0](AMANDACurrent &reading){
-                reading.setIDark(m*(reading.getTimeStamp()-TS0)+q);
+            if ( lastDarkIt+1 < darkCurrentIt-1 ) {
+              std::for_each(lastDarkIt,darkCurrentIt,[&m,&q,&TS0](AMANDACurrent &reading){
+                if(!(reading.isDark())) reading.setIDark(m*(reading.getTimeStamp()-TS0)+q);
+                std::cout<<reading.getIDark()<<std::endl;
               });
             }
           }
