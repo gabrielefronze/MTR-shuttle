@@ -71,6 +71,8 @@ class RunObject{
 //    template<class ...Args> constexpr bool getTrue(Args... /*arg*/) const { return true; }
 
     friend std::ostream& operator<<(std::ostream& os, const RunObject& obj);
+    friend RunObject operator+(RunObject result, const RunObject &added);
+    friend RunObject operator/(RunObject result, const RunObject &divider);
 
   private:
     uint64_t fRunNumber;
