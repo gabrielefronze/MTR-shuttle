@@ -496,8 +496,12 @@ void MTRShuttle::computeAverage()
       fRunDataVectAvg[plane].reserve(nOfRuns);
       for (int side=kINSIDE; side<MTRSides::kNSides; side++) {
         for (int RPC=k1; RPC<MTRRPCs::kNRPCs; RPC++) {
-          if(runData.isHVOk()) runData = runData + fRunDataVect[plane][side][RPC][iRun];
-          else nOfRPC--;
+          if(fRunDataVect[plane][side][RPC][iRun].getAvgHV()>kMinWorkHV) {
+            runData = runData + fRunDataVect[plane][side][RPC][iRun];
+          }
+          else {
+            nOfRPC--;
+          }
         }
       }
 
