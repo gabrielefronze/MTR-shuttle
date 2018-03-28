@@ -336,10 +336,6 @@ void MTRShuttle::parseOCDBiMon(std::string path){
       continue;
     }
 
-    RunObject runObjectBuffer[MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
-
-    int badHVCounter = 0;
-
     //loop sui piani, i lati (inside e outside) e le RPC (9 per side)
     for (int plane = MTRPlanes::kMT11; plane < MTRPlanes::kNPlanes; plane++) {
       for (int side = kINSIDE; side < MTRSides::kNSides; side++) {
@@ -348,7 +344,7 @@ void MTRShuttle::parseOCDBiMon(std::string path){
           //creazione di un pointer all'elemento della mappa delle tensioni
           TObjArray *dataArrayVoltage;
           dataArrayVoltage = (TObjArray *) (mapDCS->GetValue(
-            Form("MTR_%s_MT%d_RPC%d_HV.iMon", kSides[side].c_str(), kPlanes[plane], RPC + 1)));
+            Form("MTR_%s_MT%d_RPC%d_HV.actual.iMon", kSides[side].c_str(), kPlanes[plane], RPC + 1)));
 
           if (!dataArrayVoltage) {
             printf(" Problems getting dataArrayCurrent\n");
@@ -360,7 +356,8 @@ void MTRShuttle::parseOCDBiMon(std::string path){
             auto *value = (AliDCSValue *) dataArrayVoltage->At(arrayIndex);
 
             value->GetTimeStamp();
-            fAMANDACurrentsVect[plane][side][RPC].emplace_back(AMANDACurrent((uint64_t)value->GetTimeStamp(),value->GetFloat(),0.,true));
+            fAMANDACurrentsVect[plane][side][RPC].emplace_back(AMANDACurrent((uint64_t)value->GetTimeStamp(),value->GetFloat(),0.,false));
+            std::cout<<Form("MTR_%s_MT%d_RPC%d ", kSides[side].c_str(), kPlanes[plane], RPC + 1)<<fAMANDACurrentsVect[plane][side][RPC].back()<<std::endl;
           }
         }
       }
