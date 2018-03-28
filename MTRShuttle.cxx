@@ -384,7 +384,7 @@ void MTRShuttle::parseAMANDAiMon(std::string path)
 
     std::string line;
     std::ifstream fin(path);
-    AMANDACurrent bufferCurrent(0ULL,0., 0., false);
+    AMANDACurrent bufferCurrent;
     if (fin.is_open()) {
       while (!fin.eof()) {
         getline(fin, line);
