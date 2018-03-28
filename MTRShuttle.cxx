@@ -481,16 +481,16 @@ void MTRShuttle::propagateAMANDA()
 
 void MTRShuttle::computeAverage()
 {
-  auto nOfRuns = fRunDataVect[0][0][0].size();
+  auto nOfRuns = fRunDataVect[MTRPlanes::kMT12][MTRSides::kINSIDE][MTRRPCs::k1].size();
   auto nOfRPC = MTRSides::kNSides*MTRRPCs::kNRPCs;
 
   for(int iRun = 0; iRun < (int)nOfRuns; iRun++){
 
     RunObject runData;
-    runData.setSOR(fRunDataVect[0][0][0][iRun].getSOR());
-    runData.setEOR(fRunDataVect[0][0][0][iRun].getEOR());
-    runData.setRunNumber(fRunDataVect[0][0][0][iRun].getRunNumber());
-    runData.setfIsDark(fRunDataVect[0][0][0][iRun].isDark());
+    runData.setSOR(fRunDataVect[MTRPlanes::kMT12][MTRSides::kINSIDE][MTRRPCs::k1][iRun].getSOR());
+    runData.setEOR(fRunDataVect[MTRPlanes::kMT12][MTRSides::kINSIDE][MTRRPCs::k1][iRun].getEOR());
+    runData.setRunNumber(fRunDataVect[MTRPlanes::kMT12][MTRSides::kINSIDE][MTRRPCs::k1][iRun].getRunNumber());
+    runData.setfIsDark(fRunDataVect[MTRPlanes::kMT12][MTRSides::kINSIDE][MTRRPCs::k1][iRun].isDark());
 
     for (int plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
       fRunDataVectAvg[plane].reserve(nOfRuns);
@@ -507,10 +507,10 @@ void MTRShuttle::computeAverage()
     }
 
     RunObject runDataTot;
-    runDataTot.setSOR(fRunDataVect[0][0][0][iRun].getSOR());
-    runDataTot.setEOR(fRunDataVect[0][0][0][iRun].getEOR());
-    runDataTot.setRunNumber(fRunDataVect[0][0][0][iRun].getRunNumber());
-    runDataTot.setfIsDark(fRunDataVect[0][0][0][iRun].isDark());
+    runDataTot.setSOR(fRunDataVect[MTRPlanes::kMT12][MTRSides::kINSIDE][MTRRPCs::k1][iRun].getSOR());
+    runDataTot.setEOR(fRunDataVect[MTRPlanes::kMT12][MTRSides::kINSIDE][MTRRPCs::k1][iRun].getEOR());
+    runDataTot.setRunNumber(fRunDataVect[MTRPlanes::kMT12][MTRSides::kINSIDE][MTRRPCs::k1][iRun].getRunNumber());
+    runDataTot.setfIsDark(fRunDataVect[MTRPlanes::kMT12][MTRSides::kINSIDE][MTRRPCs::k1][iRun].isDark());
 
     fRunDataVectAvg[4].reserve(nOfRuns);
 
