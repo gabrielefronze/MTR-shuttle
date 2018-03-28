@@ -34,11 +34,11 @@ void MTRShuttle::parseRunList(std::string path)
     runBuffer = 0;
 
     fin >> runBuffer;
-    if(fin.eof()) break;
     auto position = std::find_if(fRunList.begin(),fRunList.end(),[&runBuffer](const std::pair<int,int>& pair){
       return pair.first == runBuffer;
     });
     if( position == fRunList.end() )fRunList.emplace_back(std::make_pair(runBuffer,AlienUtils::getRunYear(runBuffer)));
+    if(fin.eof()) break;
   }
   fin.close();
 
