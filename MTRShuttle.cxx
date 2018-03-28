@@ -528,13 +528,9 @@ void MTRShuttle::propagateAMANDA()
               // If SOR<TS<EOR then set IDark
             } else {
               auto deltaT = currentIt->getTimeStamp()-previousTS;
-//              iDarkCumulus+=currentIt->getIDark()*(double)deltaT;
-//              iTotCumulus+=currentIt->getITot()*(double)deltaT;
-//              integratedCharge+=currentIt->getINet()*(double)deltaT;
-
-              iDarkCumulus+=currentIt->getIDark();
-              iTotCumulus+=currentIt->getITot();
-              integratedCharge+=currentIt->getINet()*deltaT;
+              iDarkCumulus+=currentIt->getIDark()*(double)deltaT;
+              iTotCumulus+=currentIt->getITot()*(double)deltaT;
+              integratedCharge+=currentIt->getINet()*(double)deltaT;
 
               iCounter++;
               totalT+=deltaT;
@@ -543,10 +539,8 @@ void MTRShuttle::propagateAMANDA()
             }
           }
 
-//          runObjectIt.setAvgIDark((totalT>0)?iDarkCumulus/(double)totalT:0.);
-//          runObjectIt.setAvgITot((totalT>0)?iTotCumulus/(double)totalT:0.);
-          runObjectIt.setAvgIDark((iCounter>0)?iDarkCumulus/(double)iCounter:0.);
-          runObjectIt.setAvgITot((iCounter>0)?iTotCumulus/(double)iCounter:0.);
+          runObjectIt.setAvgIDark((totalT>0)?iDarkCumulus/(double)totalT:0.);
+          runObjectIt.setAvgITot((totalT>0)?iTotCumulus/(double)totalT:0.);
           runObjectIt.setIntCharge(integratedCharge);
         }
       }
