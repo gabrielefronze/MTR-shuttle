@@ -130,6 +130,7 @@ void MTRBooster::AutoDraw(size_t iPlot, TVirtualPad* pad, bool drawLegend, Optio
       legend->SetName(legTitle);
 //      legend->SetFillStyle(0);
       auto nGraphs = requiredPlot->GetListOfGraphs()->GetEntries();
+      if( settings.fPlotaverage ) nGraphs--;
       if( nGraphs>5 ){
         if( nGraphs%2==0 ) legend->SetNColumns(2);
         if( nGraphs%3==0 ) legend->SetNColumns(3);
