@@ -523,7 +523,7 @@ void MTRShuttle::propagateAMANDA()
             }
               // If the timestamp is after the EOR break the loop (aka pass to the following run)
             else if ( TS > EOR ){
-//              if (currentIt!=fAMANDACurrentsVect[plane][side][RPC].begin()) currentIt--;
+              if (currentIt!=fAMANDACurrentsVect[plane][side][RPC].begin()) currentIt--;
               break;
               // If SOR<TS<EOR then set IDark
             } else {
