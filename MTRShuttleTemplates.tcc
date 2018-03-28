@@ -21,7 +21,8 @@ TGraph *drawCorrelation(XType (RunObject::*getX)() const,
     if (plane<0) returnedGraph->SetNameTitle(Form("%d_%d_%d",plane,side,RPC+1),Form("MT%d %s %d",kPlanes[plane],kSidesShort[side].c_str(),RPC+1));
     else returnedGraph->SetNameTitle(Form("%d_%d",side,RPC+1),Form("%s %d",kSidesShort[side].c_str(),RPC+1));
   } else {
-    returnedGraph->SetNameTitle(Form("avg_%d",kPlanes[plane]),Form("Average MT%d",kPlanes[plane]));
+    if( plane<MTRPlanes::kNPlanes) returnedGraph->SetNameTitle(Form("avg_%d",kPlanes[plane]),Form("Average MT%d",kPlanes[plane]));
+    else returnedGraph->SetNameTitle("avg","Average");
   }
   graphMaquillage(plane, RPC, returnedGraph, plotAverage);
 
@@ -50,7 +51,7 @@ TGraph *drawCorrelation(XType (RunObject::*getX)() const,
 
   auto yCumulus = (YType)4000.;
 
-  auto dataVector = (!plotAverage)?fRunDataVect[plane][side][RPC]:fRunDataVectAvg[(plane>=0)?plane:4];
+  auto dataVector = (!plotAverage)?fRunDataVect[plane][side][RPC]:fRunDataVectAvg[(plane<MTRPlanes::kNPlanes)?plane:4];
 
   bool resetMT12OUTSIDE6 = true;
   bool isReplacedRPC = ( plane==1
