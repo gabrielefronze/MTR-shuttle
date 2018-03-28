@@ -4,7 +4,10 @@
 
 #include "AMANDACurrent.h"
 
-AMANDACurrent::AMANDACurrent(double iTot, double iDark, bool isDarkCurrent) : fITot(iTot), fIDark(iDark), fIsDarkCurrent(isDarkCurrent)
+AMANDACurrent::AMANDACurrent(uint64_t timestamp, double iTot, double iDark, bool isDarkCurrent) : fTimeStamp(timestamp),
+                                                                                                  fITot(iTot),
+                                                                                                  fIDark(iDark),
+                                                                                                  fIsDarkCurrent(isDarkCurrent)
 {}
 
 AMANDACurrent::AMANDACurrent(std::string csvLine, int &plane, int &side, int &RPC)

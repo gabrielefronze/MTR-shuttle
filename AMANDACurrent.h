@@ -11,7 +11,7 @@
 class AMANDACurrent : public AMANDAData
 {
   public:
-    AMANDACurrent(double iTot = 0., double iDark = 0., bool isDarkCurrent = false);
+    AMANDACurrent(uint64_t timestamp, double iTot = 0., double iDark = 0., bool isDarkCurrent = false);
     AMANDACurrent(std::string csvLine, int &plane, int &side, int &RPC);
 
     inline double getITot() const { return fITot; }
