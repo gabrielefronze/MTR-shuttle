@@ -436,34 +436,23 @@ void MTRShuttle::propagateAMANDA()
 
           bool isDarkRun = runObjectIt.isDark();
 
-          std::cout<<runObjectIt.getRunNumber()<<((isDarkRun)?" is dark\n":" is not dark\n");
-
           // Load SOR and EOR values
           auto SOR = runObjectIt.getSOR();
           auto EOR = runObjectIt.getEOR();
-
-          std::cout<<SOR<<"->"<<EOR<<std::endl;
 
           // Loop over the current readings
           for ( ; setIsDarkIt!=fAMANDACurrentsVect[plane][side][RPC].end(); setIsDarkIt++) {
 
             auto TS = setIsDarkIt->getTimeStamp();
 
-            std::cout<<"\t"<<TS<<" ";
-
             // If the timestamp is before the SOR skip
-            if ( TS < SOR ) {
-              std::cout<<"skipping\n";
-              continue;
-            }
+            if ( TS < SOR ) continue;
             // If the timestamp is after the EOR break the loop (aka pass to the following run)
             else if ( TS > EOR ){
 //              if (setIsDarkIt!=fAMANDACurrentsVect[plane][side][RPC].begin()) setIsDarkIt--;
-              std::cout<<"break\n";
               break;
-            // If SOR<=TS<=EOR then set IDark
+            // If SOR<TS<EOR then set IDark
             } else {
-              std::cout<<"set\n";
               if(isDarkRun) setIsDarkIt->setIDark(setIsDarkIt->getITot());
               setIsDarkIt->setIsDark(isDarkRun);
             }
@@ -480,8 +469,6 @@ void MTRShuttle::propagateAMANDA()
         for (auto darkCurrentIt=fAMANDACurrentsVect[plane][side][RPC].begin()+1;
              darkCurrentIt!=fAMANDACurrentsVect[plane][side][RPC].end();
              darkCurrentIt++) {
-
-          std::cout<<darkCurrentIt->isDark();
 
           // If previous reading and current one are dark, update last dark
           if ( wasPrevDark && darkCurrentIt->isDark() ) lastDarkIt = darkCurrentIt;
@@ -555,8 +542,6 @@ void MTRShuttle::propagateAMANDA()
           runObjectIt.setAvgIDark((totalT>0)?iDarkCumulus/(double)totalT:0.);
           runObjectIt.setAvgITot((totalT>0)?iTotCumulus/(double)totalT:0.);
           runObjectIt.setIntCharge(integratedCharge);
-
-          printf("Run:%llu %d iTot:%f iDark:%f\n",runObjectIt.getRunNumber(),runObjectIt.isDark(),runObjectIt.getAvgITot(),runObjectIt.getAvgIDark());
         }
       }
     }
