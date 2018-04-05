@@ -449,7 +449,7 @@ void MTRShuttle::propagateAMANDA()
             if ( TS < SOR ) continue;
             // If the timestamp is after the EOR break the loop (aka pass to the following run)
             else if ( TS > EOR ){
-              if (setIsDarkIt!=fAMANDACurrentsVect[plane][side][RPC].begin()) setIsDarkIt--;
+//              if (setIsDarkIt!=fAMANDACurrentsVect[plane][side][RPC].begin()) setIsDarkIt--;
               break;
             // If SOR<TS<EOR then set IDark
             } else {
@@ -466,7 +466,7 @@ void MTRShuttle::propagateAMANDA()
         printf("Setting iDark... ");
 
         // Loop over the current readings
-        for (auto darkCurrentIt=fAMANDACurrentsVect[plane][side][RPC].begin();
+        for (auto darkCurrentIt=fAMANDACurrentsVect[plane][side][RPC].begin()+1;
              darkCurrentIt!=fAMANDACurrentsVect[plane][side][RPC].end();
              darkCurrentIt++) {
 
@@ -483,9 +483,9 @@ void MTRShuttle::propagateAMANDA()
 
             // Assigning dark current values from interpolation to the not-dark readings
             if ( lastDarkIt+1 < darkCurrentIt-1 ) {
-              std::for_each(lastDarkIt,darkCurrentIt,[&m,&q,&TS0](AMANDACurrent &reading){
-                if(!(reading.isDark())) reading.setIDark(m*(reading.getTimeStamp()-TS0)+q);
-                std::cout<<reading.getIDark()<<std::endl;
+              std::for_each(lastDarkIt+1,darkCurrentIt-1,[&m,&q,&TS0](AMANDACurrent &reading){
+                if( !(reading.isDark()) )reading.setIDark(m*(reading.getTimeStamp()-TS0)+q);
+//                std::cout<<reading.getIDark()<<std::endl;
               });
             }
           }
@@ -523,7 +523,7 @@ void MTRShuttle::propagateAMANDA()
             }
               // If the timestamp is after the EOR break the loop (aka pass to the following run)
             else if ( TS > EOR ){
-              if (currentIt!=fAMANDACurrentsVect[plane][side][RPC].begin()) currentIt--;
+//              if (currentIt!=fAMANDACurrentsVect[plane][side][RPC].begin()) currentIt--;
               break;
               // If SOR<TS<EOR then set IDark
             } else {
