@@ -128,62 +128,64 @@ MTRBooster booster("path/to/data.csv");
 
 The conditions will be passed at each setup ina  human readable form.
 
+Each plot can be described through calling several setting methods on a `MTRBooster` object. 
+Once all the wanted settings have been called the `StackStage` routine has to be called in order to append the specified settings to the list of plots which have to be generated.
 At this point one may want to generate a trend for a single RPC's dark current:
 
 ```cpp
 //This will generate plot with index 0
-booster.SetX("Time").SetY("iDark").SetPlane(MTRPlanes::kMT11).SetSide(MTRSides::kINSIDE).SetRPC(MTRRPCs::k3).SetMinDate("01/01/17");
+booster.SetX("Time").SetY("iDark").SetPlane(11).SetSide("IN").SetRPC(3).SetMinDate("01/01/17").StackStage();
 ```
 
 Or HV for a group of RPC:
 
 ```cpp
 //This will generate plot with index 1
-booster.SetX("Time").SetY("HV").SetPlane(MTRPlanes::kMT11).SetSide(MTRSides::kINSIDE).SetMinDate("01/01/17");
+booster.SetX("Time").SetY("HV").SetPlane(11).SetSide("IN").SetMinDate("01/01/17").StackStage();
 
 //This will generate plot with index 2
-booster.SetX("Time").SetY("HV").SetPlane(MTRPlanes::kMT11).SetMinDate("01/01/17");
+booster.SetX("Time").SetY("HV").SetPlane(11).SetMinDate("01/01/17").StackStage();
 ```
 
 Or plot only the RPCs reaching the maximum and minimum net current values at the end of the period:
 
 ```cpp
 //This will generate plot with index 3
-booster.SetX("Time").SetY("iNet").SetPlane(MTRPlanes::kMT11).SetSide(MTRSides::kINSIDE).SetMinDate("01/01/17");
+booster.SetX("Time").SetY("iNet").SetPlane(11).SetSide("IN").SetMinDate("01/01/17").StackStage();
 
 //This will generate plot with index 4
-booster.SetX("Time").SetY("iNet").SetPlane(MTRPlanes::kMT11).SetMinDate("01/01/17");
+booster.SetX("Time").SetY("iNet").SetPlane(11).SetMinDate("01/01/17").StackStage();
 ```
 
 Same goes for correlations, even if `MTRShuttle::drawMaxMin` cannot apply to correlations:
 
 ```cpp
 //This will generate plot with index 5
-booster.SetX("iDark").SetY("HV").SetPlane(MTRPlanes::kMT11).SetSide(MTRSides::kINSIDE).SetRPC(MTRRPCs::k3).SetMinDate("01/01/17");
+booster.SetX("iDark").SetY("HV").SetPlane(11).SetSide("IN").SetRPC(3).SetMinDate("01/01/17").StackStage();
 
 //This will generate plot with index 6
-booster.SetX("HV").SetY("rateBend").SetPlane(MTRPlanes::kMT11).SetSide(MTRSides::kINSIDE).SetRPC(MTRRPCs::k3).SetMinDate("01/01/17");
+booster.SetX("HV").SetY("rateBend").SetPlane(11).SetSide("IN").SetRPC(3).SetMinDate("01/01/17").StackStage();
 ```
 
 The whole set of examples might be modified to normalise to the RPC area the values:
 
 ```cpp
 //This will generate plot with index 8, same as 0 but normalised
-booster.SetX("Time").SetY("iDark").SetPlane(MTRPlanes::kMT11).SetSide(MTRSides::kINSIDE).SetRPC(MTRRPCs::k3).NormalizeToArea().SetMinDate("01/01/17");
+booster.SetX("Time").SetY("iDark").SetPlane(11).SetSide("IN").SetRPC(3).NormalizeToArea().SetMinDate("01/01/17").StackStage();
 ```
 
 Or to integrate over X:
 
 ```cpp
 //This will generate plot with index 9
-booster.SetX("Time").SetY("IntCharge").SetPlane(MTRPlanes::kMT11).SetSide(MTRSides::kINSIDE).SetRPC(MTRRPCs::k3).AccumulateY().SetMinDate("01/01/17");
+booster.SetX("Time").SetY("IntCharge").SetPlane(11).SetSide("IN").SetRPC(3).AccumulateY().SetMinDate("01/01/17").StackStage();
 ```
 
 Or to superimpose the average trend:
 
 ```cpp
 //This will generate plot with index 10
-booster.SetX("Time").SetY("HV").SetPlane(MTRPlanes::kMT11).SetSide(MTRSides::kINSIDE).PlotAverage().SetMinDate("01/01/17");
+booster.SetX("Time").SetY("HV").SetPlane(11).SetSide("IN").PlotAverage().SetMinDate("01/01/17").StackStage();
 ```
 
 Once everything has bee setup just call:
