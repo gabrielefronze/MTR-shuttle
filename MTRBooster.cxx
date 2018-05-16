@@ -118,6 +118,7 @@ void MTRBooster::AutoDraw(size_t iPlot, TVirtualPad* pad, bool drawLegend, Optio
       requiredPlot->GetXaxis()->SetTimeDisplay(1);
       requiredPlot->GetXaxis()->SetTimeFormat("%d/%m/%y");
       requiredPlot->GetXaxis()->SetTitle("Date");
+      requiredPlot->GetXaxis()->SetLabelSize(0.023);
     } else requiredPlot->GetHistogram()->GetXaxis()->SetTitle(generateLabel(settings.funcX, settings.fNormalize).c_str());
 
     requiredPlot->GetHistogram()->GetYaxis()->SetTitle(generateLabel(settings.funcY, settings.fNormalize).c_str());
