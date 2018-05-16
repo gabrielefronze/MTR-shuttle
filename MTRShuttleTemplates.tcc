@@ -49,7 +49,7 @@ TGraph *drawCorrelation(XType (RunObject::*getX)() const,
 
   int counter = 0;
 
-  auto yCumulus = (YType)4000.;
+  auto yCumulus = (YType)0.;//(YType)4000.;
 
   auto dataVector = (!plotAverage)?fRunDataVect[plane][side][RPC]:fRunDataVectAvg[(plane<MTRPlanes::kNPlanes)?plane:4];
 
