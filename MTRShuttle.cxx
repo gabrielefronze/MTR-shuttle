@@ -552,7 +552,6 @@ void MTRShuttle::propagateAMANDA()
 void MTRShuttle::computeAverage()
 {
   auto nOfRuns = fRunDataVect[MTRPlanes::kMT12][MTRSides::kINSIDE][MTRRPCs::k1].size();
-  auto nOfRPC = MTRSides::kNSides*MTRRPCs::kNRPCs;
 
   for(int iRun = 0; iRun < (int)nOfRuns; iRun++){
 
@@ -563,6 +562,7 @@ void MTRShuttle::computeAverage()
     runData.setfIsDark(fRunDataVect[MTRPlanes::kMT12][MTRSides::kINSIDE][MTRRPCs::k1][iRun].isDark());
 
     for (int plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
+      auto nOfRPC = MTRSides::kNSides*MTRRPCs::kNRPCs;
       fRunDataVectAvg[plane].reserve(nOfRuns);
       for (int side=kINSIDE; side<MTRSides::kNSides; side++) {
         for (int RPC=k1; RPC<MTRRPCs::kNRPCs; RPC++) {
