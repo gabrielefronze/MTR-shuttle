@@ -28,7 +28,7 @@ class MTRShuttle
     void parseAMANDAiMon(std::string path = "");
     void parseOCDBiMon(std::string path = "");
 //TODO:    void parseAMANDAVeff(std::string path = "");
-    void propagateAMANDA();
+  void propagateAMANDA(bool weightedAverage = true);
     void saveData(std::string path = "MTRShuttle.csv");
     void loadData(std::string path = "MTRShuttle.csv");
     void computeAverage();

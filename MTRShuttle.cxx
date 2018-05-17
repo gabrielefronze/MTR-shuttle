@@ -420,7 +420,7 @@ void MTRShuttle::parseAMANDAiMon(std::string path)
   std::cout << "Loaded " << linesCounter << "AMANDA values" << std::endl;
 }
 
-void MTRShuttle::propagateAMANDA()
+void MTRShuttle::propagateAMANDA(bool weightedAverage)
 {
   for (int plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
     for (int side=kINSIDE; side<MTRSides::kNSides; side++) {
@@ -530,20 +530,31 @@ void MTRShuttle::propagateAMANDA()
               auto nextTS = (currentIt+1)->getTimeStamp();
 
               if( nextTS < EOR && nextTS > SOR ) {
-                auto deltaT = (currentIt + 1)->getTimeStamp() - TS;
-                iDarkCumulus += currentIt->getIDark() * (double) deltaT;
-                iTotCumulus += currentIt->getITot() * (double) deltaT;
-                integratedCharge += currentIt->getINet() * (double) deltaT;
-
+                if(weightedAverage) {
+                  auto deltaT = (currentIt + 1)->getTimeStamp() - TS;
+                  iDarkCumulus += currentIt->getIDark() * (double) deltaT;
+                  iTotCumulus += currentIt->getITot() * (double) deltaT;
+                  integratedCharge += currentIt->getINet() * (double) deltaT;
+                  totalT += deltaT;
+                } else {
+                  iDarkCumulus += currentIt->getIDark();
+                  iTotCumulus += currentIt->getITot();
+                  integratedCharge += currentIt->getINet();
+                }
                 iCounter++;
-                totalT += deltaT;
               }
             }
           }
 
-          runObjectIt.setAvgIDark((totalT>0)?iDarkCumulus/(double)totalT:0.);
-          runObjectIt.setAvgITot((totalT>0)?iTotCumulus/(double)totalT:0.);
-          runObjectIt.setIntCharge(integratedCharge);
+          if(weightedAverage) {
+            runObjectIt.setAvgIDark((totalT > 0) ? iDarkCumulus / totalT : 0.);
+            runObjectIt.setAvgITot((totalT > 0) ? iTotCumulus / totalT : 0.);
+            runObjectIt.setIntCharge(integratedCharge);
+          } else {
+            runObjectIt.setAvgIDark((iCounter > 0) ? iDarkCumulus / (double) iCounter : 0.);
+            runObjectIt.setAvgITot((iCounter > 0) ? iTotCumulus / (double) iCounter : 0.);
+            runObjectIt.setIntCharge(integratedCharge);
+          }
         }
       }
     }
