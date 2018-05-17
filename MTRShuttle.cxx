@@ -509,16 +509,15 @@ void MTRShuttle::propagateAMANDA()
           int iCounter = 0;
 
           double integratedCharge = 0;
-          uint64_t previousTS = currentIt->getTimeStamp();
+//          uint64_t previousTS = currentIt->getTimeStamp();
 
           // Loop over the current readings
-          for ( ; currentIt!=fAMANDACurrentsVect[plane][side][RPC].end(); currentIt++) {
+          for ( ; currentIt!=fAMANDACurrentsVect[plane][side][RPC].end()-1; currentIt++) {
 
             auto TS = currentIt->getTimeStamp();
 
             // If the timestamp is before the SOR skip
             if ( TS < SOR ) {
-              previousTS=TS;
               continue;
             }
               // If the timestamp is after the EOR break the loop (aka pass to the following run)
@@ -527,15 +526,18 @@ void MTRShuttle::propagateAMANDA()
               break;
               // If SOR<TS<EOR then set IDark
             } else {
-              auto deltaT = currentIt->getTimeStamp()-previousTS;
-              iDarkCumulus+=currentIt->getIDark()*(double)deltaT;
-              iTotCumulus+=currentIt->getITot()*(double)deltaT;
-              integratedCharge+=currentIt->getINet()*(double)deltaT;
 
-              iCounter++;
-              totalT+=deltaT;
+              auto nextTS = (currentIt+1)->getTimeStamp();
 
-              previousTS = TS;
+              if( nextTS < EOR && nextTS > SOR ) {
+                auto deltaT = (currentIt + 1)->getTimeStamp() - TS;
+                iDarkCumulus += currentIt->getIDark() * (double) deltaT;
+                iTotCumulus += currentIt->getITot() * (double) deltaT;
+                integratedCharge += currentIt->getINet() * (double) deltaT;
+
+                iCounter++;
+                totalT += deltaT;
+              }
             }
           }
 
