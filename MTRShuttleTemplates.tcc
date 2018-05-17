@@ -270,7 +270,7 @@ drawMaxMin(YType (RunObject::*getY)() const,
   for(int iGraph = 0; iGraph < grList->GetEntries(); iGraph++){
     auto graph = (TGraph*)(grList->At(iGraph));
 
-    if(plane==1 && strcmp(graph->GetName(),"1_6")==0) continue;
+    if(strcmp(graph->GetName(),"1_1_6")==0) continue;
 
     double dummyX;
     double dummyY;
