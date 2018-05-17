@@ -18,7 +18,7 @@ TGraph *drawCorrelation(XType (RunObject::*getX)() const,
 {
   auto *returnedGraph = new TGraph();
   if(!plotAverage){
-    if (plane<0) returnedGraph->SetNameTitle(Form("%d_%d_%d",plane,side,RPC+1),Form("MT%d %s %d",kPlanes[plane],kSidesShort[side].c_str(),RPC+1));
+    if (plane<MTRPlanes::kNPlanes) returnedGraph->SetNameTitle(Form("%d_%d_%d",plane,side,RPC+1),Form("MT%d %s %d",kPlanes[plane],kSidesShort[side].c_str(),RPC+1));
     else returnedGraph->SetNameTitle(Form("%d_%d",side,RPC+1),Form("%s %d",kSidesShort[side].c_str(),RPC+1));
   } else {
     if( plane<MTRPlanes::kNPlanes) returnedGraph->SetNameTitle(Form("avg_%d",kPlanes[plane]),Form("Average MT%d",kPlanes[plane]));
