@@ -529,17 +529,18 @@ void MTRShuttle::propagateAMANDA(bool weightedAverage)
 
               auto nextTS = (currentIt+1)->getTimeStamp();
 
+              auto deltaT = nextTS - TS;
+              integratedCharge += currentIt->getINet() * (double) deltaT;
+              totalT += deltaT;
+
               if( nextTS < EOR && nextTS > SOR ) {
                 if(weightedAverage) {
-                  auto deltaT = (currentIt + 1)->getTimeStamp() - TS;
                   iDarkCumulus += currentIt->getIDark() * (double) deltaT;
                   iTotCumulus += currentIt->getITot() * (double) deltaT;
-                  integratedCharge += currentIt->getINet() * (double) deltaT;
-                  totalT += deltaT;
+
                 } else {
                   iDarkCumulus += currentIt->getIDark();
                   iTotCumulus += currentIt->getITot();
-                  integratedCharge += currentIt->getINet();
                 }
                 iCounter++;
               }
