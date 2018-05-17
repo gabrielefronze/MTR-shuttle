@@ -43,7 +43,7 @@ class MTRBooster
     void Launch();
     void Launch(size_t iSetting, TMultiGraph* buffer);
     inline TMultiGraph* GetPlot(size_t iPlot){ return (iPlot<fPlots.size())?fPlots[iPlot]:nullptr; };
-    void AutoDraw(size_t iPlot, TVirtualPad* pad, bool drawLegend=false, Option_t* opt="alp", Option_t* legOpt="P");
+    void AutoDraw(size_t iPlot, TVirtualPad* pad, bool drawLegend=false, Option_t* opt="alp", Option_t* legOpt="LP");
 
     MTRBooster& SetPlane(int HR_plane);
     MTRBooster& SetSide(std::string HR_side);
