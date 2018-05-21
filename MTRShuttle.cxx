@@ -520,33 +520,27 @@ void MTRShuttle::propagateAMANDA(bool weightedAverage)
 
             // If the timestamp is before the SOR skip
             if ( TS < SOR ) {
-              auto deltaT = nextTS - TS;
               integratedCharge += currentIt->getINet() * (double) deltaT;
-              totalT += deltaT;
               continue;
             }
               // If the timestamp is after the EOR break the loop (aka pass to the following run)
             else if ( TS > EOR ){
-//              if (currentIt!=fAMANDACurrentsVect[plane][side][RPC].begin()) currentIt--;
               break;
               // If SOR<TS<EOR then set IDark
             } else {
-
-
               integratedCharge += currentIt->getINet() * (double) deltaT;
-              totalT += deltaT;
 
-              if( nextTS < EOR && nextTS > SOR ) {
+              if( nextTS <= EOR && nextTS > SOR ) {
                 if(weightedAverage) {
                   iDarkCumulus += currentIt->getIDark() * (double) deltaT;
                   iTotCumulus += currentIt->getITot() * (double) deltaT;
-
                 } else {
                   iDarkCumulus += currentIt->getIDark();
                   iTotCumulus += currentIt->getITot();
                 }
                 iCounter++;
               }
+              totalT += deltaT;
             }
           }
 
