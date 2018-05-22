@@ -24,36 +24,39 @@
 class MTRShuttle
 {
   public:
-    void parseRunList(std::string path="");
-    void parseOCDB(std::string path="");
-    void parseAMANDAiMon(std::string path = "");
-    void parseAMANDAvMon(std::string path = "");
-    void parseOCDBiMon(std::string path = "");
-    void propagateAMANDA(bool weightedAverage = true);
-    void saveData(std::string path = "MTRShuttle.csv");
-    void loadData(std::string path = "MTRShuttle.csv");
-    void computeAverage();
+  void parseRunList(std::string path="");
+  void parseOCDB(std::string path="");
+  void parseOCDBiMon(std::string path = "");
+  void parseAMANDAiMon(std::string path = "");
+  void parseAMANDAvMon(std::string path = "");
+  void propagateAMANDA(bool weightedAverage = true);
+  void saveData(std::string path = "MTRShuttle.csv");
+  void loadData(std::string path = "MTRShuttle.csv");
+  void computeAverage();
 
-    #include "MTRShuttleTemplates.tcc"
+  private:
+  void createDummyRuns();
+
+#include "MTRShuttleTemplates.tcc"
 
   public:
-    std::vector<std::pair<int,int>> fRunList;
-    std::vector<RunObject> fRunDataVect[MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
-    std::vector<RunObject> fRunDataVectAvg[MTRPlanes::kNPlanes+1];
-    std::vector<AMANDACurrent> fAMANDACurrentsVect[MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
-    std::vector<AMANDAVoltage> fAMANDAVoltagesVect[MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
+  std::vector<std::pair<int,int>> fRunList;
+  std::vector<RunObject> fRunDataVect[MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
+  std::vector<RunObject> fRunDataVectAvg[MTRPlanes::kNPlanes+1];
+  std::vector<AMANDACurrent> fAMANDACurrentsVect[MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
+  std::vector<AMANDAVoltage> fAMANDAVoltagesVect[MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
 
-    inline double getM(const AMANDACurrent iStart, const AMANDACurrent iStop) {
-      auto deltaI = iStop.getIDark()-iStart.getIDark();
-      auto deltaTS = iStop.getTimeStamp()-iStart.getTimeStamp();
-      return (deltaTS>0.)?deltaI/deltaTS:0.;
-    };
+  inline double getM(const AMANDACurrent iStart, const AMANDACurrent iStop) {
+    auto deltaI = iStop.getIDark()-iStart.getIDark();
+    auto deltaTS = iStop.getTimeStamp()-iStart.getTimeStamp();
+    return (deltaTS>0.)?deltaI/deltaTS:0.;
+  };
 
-    inline double getQ(const AMANDACurrent iStart, const AMANDACurrent /*iStop*/) {
-      return iStart.getIDark();
-    };
+  inline double getQ(const AMANDACurrent iStart, const AMANDACurrent /*iStop*/) {
+    return iStart.getIDark();
+  };
 
-    void graphMaquillage(MTRPlanes plane, MTRRPCs RPC, TGraph *graph, bool isAvgGraph);
+  void graphMaquillage(MTRPlanes plane, MTRRPCs RPC, TGraph *graph, bool isAvgGraph);
 
   ClassDef(MTRShuttle,1);
 };

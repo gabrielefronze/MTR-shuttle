@@ -296,6 +296,8 @@ void MTRShuttle::parseOCDB(std::string path)
       }
     }
   }
+
+  MTRShuttle::createDummyRuns();
 }
 
 void MTRShuttle::parseOCDBiMon(std::string path){
@@ -473,6 +475,42 @@ void MTRShuttle::parseAMANDAvMon(std::string path)
   }
 
   std::cout << "Loaded " << linesCounter << "AMANDA voltages values" << std::endl;
+}
+
+void MTRShuttle::createDummyRuns(){
+
+  std::cout << "Creating dummy runs...\n"
+
+  for (int plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
+    for (int side = kINSIDE; side < MTRSides::kNSides; side++) {
+      for (int RPC = k1; RPC < MTRRPCs::kNRPCs; RPC++) {
+
+        uint64_t runNumber = 0;
+
+        std::sort(fRunDataVect[plane][side][RPC].begin(),
+                  fRunDataVect[plane][side][RPC].end(),
+                  [](const RunObject &a, const RunObject &b) -> bool {
+                    return a.getRunNumber() < b.getRunNumber();
+                  });
+
+        auto runObjectIt = fRunDataVect[plane][side][RPC].begin();
+        auto runObjectEnd = fRunDataVect[plane][side][RPC].end();
+        for (; runObjectIt<runObjectEnd-1; runObjectIt++) {
+          if( runObjectIt->getEOR() < (runObjectIt+1)->getSOR()){
+            fRunDataVect[plane][side][RPC].emplace_back(RunObject(runObjectIt->getEOR(),(runObjectIt+1)->getSOR()));
+            fRunDataVect[plane][side][RPC].back().setRunNumber(runNumber);
+            runNumber++;
+          }
+        }
+
+        std::sort(fRunDataVect[plane][side][RPC].begin(),
+                  fRunDataVect[plane][side][RPC].end(),
+                  [](const RunObject &a, const RunObject &b) -> bool {
+                    return a.getEOR() < b.getSOR();
+                  });
+      }
+    }
+  }
 }
 
 void MTRShuttle::propagateAMANDA(bool weightedAverage)
