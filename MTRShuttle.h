@@ -16,6 +16,7 @@
 #include <TList.h>
 #include "RunObject.h"
 #include "AMANDACurrent.h"
+#include "AMANDAVoltage.h"
 #include "Parameters.h"
 #include "MTRConditions.h"
 #include "Enumerators.h"
@@ -26,9 +27,9 @@ class MTRShuttle
     void parseRunList(std::string path="");
     void parseOCDB(std::string path="");
     void parseAMANDAiMon(std::string path = "");
+    void parseAMANDAvMon(std::string path = "");
     void parseOCDBiMon(std::string path = "");
-//TODO:    void parseAMANDAVeff(std::string path = "");
-  void propagateAMANDA(bool weightedAverage = true);
+    void propagateAMANDA(bool weightedAverage = true);
     void saveData(std::string path = "MTRShuttle.csv");
     void loadData(std::string path = "MTRShuttle.csv");
     void computeAverage();
@@ -40,6 +41,7 @@ class MTRShuttle
     std::vector<RunObject> fRunDataVect[MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
     std::vector<RunObject> fRunDataVectAvg[MTRPlanes::kNPlanes+1];
     std::vector<AMANDACurrent> fAMANDACurrentsVect[MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
+    std::vector<AMANDAVoltage> fAMANDAVoltagesVect[MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
 
     inline double getM(const AMANDACurrent iStart, const AMANDACurrent iStop) {
       auto deltaI = iStop.getIDark()-iStart.getIDark();

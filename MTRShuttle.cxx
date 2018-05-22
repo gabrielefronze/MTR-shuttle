@@ -417,45 +417,124 @@ void MTRShuttle::parseAMANDAiMon(std::string path)
     }
   }
 
-  std::cout << "Loaded " << linesCounter << "AMANDA values" << std::endl;
+  std::cout << "Loaded " << linesCounter << "AMANDA current values" << std::endl;
+}
+
+void MTRShuttle::parseAMANDAvMon(std::string path)
+{
+  int linesCounter = 0;
+  {
+    double dummyTimeStamp = 0;
+    double timeStamp = 0;
+    double voltage = 0.;
+    int MT = 0;
+    int RPC = 0;
+    char InsideOutside = 'I';
+
+    int mts[23];
+    mts[11]=0;
+    mts[12]=1;
+    mts[21]=2;
+    mts[22]=3;
+
+    std::string line;
+    std::ifstream fin(path);
+    AMANDACurrent bufferCurrent;
+    if (fin.is_open()) {
+      while (!fin.eof()) {
+        getline(fin, line);
+        if (fin.eof()) break;
+        std::cout << linesCounter++ << "\r";
+        const char *charbuffer = (char *) line.c_str();
+        if (!charbuffer) continue;
+        sscanf(charbuffer, "%lf;MTR_%c", &dummyTimeStamp, &InsideOutside);
+        char pattern[200];
+        sprintf(pattern, "%%lf;MTR_%sSIDE_MT%%d_RPC%%d_HV.actual.vMon;%%lf", (InsideOutside == 'I' ? "IN" : "OUT"));
+        sscanf(charbuffer, pattern, &timeStamp, &MT, &RPC, &voltage);
+        bufferCurrent.setTimeStamp((uint64_t)timeStamp);
+        bufferCurrent.setITot(voltage);
+        fAMANDAVoltagesVect[mts[MT]][(InsideOutside == 'I' ? 0 : 1)][RPC - 1].emplace_back(bufferCurrent);
+      }
+      std::cout << std::endl;
+      fin.close();
+    } else std::cout << "Unable to open file";
+  }
+
+  for (int plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
+    for (int side=kINSIDE; side<MTRSides::kNSides; side++) {
+      for (int RPC=k1; RPC<MTRRPCs::kNRPCs; RPC++) {
+        std::sort(fAMANDAVoltagesVect[plane][side][RPC].begin(),
+                  fAMANDAVoltagesVect[plane][side][RPC].end(),
+                  [](const AMANDAVoltage &a, const AMANDAVoltage &b) -> bool {
+                    return a.getTimeStamp() < b.getTimeStamp();
+                  });
+      }
+    }
+  }
+
+  std::cout << "Loaded " << linesCounter << "AMANDA voltages values" << std::endl;
 }
 
 void MTRShuttle::propagateAMANDA(bool weightedAverage)
 {
+  struct validityInterval{
+    uint64_t start;
+    uint64_t stop;
+  };
+
   for (int plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
     for (int side=kINSIDE; side<MTRSides::kNSides; side++) {
       for (int RPC=k1; RPC<MTRRPCs::kNRPCs; RPC++) {
 
+        printf("MT%d %s RPC%d... Setting isHvOk... ",kPlanes[plane],kSides[side].c_str(),RPC);
+
+        // Creating a vector of validity intervals for HV
+        std::vector<validityInterval> isHvOkIntervals;
+        for(auto isHvOkIt = fAMANDAVoltagesVect[plane][side][RPC].begin();
+            isHvOkIt<fAMANDAVoltagesVect[plane][side][RPC].end()-1;
+            isHvOkIt++){
+          if( isHvOkIt->getHV() > 8000. ) { //TODO: this value should not be hardcoded!
+            isHvOkIntervals.emplace_back({isHvOkIt->getTimeStamp(),(isHvOkIt+1)->getTimeStamp()});
+          }
+        }
+
+        // The instance of the iterator is external to the loop to avoid always starting from the first element
+        auto setHvOkIt= fAMANDACurrentsVect[plane][side][RPC].begin();
+
+        // Setting isHvOk for all current measurements
+        for(const auto &intervalIt : isHvOkIntervals){
+          for(; setHvOkIt<fAMANDACurrentsVect[plane][side][RPC].end(); setHvOkIt++){
+            if(setHvOkIt->getTimeStamp()<intervalIt.start) continue;
+            else if(setHvOkIt->getTimeStamp()>intervalIt.stop) {
+              setHvOkIt--;
+              break;
+            }
+            else setHvOkIt->setIsHvOk(true);
+          }
+        }
+
         printf("MT%d %s RPC%d... Setting isDark... ",kPlanes[plane],kSides[side].c_str(),RPC);
+
+        // Creating a vector of dark periods
+        std::vector<validityInterval> isDarkIntervals;
+        for (const auto &runObjectIt: fRunDataVect[plane][side][RPC]) {
+          if( runObjectIt.isDark() ) {
+            isDarkIntervals.emplace_back({runObjectIt.getSOR(),runObjectIt.getEOR()});
+          }
+        }
 
         // The instance of the iterator is external to the loop to avoid always starting from the first element
         auto setIsDarkIt= fAMANDACurrentsVect[plane][side][RPC].begin();
 
-        // Loop over run objects to retreve SOR and EOR values
-        for (const auto &runObjectIt: fRunDataVect[plane][side][RPC]) {
-
-          bool isDarkRun = runObjectIt.isDark();
-
-          // Load SOR and EOR values
-          auto SOR = runObjectIt.getSOR();
-          auto EOR = runObjectIt.getEOR();
-
-          // Loop over the current readings
-          for ( ; setIsDarkIt!=fAMANDACurrentsVect[plane][side][RPC].end(); setIsDarkIt++) {
-
-            auto TS = setIsDarkIt->getTimeStamp();
-
-            // If the timestamp is before the SOR skip
-            if ( TS < SOR ) continue;
-            // If the timestamp is after the EOR break the loop (aka pass to the following run)
-            else if ( TS > EOR ){
-//              if (setIsDarkIt!=fAMANDACurrentsVect[plane][side][RPC].begin()) setIsDarkIt--;
+        // Setting isDark for all current measurements
+        for(const auto &intervalIt : isDarkIntervals){
+          for(; setIsDarkIt<fAMANDACurrentsVect[plane][side][RPC].end(); setIsDarkIt++){
+            if(setIsDarkIt->getTimeStamp()<intervalIt.start) continue;
+            else if(setIsDarkIt->getTimeStamp()>intervalIt.stop) {
+              setIsDarkIt--;
               break;
-            // If SOR<TS<EOR then set IDark
-            } else {
-              if(isDarkRun) setIsDarkIt->setIDark(setIsDarkIt->getITot());
-              setIsDarkIt->setIsDark(isDarkRun);
             }
+            else setIsDarkIt->setIsDark(true);
           }
         }
 
@@ -473,7 +552,7 @@ void MTRShuttle::propagateAMANDA(bool weightedAverage)
           // If previous reading and current one are dark, update last dark
           if ( wasPrevDark && darkCurrentIt->isDark() ) lastDarkIt = darkCurrentIt;
 
-          // If previous reading wasn't dark, while current one is, set dark currents
+            // If previous reading wasn't dark, while current one is, set dark currents
           else if ( !wasPrevDark && darkCurrentIt->isDark()) {
 
             // Computing the parameters for the "dumb interpolation"
@@ -495,7 +574,7 @@ void MTRShuttle::propagateAMANDA(bool weightedAverage)
 
         auto currentIt= fAMANDACurrentsVect[plane][side][RPC].begin();
 
-        printf("Interpolating and averaging...\n");
+        printf("Integrating and averaging... \n");
 
         for (auto &runObjectIt: fRunDataVect[plane][side][RPC]) {
 
@@ -515,35 +594,44 @@ void MTRShuttle::propagateAMANDA(bool weightedAverage)
           for ( ; currentIt!=fAMANDACurrentsVect[plane][side][RPC].end()-1; currentIt++) {
 
             auto TS = currentIt->getTimeStamp();
+
+            // If the timestamp is after the EOR break the loop (aka pass to the following run)
+            if ( TS > EOR ) break;
+
             auto nextTS = (currentIt+1)->getTimeStamp();
+
+            // If the timestamp is before the SOR
+            if ( TS < SOR ) {
+              // If nextTS is before SOR skip
+              if ( nextTS < SOR ) continue;
+                // Else the current value has to be averaged from SOR to nextTS
+              else TS = SOR;
+            }
+
+            // If nextTS is after EOR the current value has to be averaged from TS to EOR
+            if( nextTS >= EOR ) nextTS = EOR;
+
+            // Compute deltaT
             auto deltaT = nextTS - TS;
 
-            // If the timestamp is before the SOR skip
-            if ( TS < SOR ) {
-              integratedCharge += currentIt->getINet() * (double) deltaT;
-              continue;
-            }
-              // If the timestamp is after the EOR break the loop (aka pass to the following run)
-            else if ( TS > EOR ){
-              break;
-              // If SOR<TS<EOR then set IDark
-            } else {
-              integratedCharge += currentIt->getINet() * (double) deltaT;
+            // Integrate current
+            integratedCharge += currentIt->getINet() * (double) deltaT;
 
-              if( nextTS <= EOR && nextTS > SOR ) {
-                if(weightedAverage) {
-                  iDarkCumulus += currentIt->getIDark() * (double) deltaT;
-                  iTotCumulus += currentIt->getITot() * (double) deltaT;
-                } else {
-                  iDarkCumulus += currentIt->getIDark();
-                  iTotCumulus += currentIt->getITot();
-                }
-                iCounter++;
-              }
-              totalT += deltaT;
+            // Add current value to average numerator sum
+            if(weightedAverage) {
+              iDarkCumulus += currentIt->getIDark() * (double) deltaT;
+              iTotCumulus += currentIt->getITot() * (double) deltaT;
+            } else {
+              iDarkCumulus += currentIt->getIDark();
+              iTotCumulus += currentIt->getITot();
+              iCounter++;
             }
+
+            // Now deltaT should always be equal to EOR-SOR
+            totalT += deltaT;
           }
 
+          // Compute average and assign values to run object
           if(weightedAverage) {
             runObjectIt.setAvgIDark((totalT > 0) ? iDarkCumulus / totalT : 0.);
             runObjectIt.setAvgITot((totalT > 0) ? iTotCumulus / totalT : 0.);
@@ -552,6 +640,62 @@ void MTRShuttle::propagateAMANDA(bool weightedAverage)
             runObjectIt.setAvgIDark((iCounter > 0) ? iDarkCumulus / (double) iCounter : 0.);
             runObjectIt.setAvgITot((iCounter > 0) ? iTotCumulus / (double) iCounter : 0.);
             runObjectIt.setIntCharge(integratedCharge);
+          }
+        }
+
+        auto voltageIt= fAMANDAVoltagesVect[plane][side][RPC].begin();
+
+        for (auto &runObjectIt: fRunDataVect[plane][side][RPC]) {
+
+          // Load SOR and EOR values
+          auto SOR = runObjectIt.getSOR();
+          auto EOR = runObjectIt.getEOR();
+
+          double hvCumulus = 0.;
+          double totalT = 0.;
+          int iCounter = 0;
+
+          // Loop over the voltage readings
+          for ( ; voltageIt!=fAMANDAVoltagesVect[plane][side][RPC].end()-1; voltageIt++) {
+
+            auto TS = voltageIt->getTimeStamp();
+
+            // If the timestamp is after the EOR break the loop (aka pass to the following run)
+            if ( TS > EOR ) break;
+
+            auto nextTS = (voltageIt+1)->getTimeStamp();
+
+            // If the timestamp is before the SOR
+            if ( TS < SOR ) {
+              // If nextTS is before SOR skip
+              if ( nextTS < SOR ) continue;
+              // Else the current value has to be averaged from SOR to nextTS
+              else TS = SOR;
+            }
+
+            // If nextTS is after EOR the current value has to be averaged from TS to EOR
+            if( nextTS >= EOR ) nextTS = EOR;
+
+            // Compute deltaT
+            auto deltaT = nextTS - TS;
+
+            // Add current value to average numerator sum
+            if(weightedAverage) {
+              hvCumulus += voltageIt->getHV() * (double) deltaT;
+            } else {
+              hvCumulus += voltageIt->getHV();
+              iCounter++;
+            }
+
+            // Now deltaT should always be equal to EOR-SOR
+            totalT += deltaT;
+          }
+
+          // Compute average and assign values to run object
+          if(weightedAverage) {
+            runObjectIt.setAvgHV((totalT > 0) ? hvCumulus / totalT : 0.);
+          } else {
+            runObjectIt.setAvgHV((iCounter > 0) ? hvCumulus / (double) iCounter : 0.);
           }
         }
       }
