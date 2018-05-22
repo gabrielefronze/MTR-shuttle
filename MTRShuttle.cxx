@@ -614,8 +614,8 @@ void MTRShuttle::propagateAMANDA(bool weightedAverage)
             // Compute deltaT
             auto deltaT = nextTS - TS;
 
-            // Integrate current
-            integratedCharge += currentIt->getINet() * (double) deltaT;
+            // Integrate current is HV is at working point
+            if(currentIt->isHvOk()) integratedCharge += currentIt->getINet() * (double) deltaT;
 
             // Add current value to average numerator sum
             if(weightedAverage) {
