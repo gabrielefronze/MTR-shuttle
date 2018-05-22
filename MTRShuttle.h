@@ -34,10 +34,10 @@ class MTRShuttle
   void loadData(std::string path = "MTRShuttle.csv");
   void computeAverage();
 
+#include "MTRShuttleTemplates.tcc"
+
   private:
   void createDummyRuns();
-
-#include "MTRShuttleTemplates.tcc"
 
   public:
   std::vector<std::pair<int,int>> fRunList;
