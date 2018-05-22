@@ -10,6 +10,8 @@ set(SOURCE_FILES
         AMANDAData.cxx
         AMANDACurrent.h
         AMANDACurrent.cxx
+        AMANDAVoltage.h
+        AMANDAVoltage.cxx
         MTRConditions.h
         Enumerators.h
         MTRShuttle.h
