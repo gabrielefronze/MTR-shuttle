@@ -19,6 +19,7 @@ opt = "kg";
 }
 gSystem->CompileMacro("AMANDAData.cxx",opt.c_str());
 gSystem->CompileMacro("AMANDACurrent.cxx",opt.c_str());
+gSystem->CompileMacro("AMANDAVoltage.cxx",opt.c_str());
 gSystem->CompileMacro("RunObject.cxx",opt.c_str());
 gSystem->CompileMacro("MTRShuttle.cxx",opt.c_str());
 gSystem->CompileMacro("MTRBooster.cxx",opt.c_str());
