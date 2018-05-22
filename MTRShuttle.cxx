@@ -518,6 +518,10 @@ void MTRShuttle::propagateAMANDA(bool weightedAverage)
   struct validityInterval{
     uint64_t start;
     uint64_t stop;
+    validityInterval(uint64_t sta, uint64_t sto){
+      start = sta;
+      stop = sto;
+    }
   };
 
   for (int plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
@@ -532,7 +536,7 @@ void MTRShuttle::propagateAMANDA(bool weightedAverage)
             isHvOkIt<fAMANDAVoltagesVect[plane][side][RPC].end()-1;
             isHvOkIt++){
           if( isHvOkIt->getHV() > 8000. ) { //TODO: this value should not be hardcoded!
-            isHvOkIntervals.emplace_back({isHvOkIt->getTimeStamp(),(isHvOkIt+1)->getTimeStamp()});
+            isHvOkIntervals.emplace_back(validityInterval(isHvOkIt->getTimeStamp(),(isHvOkIt+1)->getTimeStamp()));
           }
         }
 
@@ -557,7 +561,7 @@ void MTRShuttle::propagateAMANDA(bool weightedAverage)
         std::vector<validityInterval> isDarkIntervals;
         for (const auto &runObjectIt: fRunDataVect[plane][side][RPC]) {
           if( runObjectIt.isDark() ) {
-            isDarkIntervals.emplace_back({runObjectIt.getSOR(),runObjectIt.getEOR()});
+            isDarkIntervals.emplace_back(validityInterval(runObjectIt.getSOR(),runObjectIt.getEOR()));
           }
         }
 
