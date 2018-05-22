@@ -441,7 +441,7 @@ void MTRShuttle::parseAMANDAvMon(std::string path)
 
     std::string line;
     std::ifstream fin(path);
-    AMANDACurrent bufferCurrent;
+    AMANDAVoltage bufferVoltage;
     if (fin.is_open()) {
       while (!fin.eof()) {
         getline(fin, line);
@@ -453,9 +453,9 @@ void MTRShuttle::parseAMANDAvMon(std::string path)
         char pattern[200];
         sprintf(pattern, "%%lf;MTR_%sSIDE_MT%%d_RPC%%d_HV.actual.vMon;%%lf", (InsideOutside == 'I' ? "IN" : "OUT"));
         sscanf(charbuffer, pattern, &timeStamp, &MT, &RPC, &voltage);
-        bufferCurrent.setTimeStamp((uint64_t)timeStamp);
-        bufferCurrent.setITot(voltage);
-        fAMANDAVoltagesVect[mts[MT]][(InsideOutside == 'I' ? 0 : 1)][RPC - 1].emplace_back(bufferCurrent);
+        bufferVoltage.setTimeStamp((uint64_t)timeStamp);
+        bufferVoltage.setHV(voltage);
+        fAMANDAVoltagesVect[mts[MT]][(InsideOutside == 'I' ? 0 : 1)][RPC - 1].emplace_back(bufferVoltage);
       }
       std::cout << std::endl;
       fin.close();
@@ -479,7 +479,7 @@ void MTRShuttle::parseAMANDAvMon(std::string path)
 
 void MTRShuttle::createDummyRuns(){
 
-  std::cout << "Creating dummy runs...\n"
+  std::cout << "Creating dummy runs...\n";
 
   for (int plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
     for (int side = kINSIDE; side < MTRSides::kNSides; side++) {
