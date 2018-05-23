@@ -390,7 +390,7 @@ void MTRShuttle::parseAMANDAiMon(std::string path)
     if (fin.is_open()) {
       while (!fin.eof()) {
         getline(fin, line);
-        if (fin.eof()) break;
+        if (line.empty()) continue;
         std::cout << linesCounter++ << "\r";
         const char *charbuffer = (char *) line.c_str();
         if (!charbuffer) continue;
@@ -445,7 +445,7 @@ void MTRShuttle::parseAMANDAvMon(std::string path)
     if (fin.is_open()) {
       while (!fin.eof()) {
         getline(fin, line);
-        if (fin.eof()) break;
+        if (line.empty()) continue;
         std::cout << linesCounter++ << "\r";
         const char *charbuffer = (char *) line.c_str();
         if (!charbuffer) continue;
@@ -475,6 +475,23 @@ void MTRShuttle::parseAMANDAvMon(std::string path)
   }
 
   std::cout << "Loaded " << linesCounter << "AMANDA voltages values" << std::endl;
+}
+
+void MTRShuttle::loadReplacedRPCs(std::string path){
+  int linesCounter = 0;
+  std::string line;
+  std::ifstream fin(path);
+  if (fin.is_open()) {
+    while (!fin.eof()) {
+      getline(fin, line);
+      if (line.empty()) continue;
+      linesCounter++;
+      std::cout << linesCounter << " " << line << "\n";
+      fReplacedRPCs.emplace_back(ReplacedRPC(line));
+    }
+  } else {
+    std::cout << "Problem with replacements file.\n";
+  }
 }
 
 void MTRShuttle::createDummyRuns(){
@@ -831,10 +848,10 @@ void MTRShuttle::loadData(std::string path)
 
   if (fin.is_open())
   {
-    while (! fin.eof() )
+    while (!fin.eof() )
     {
       getline (fin,line);
-      if (fin.eof()) break;
+      if (line.empty()) continue;
       std::cout<<"Loaded lines: "<<linesCounter++<<"\r";
       runObjectBuffer = RunObject(line,plane,side,RPC);
       fRunDataVect[plane][side][RPC].emplace_back(runObjectBuffer);
