@@ -17,6 +17,7 @@
 #include "RunObject.h"
 #include "AMANDACurrent.h"
 #include "AMANDAVoltage.h"
+#include "ReplacedRPC.h"
 #include "Parameters.h"
 #include "MTRConditions.h"
 #include "Enumerators.h"
@@ -32,6 +33,7 @@ class MTRShuttle
   void propagateAMANDA(bool weightedAverage = true);
   void saveData(std::string path = "MTRShuttle.csv");
   void loadData(std::string path = "MTRShuttle.csv");
+  void loadReplacedRPCs(std::string path = "MTRRep.dat");
   void computeAverage();
 
 #include "MTRShuttleTemplates.tcc"
@@ -45,6 +47,8 @@ class MTRShuttle
   std::vector<RunObject> fRunDataVectAvg[MTRPlanes::kNPlanes+1];
   std::vector<AMANDACurrent> fAMANDACurrentsVect[MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
   std::vector<AMANDAVoltage> fAMANDAVoltagesVect[MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
+
+  std::vector<ReplacedRPC> fReplacedRPCs;
 
   inline double getM(const AMANDACurrent iStart, const AMANDACurrent iStop) {
     auto deltaI = iStop.getIDark()-iStart.getIDark();

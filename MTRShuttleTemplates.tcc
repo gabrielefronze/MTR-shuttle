@@ -53,12 +53,12 @@ TGraph *drawCorrelation(XType (RunObject::*getX)() const,
 
   auto dataVector = (!plotAverage)?fRunDataVect[plane][side][RPC]:fRunDataVectAvg[(plane<MTRPlanes::kNPlanes)?plane:4];
 
-  bool resetMT12OUTSIDE6 = true;
-  bool isReplacedRPC = ( plane==1
-                         && side==1
-                         && RPC==5
-                         && funcCmp(getY, &RunObject::getIntCharge)
-                         && accumulate );
+//  bool resetMT12OUTSIDE6 = true;
+//  bool isReplacedRPC = ( plane==1
+//                         && side==1
+//                         && RPC==5
+//                         && funcCmp(getY, &RunObject::getIntCharge)
+//                         && accumulate );
 
   for( auto const &dataIt : dataVector){
 
@@ -85,10 +85,15 @@ TGraph *drawCorrelation(XType (RunObject::*getX)() const,
 
     if ( y==(YType)0 ) continue;
 
-    if ( isReplacedRPC && resetMT12OUTSIDE6 && dataIt.getSOR()>1477958400 ){
-      resetMT12OUTSIDE6 = false;
-      yCumulus = (YType)0;
+//    if ( isReplacedRPC && resetMT12OUTSIDE6 && dataIt.getSOR()>1477958400 ){
+//      resetMT12OUTSIDE6 = false;
+//      yCumulus = (YType)0;
+//    }
+
+    for(auto &itReplaced : fReplacedRPCs){
+      if(itReplaced.shouldReset(dataIt.getSOR(),plane,side,RPC,accumulate)) yCumulus = (YType)0;
     }
+
     returnedGraph->SetPoint(counter++,(double)x,(double)((accumulate)?(yCumulus+=y):y));
   }
 
