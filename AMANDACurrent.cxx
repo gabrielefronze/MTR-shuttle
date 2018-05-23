@@ -7,7 +7,8 @@
 AMANDACurrent::AMANDACurrent(uint64_t timestamp, double iTot, double iDark, bool isDarkCurrent, bool isHvOk) : fITot(iTot),
                                                                                                                fIDark(iDark),
                                                                                                                fIsDarkCurrent(isDarkCurrent),
-                                                                                                               fIsHVOk(isHvOk)
+                                                                                                               fIsHVOk(isHvOk),
+                                                                                                               fFlagged(false)
 {
   this->setTimeStamp(timestamp);
 }
@@ -16,7 +17,8 @@ AMANDACurrent::AMANDACurrent(std::string csvLine, int &plane, int &side, int &RP
 {
   int bufferIsDark = 0;
   int bufferIsHvOk = 0;
-  sscanf(csvLine.c_str(),"%d;%d;%d;%llu;%lf;%lf;%d;%d",
+  int bufferFlagged = 0;
+  sscanf(csvLine.c_str(),"%d;%d;%d;%llu;%lf;%lf;%d;%d;%d",
          &plane,
          &side,
          &RPC,
@@ -24,8 +26,11 @@ AMANDACurrent::AMANDACurrent(std::string csvLine, int &plane, int &side, int &RP
          &fITot,
          &fIDark,
          &bufferIsDark,
-         &bufferIsHvOk
+         &bufferIsHvOk,
+         &bufferFlagged
+
   );
   fIsDarkCurrent = (bufferIsDark==1);
   fIsHVOk = (bufferIsHvOk==1);
+  fFlagged = (bufferFlagged==1);
 }

@@ -29,7 +29,8 @@ class AMANDACurrent : public AMANDAData
   inline void setIsDark(bool isDark) { fIsDarkCurrent = isDark; }
 
   inline bool isHvOk() const { return fIsHVOk; }
-  inline void setIsHvOk(bool isHvOk) { fIsHVOk = isHvOk; }
+  inline bool hasBeenFlagged() const { return fFlagged; }
+  inline void setIsHvOk(bool isHvOk) { fIsHVOk = isHvOk; fFlagged=true; }
 
   friend std::ostream& operator<<(std::ostream& os, const AMANDACurrent& obj);
 
@@ -38,6 +39,7 @@ class AMANDACurrent : public AMANDAData
   double fIDark;
   bool fIsDarkCurrent;
   bool fIsHVOk;
+  bool fFlagged;
 };
 
 std::ostream& operator<<(std::ostream& os, const AMANDACurrent& obj){
@@ -45,7 +47,8 @@ std::ostream& operator<<(std::ostream& os, const AMANDACurrent& obj){
             << obj.getITot() << ";"
             << obj.getIDark() << ";"
             << obj.isDark() << ";"
-            << obj.isHvOk();
+            << obj.isHvOk() << ";"
+            << obj.hasBeenFlagged();
 }
 
 #endif //MTR_SHUTTLE_AMANDACURRENT_H
