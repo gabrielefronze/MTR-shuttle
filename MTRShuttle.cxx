@@ -377,7 +377,7 @@ void MTRShuttle::parseAMANDAiMon(std::string path)
     int MT = 0;
     int RPC = 0;
     char InsideOutside = 'I';
-    
+
     int mts[23];
     mts[11]=0;
     mts[12]=1;
@@ -614,6 +614,68 @@ void MTRShuttle::propagateAMANDA(bool weightedAverage)
           wasPrevDark = darkCurrentIt->isDark();
         }
 
+        printf("Setting voltage... ");
+
+        auto voltageIt= fAMANDAVoltagesVect[plane][side][RPC].begin();
+
+        for (auto &runObjectIt: fRunDataVect[plane][side][RPC]) {
+
+          // Load SOR and EOR values
+          auto SOR = runObjectIt.getSOR();
+          auto EOR = runObjectIt.getEOR();
+
+          double hvCumulus = 0.;
+          double totalT = 0.;
+          int iCounter = 0;
+
+          // Loop over the voltage readings
+          for ( ; voltageIt!=fAMANDAVoltagesVect[plane][side][RPC].end()-1; voltageIt++) {
+
+            auto TS = voltageIt->getTimeStamp();
+
+            // If the timestamp is after the EOR break the loop (aka pass to the following run)
+            if ( TS > EOR ) break;
+
+            auto nextTS = (voltageIt+1)->getTimeStamp();
+
+            // If the timestamp is before the SOR
+            if ( TS < SOR ) {
+              // If nextTS is before SOR skip
+              if ( nextTS < SOR ) continue;
+                // Else the current value has to be averaged from SOR to nextTS
+              else TS = SOR;
+            }
+
+            // If nextTS is after EOR the current value has to be averaged from TS to EOR
+            if( nextTS >= EOR ) nextTS = EOR;
+
+            // Compute deltaT
+            auto deltaT = nextTS - TS;
+
+            std::cout << "computing with deltaT=" << deltaT <<"\n";
+
+            // Add current value to average numerator sum
+            if(weightedAverage) {
+              hvCumulus += voltageIt->getHV() * (double) deltaT;
+            } else {
+              hvCumulus += voltageIt->getHV();
+            }
+
+            // Now deltaT should always be equal to EOR-SOR
+            totalT += deltaT;
+            iCounter++;
+          }
+
+          std::cout << "run " << runObjectIt.getRunNumber() << " had " << iCounter << " available voltage readings.\n";
+
+          // Compute average and assign values to run object
+          if(weightedAverage) {
+            runObjectIt.setAvgHV((totalT > 0) ? hvCumulus / totalT : runObjectIt.getAvgHV());
+          } else {
+            runObjectIt.setAvgHV((iCounter > 0) ? hvCumulus / (double) iCounter : runObjectIt.getAvgHV());
+          }
+        }
+
         auto currentIt= fAMANDACurrentsVect[plane][side][RPC].begin();
 
         printf("Integrating and averaging... \n");
@@ -656,8 +718,10 @@ void MTRShuttle::propagateAMANDA(bool weightedAverage)
             // Compute deltaT
             auto deltaT = nextTS - TS;
 
+            std::cout << "computing with deltaT=" << deltaT <<"\n";
+
             // Integrate current is HV is at working point
-            if(currentIt->isHvOk()) integratedCharge += currentIt->getINet() * (double) deltaT;
+            if(currentIt->isHvOk() || !(currentIt->hasBeenFlagged())) integratedCharge += currentIt->getINet() * (double) deltaT;
 
             // Add current value to average numerator sum
             if(weightedAverage) {
@@ -666,12 +730,14 @@ void MTRShuttle::propagateAMANDA(bool weightedAverage)
             } else {
               iDarkCumulus += currentIt->getIDark();
               iTotCumulus += currentIt->getITot();
-              iCounter++;
             }
 
             // Now deltaT should always be equal to EOR-SOR
             totalT += deltaT;
+            iCounter++;
           }
+
+          std::cout << "run " << runObjectIt.getRunNumber() << " had " << iCounter << " available current readings.\n";
 
           // Compute average and assign values to run object
           if(weightedAverage) {
@@ -682,62 +748,6 @@ void MTRShuttle::propagateAMANDA(bool weightedAverage)
             runObjectIt.setAvgIDark((iCounter > 0) ? iDarkCumulus / (double) iCounter : 0.);
             runObjectIt.setAvgITot((iCounter > 0) ? iTotCumulus / (double) iCounter : 0.);
             runObjectIt.setIntCharge(integratedCharge);
-          }
-        }
-
-        auto voltageIt= fAMANDAVoltagesVect[plane][side][RPC].begin();
-
-        for (auto &runObjectIt: fRunDataVect[plane][side][RPC]) {
-
-          // Load SOR and EOR values
-          auto SOR = runObjectIt.getSOR();
-          auto EOR = runObjectIt.getEOR();
-
-          double hvCumulus = 0.;
-          double totalT = 0.;
-          int iCounter = 0;
-
-          // Loop over the voltage readings
-          for ( ; voltageIt!=fAMANDAVoltagesVect[plane][side][RPC].end()-1; voltageIt++) {
-
-            auto TS = voltageIt->getTimeStamp();
-
-            // If the timestamp is after the EOR break the loop (aka pass to the following run)
-            if ( TS > EOR ) break;
-
-            auto nextTS = (voltageIt+1)->getTimeStamp();
-
-            // If the timestamp is before the SOR
-            if ( TS < SOR ) {
-              // If nextTS is before SOR skip
-              if ( nextTS < SOR ) continue;
-              // Else the current value has to be averaged from SOR to nextTS
-              else TS = SOR;
-            }
-
-            // If nextTS is after EOR the current value has to be averaged from TS to EOR
-            if( nextTS >= EOR ) nextTS = EOR;
-
-            // Compute deltaT
-            auto deltaT = nextTS - TS;
-
-            // Add current value to average numerator sum
-            if(weightedAverage) {
-              hvCumulus += voltageIt->getHV() * (double) deltaT;
-            } else {
-              hvCumulus += voltageIt->getHV();
-              iCounter++;
-            }
-
-            // Now deltaT should always be equal to EOR-SOR
-            totalT += deltaT;
-          }
-
-          // Compute average and assign values to run object
-          if(weightedAverage) {
-            runObjectIt.setAvgHV((totalT > 0) ? hvCumulus / totalT : 0.);
-          } else {
-            runObjectIt.setAvgHV((iCounter > 0) ? hvCumulus / (double) iCounter : 0.);
           }
         }
       }
