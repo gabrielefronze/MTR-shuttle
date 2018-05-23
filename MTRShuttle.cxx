@@ -528,7 +528,7 @@ void MTRShuttle::propagateAMANDA(bool weightedAverage)
     for (int side=kINSIDE; side<MTRSides::kNSides; side++) {
       for (int RPC=k1; RPC<MTRRPCs::kNRPCs; RPC++) {
 
-        printf("MT%d %s RPC%d... Setting isHvOk... ",kPlanes[plane],kSides[side].c_str(),RPC);
+        printf("MT%d %s RPC%d...\n Setting isHvOk... \n",kPlanes[plane],kSides[side].c_str(),RPC);
 
         // Creating a vector of validity intervals for HV
         std::vector<validityInterval> isHvOkIntervals;
@@ -555,7 +555,7 @@ void MTRShuttle::propagateAMANDA(bool weightedAverage)
           }
         }
 
-        printf("MT%d %s RPC%d... Setting isDark... ",kPlanes[plane],kSides[side].c_str(),RPC);
+        printf("Setting isDark... \n");
 
         // Creating a vector of dark periods
         std::vector<validityInterval> isDarkIntervals;
@@ -584,7 +584,7 @@ void MTRShuttle::propagateAMANDA(bool weightedAverage)
         auto lastDarkIt = fAMANDACurrentsVect[plane][side][RPC].begin();
         bool wasPrevDark = lastDarkIt->isDark();
 
-        printf("Setting iDark... ");
+        printf("Setting iDark... \n");
 
         // Loop over the current readings
         for (auto darkCurrentIt=fAMANDACurrentsVect[plane][side][RPC].begin()+1;
@@ -614,7 +614,7 @@ void MTRShuttle::propagateAMANDA(bool weightedAverage)
           wasPrevDark = darkCurrentIt->isDark();
         }
 
-        printf("Setting voltage... ");
+        printf("Setting voltage... \n");
 
         auto voltageIt= fAMANDAVoltagesVect[plane][side][RPC].begin();
 
