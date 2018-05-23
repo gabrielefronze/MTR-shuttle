@@ -12,6 +12,7 @@ set(SOURCE_FILES
         AMANDACurrent.cxx
         AMANDAVoltage.h
         AMANDAVoltage.cxx
+        ReplacedRPC.h
         MTRConditions.h
         Enumerators.h
         MTRShuttle.h
