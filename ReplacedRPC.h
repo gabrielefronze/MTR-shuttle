@@ -17,8 +17,7 @@ struct ReplacedRPC{
   bool fAlreadyReset = false;
 
   bool shouldReset(uint64_t currentSOR, MTRPlanes plane, MTRSides side, MTRRPCs RPC, bool accumulating){
-    fAlreadyReset = !fAlreadyReset && accumulating && plane==fPlane && side==fSide && RPC==fRPC && currentSOR>fReplacementTS;
-    return fAlreadyReset;
+    return accumulating && plane==fPlane && side==fSide && RPC==fRPC && currentSOR>fReplacementTS;
   }
 
   ReplacedRPC(){
