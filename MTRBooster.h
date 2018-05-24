@@ -37,7 +37,7 @@ class MTRBooster
 
     MTRBooster();
     explicit MTRBooster(std::string inputData);
-    inline MTRShuttle* getShuttle(){ return &fShuttle; };
+    inline MTRShuttle* GetShuttle(){ return &fShuttle; };
     void PrintConfig();
 
     void Launch();
