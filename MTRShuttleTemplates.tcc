@@ -91,11 +91,16 @@ TGraph *drawCorrelation(XType (RunObject::*getX)() const,
 //    }
 
     for(auto &itReplaced : fReplacedRPCs){
-      if(itReplaced.shouldReset(dataIt.getSOR(),plane,side,RPC,accumulate)) yCumulus = (YType)0;
+      if(itReplaced.shouldReset(dataIt.getSOR(),plane,side,RPC,accumulate) && !(itReplaced.fAlreadyReset)) {
+        yCumulus = (YType)0;
+        itReplaced.fAlreadyReset = true;
+      }
     }
 
     returnedGraph->SetPoint(counter++,(double)x,(double)((accumulate)?(yCumulus+=y):y));
   }
+
+  resetReplacedRPCs();
 
   return returnedGraph;
 }

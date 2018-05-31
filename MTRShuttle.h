@@ -34,6 +34,7 @@ class MTRShuttle
   void saveData(std::string path = "MTRShuttle.csv");
   void loadData(std::string path = "MTRShuttle.csv");
   void loadReplacedRPCs(std::string path = "MTRRep.dat");
+  inline void resetReplacedRPCs(){ for(auto &itRep : fReplacedRPCs){ itRep.fAlreadyReset=false; }};
   void computeAverage();
 
 #include "MTRShuttleTemplates.tcc"
