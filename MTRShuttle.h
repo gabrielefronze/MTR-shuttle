@@ -39,17 +39,18 @@ class MTRShuttle
 
 #include "MTRShuttleTemplates.tcc"
 
-  private:
-  void createDummyRuns();
+  void graphMaquillage(MTRPlanes plane, MTRRPCs RPC, TGraph *graph, bool isAvgGraph);
 
-  public:
+  private:
+
   std::vector<std::pair<int,int>> fRunList;
   std::vector<RunObject> fRunDataVect[MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
   std::vector<RunObject> fRunDataVectAvg[MTRPlanes::kNPlanes+1];
   std::vector<AMANDACurrent> fAMANDACurrentsVect[MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
   std::vector<AMANDAVoltage> fAMANDAVoltagesVect[MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
-
   std::vector<ReplacedRPC> fReplacedRPCs;
+
+  void createDummyRuns();
 
   inline double getM(const AMANDACurrent iStart, const AMANDACurrent iStop) {
     auto deltaI = iStop.getIDark()-iStart.getIDark();
@@ -60,8 +61,6 @@ class MTRShuttle
   inline double getQ(const AMANDACurrent iStart, const AMANDACurrent /*iStop*/) {
     return iStart.getIDark();
   };
-
-  void graphMaquillage(MTRPlanes plane, MTRRPCs RPC, TGraph *graph, bool isAvgGraph);
 
   ClassDef(MTRShuttle,1);
 };

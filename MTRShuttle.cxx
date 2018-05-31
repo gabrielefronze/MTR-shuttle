@@ -501,29 +501,73 @@ void MTRShuttle::createDummyRuns(){
   for (int plane=MTRPlanes::kMT11; plane<MTRPlanes::kNPlanes; plane++) {
     for (int side = kINSIDE; side < MTRSides::kNSides; side++) {
       for (int RPC = k1; RPC < MTRRPCs::kNRPCs; RPC++) {
-
+        // Incremental counter to enumerate added dummy runs
         uint64_t runNumber = 0;
 
+        // Sorting the vector of RunData
         std::sort(fRunDataVect[plane][side][RPC].begin(),
                   fRunDataVect[plane][side][RPC].end(),
                   [](const RunObject &a, const RunObject &b) -> bool {
-                    return a.getRunNumber() < b.getRunNumber();
+                    return a.getSOR() < b.getSOR();
                   });
 
+        // Getting first AMANDA TS from iMon and vMon vectors
+        auto firstAMANDAiMonTS = (!(fAMANDACurrentsVect[plane][side][RPC].empty()))?fAMANDACurrentsVect[plane][side][RPC].begin()->fTimeStamp:std::numeric_limits<uint64_t>::max();
+        auto firstAMANDAvMonTS = (!(fAMANDAVoltagesVect[plane][side][RPC].empty()))?fAMANDAVoltagesVect[plane][side][RPC].begin()->fTimeStamp:std::numeric_limits<uint64_t>::max();
+
+        // Retrieving the lowest TS
+        auto firstAMANDATS = (firstAMANDAiMonTS<firstAMANDAvMonTS)?firstAMANDAiMonTS:firstAMANDAvMonTS;
+
+        // First run of the RunData vector
         auto runObjectIt = fRunDataVect[plane][side][RPC].begin();
+        // Original last run of RunData vector
         auto runObjectEnd = fRunDataVect[plane][side][RPC].end();
-        for (; runObjectIt<runObjectEnd-1; runObjectIt++) {
+
+        // Create a dummy run from minimum AMANDA TS to first SOR-1
+        if(firstAMANDATS<runObjectIt->getSOR()-1) {
+          fRunDataVect[plane][side][RPC].emplace_back(RunObject(firstAMANDATS-1,runObjectIt->getSOR()-1));
+          fRunDataVect[plane][side][RPC].back().setRunNumber(runNumber);
+          fRunDataVect[plane][side][RPC].back().setfIsDummy(true);
+          runNumber++;
+          printf("####################################\nCreated first run %llu from %llu to %llu.\n",runNumber-1,fRunDataVect[plane][side][RPC].back().getSOR(),fRunDataVect[plane][side][RPC].back().getEOR());
+        }
+
+        // Creating dummy runs between EOR(n) and SOR(n+1). end-1 is needed because n+1 is required.
+        for (; runObjectIt < runObjectEnd-1; runObjectIt++) {
+
+          printf("Run %llu from %llu to %llu.\n", runObjectIt->getRunNumber(), runObjectIt->getSOR(),
+                 runObjectIt->getEOR());
+
           if( runObjectIt->getEOR() < (runObjectIt+1)->getSOR()){
-            fRunDataVect[plane][side][RPC].emplace_back(RunObject(runObjectIt->getEOR(),(runObjectIt+1)->getSOR()));
+            fRunDataVect[plane][side][RPC].emplace_back(RunObject(runObjectIt->getEOR()+1,(runObjectIt+1)->getSOR()-1));
             fRunDataVect[plane][side][RPC].back().setRunNumber(runNumber);
+            fRunDataVect[plane][side][RPC].back().setfIsDummy(true);
             runNumber++;
+            printf("Created run %llu from %llu to %llu.\n",runNumber-1,fRunDataVect[plane][side][RPC].back().getSOR(),fRunDataVect[plane][side][RPC].back().getEOR());
           }
         }
 
+        // Getting last AMANDA TS from iMon and vMon vectors
+        auto lastAMANDAiMonTS = (!(fAMANDACurrentsVect[plane][side][RPC].empty()))?fAMANDACurrentsVect[plane][side][RPC].back().fTimeStamp:0;
+        auto lastAMANDAvMonTS = (!(fAMANDAVoltagesVect[plane][side][RPC].empty()))?fAMANDAVoltagesVect[plane][side][RPC].back().fTimeStamp:0;
+
+        // Retrieving the highest TS
+        auto lastAMANDATS = (lastAMANDAiMonTS<lastAMANDAvMonTS)?lastAMANDAvMonTS:lastAMANDAiMonTS;
+
+        // Create a dummy run from last EOR+1 to maximum AMANDA TS
+        if(lastAMANDATS>(runObjectEnd-1)->getEOR()+1) {
+          fRunDataVect[plane][side][RPC].emplace_back(RunObject((runObjectEnd-1)->getEOR()+1,lastAMANDATS+1));
+          fRunDataVect[plane][side][RPC].back().setRunNumber(runNumber);
+          fRunDataVect[plane][side][RPC].back().setfIsDummy(true);
+          runNumber++;
+          printf("Created last run %llu from %llu to %llu.\n####################################\n",runNumber-1,fRunDataVect[plane][side][RPC].back().getSOR(),fRunDataVect[plane][side][RPC].back().getEOR());
+        }
+
+        // Re-sorting the whole vector of RunData to put the dummy runs at the right spot
         std::sort(fRunDataVect[plane][side][RPC].begin(),
                   fRunDataVect[plane][side][RPC].end(),
                   [](const RunObject &a, const RunObject &b) -> bool {
-                    return a.getEOR() < b.getSOR();
+                    return a.getSOR() < b.getSOR();
                   });
       }
     }
@@ -669,7 +713,7 @@ void MTRShuttle::propagateAMANDA(bool weightedAverage)
             // Compute deltaT
             auto deltaT = nextTS - TS;
 
-            std::cout << "computing with deltaT=" << deltaT <<"\n";
+//            std::cout << "computing with deltaT=" << deltaT <<"\n";
 
             // Add current value to average numerator sum
             if(weightedAverage) {
@@ -735,7 +779,7 @@ void MTRShuttle::propagateAMANDA(bool weightedAverage)
             // Compute deltaT
             auto deltaT = nextTS - TS;
 
-            std::cout << "computing with deltaT=" << deltaT <<"\n";
+//            std::cout << "computing with deltaT=" << deltaT <<"\n";
 
             // Integrate current is HV is at working point
             if(currentIt->isHvOk() || !(currentIt->hasBeenFlagged())) integratedCharge += currentIt->getINet() * (double) deltaT;
