@@ -5,22 +5,24 @@
 #include "RunObject.h"
 
 RunObject::RunObject(uint64_t SOR, uint64_t EOR, double avgHV, double avgITot, double avgIDark, double intCharge,
-                     uint64_t scalBending, uint64_t scalNotBending, bool isDark) : fSOR(SOR),
-                                                                              fEOR(EOR),
-                                                                              fAvgHV(avgHV),
-                                                                              fAvgITot(avgITot),
-                                                                              fAvgIDark(avgIDark),
-                                                                              fIntCharge(intCharge),
-                                                                              fScalBending(scalBending),
-                                                                              fScalNotBending(scalNotBending),
-                                                                              fIsDark(isDark)
+                     uint64_t scalBending, uint64_t scalNotBending, bool isDark, bool isDummy) : fSOR(SOR),
+                                                                                                 fEOR(EOR),
+                                                                                                 fAvgHV(avgHV),
+                                                                                                 fAvgITot(avgITot),
+                                                                                                 fAvgIDark(avgIDark),
+                                                                                                 fIntCharge(intCharge),
+                                                                                                 fScalBending(scalBending),
+                                                                                                 fScalNotBending(scalNotBending),
+                                                                                                 fIsDark(isDark),
+                                                                                                 fIsDummy(isDummy)
 {}
 
 RunObject::RunObject(std::string csvLine, int &plane, int &side, int &RPC)
 {
   int isDarkBuffer = 0;
   int isHVOkBuffer = 0;
-  sscanf(csvLine.c_str(),"%d;%d;%d;%llu;%llu;%llu;%lf;%lf;%lf;%lf;%lf;%lf;%d;%d",
+  int isDummyBuffer = 0;
+  sscanf(csvLine.c_str(),"%d;%d;%d;%llu;%llu;%llu;%lf;%lf;%lf;%lf;%lf;%lf;%d;%d;%d",
          &plane,
          &side,
          &RPC,
@@ -34,7 +36,9 @@ RunObject::RunObject(std::string csvLine, int &plane, int &side, int &RPC)
          &fScalBending,
          &fScalNotBending,
          &isDarkBuffer,
-         &isHVOkBuffer);
+         &isHVOkBuffer,
+         &isDummyBuffer);
   fIsDark = (isDarkBuffer == 1);
   fIsHVOk = (isHVOkBuffer == 1);
+  fIsDummy= (isDummyBuffer == 1);
 }
