@@ -24,12 +24,31 @@
 
 class MTRShuttle
 {
+  private:
+  template<class ContainerT> typename std::enable_if<std::is_same<std::string,typename ContainerT::value_type>::value>::type parseList(ContainerT paths, void (MTRShuttle::*parser)(std::string)){
+    for(auto &itPaths : paths){
+      (this->*parser)(itPaths);
+    }
+  }
+
   public:
   void parseRunList(std::string path="");
+  template<class ContainerT> void parseRunList(ContainerT paths){
+    parseList(paths,&MTRShuttle::parseRunList);
+  };
+
   void parseOCDB(std::string path="");
   void parseOCDBiMon(std::string path = "");
+
   void parseAMANDAiMon(std::string path = "");
+  template<class ContainerT> void parseAMANDAvMon(ContainerT paths){
+    parseList(paths,&MTRShuttle::parseAMANDAvMon);
+  };
+
   void parseAMANDAvMon(std::string path = "");
+  template<class ContainerT> void parseAMANDAiMon(ContainerT paths){
+    parseList(paths,&MTRShuttle::parseAMANDAiMon);
+  };
   void propagateAMANDA(bool weightedAverage = true);
   void saveData(std::string path = "MTRShuttle.csv");
   void loadData(std::string path = "MTRShuttle.csv");
