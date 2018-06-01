@@ -24,6 +24,8 @@
 
 class MTRShuttle
 {
+  friend class MTRBooster;
+
   private:
   template<class ContainerT> typename std::enable_if<std::is_same<std::string,typename ContainerT::value_type>::value>::type parseList(ContainerT paths, void (MTRShuttle::*parser)(std::string)){
     for(auto &itPaths : paths){
@@ -49,6 +51,7 @@ class MTRShuttle
   template<class ContainerT> void parseAMANDAiMon(ContainerT paths){
     parseList(paths,&MTRShuttle::parseAMANDAiMon);
   };
+
   void propagateAMANDA(bool weightedAverage = true);
   void saveData(std::string path = "MTRShuttle.csv");
   void loadData(std::string path = "MTRShuttle.csv");
