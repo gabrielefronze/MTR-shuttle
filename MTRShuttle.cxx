@@ -477,23 +477,6 @@ void MTRShuttle::parseAMANDAvMon(std::string path)
   std::cout << "Loaded " << linesCounter << "AMANDA voltages values" << std::endl;
 }
 
-void MTRShuttle::loadReplacedRPCs(std::string path){
-  int linesCounter = 0;
-  std::string line;
-  std::ifstream fin(path);
-  if (fin.is_open()) {
-    while (!fin.eof()) {
-      getline(fin, line);
-      if (line.empty()) continue;
-      linesCounter++;
-      std::cout << linesCounter << " " << line << "\n";
-      fReplacedRPCs.emplace_back(ReplacedRPC(line));
-    }
-  } else {
-    std::cout << "Problem with replacements file.\n";
-  }
-}
-
 void MTRShuttle::createDummyRuns(){
 
   std::cout << "Creating dummy runs...\n";
@@ -904,25 +887,4 @@ void MTRShuttle::loadData(std::string path)
     fin.close();
   }
   else std::cout << "Unable to open file";
-}
-
-void MTRShuttle::graphMaquillage(MTRPlanes plane, MTRRPCs RPC, TGraph *graph, bool isAvgGraph)
-{
-  graph->GetXaxis()->SetLabelSize(0.035);
-  graph->GetYaxis()->SetLabelSize(0.035);
-  if(!isAvgGraph){
-    graph->SetLineColor(kColors[RPC]);
-    graph->SetMarkerColor(kColors[RPC]);
-    graph->SetMarkerStyle(kMarkers[plane]);
-    graph->SetMarkerSize(0.1);
-    graph->SetLineStyle((Style_t)(1));
-    graph->SetLineWidth(1);
-  } else {
-    graph->SetLineColor(kBlack);
-    graph->SetMarkerColor(kBlack);
-    graph->SetMarkerStyle(20);
-    graph->SetMarkerSize(0.15);
-    graph->SetLineStyle((Style_t)(1));
-    graph->SetLineWidth(2);
-  }
 }

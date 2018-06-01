@@ -27,13 +27,24 @@ class MTRShuttle
   friend class MTRBooster;
 
   private:
-  template<class ContainerT> typename std::enable_if<std::is_same<std::string,typename ContainerT::value_type>::value>::type parseList(ContainerT paths, void (MTRShuttle::*parser)(std::string)){
+  template<class ContainerT>
+  typename std::enable_if<std::is_same<std::string,typename ContainerT::value_type>::value>::type
+  parseList(ContainerT paths, void (MTRShuttle::*parser)(std::string)){
     for(auto &itPaths : paths){
       (this->*parser)(itPaths);
     }
   }
 
   public:
+  void instance(std::string runListPath, std::string AMANDAiMonPath, std::string AMANDAvMonPath, std::string OCDBPath, bool weighted=true){
+    this->parseRunList(runListPath);
+    this->parseAMANDAvMon(AMANDAvMonPath);
+    this->parseAMANDAiMon(AMANDAiMonPath);
+    this->parseOCDB(OCDBPath);
+    this->createDummyRuns();
+    this->propagateAMANDA(weighted);
+  }
+
   void parseRunList(std::string path="");
   template<class ContainerT> void parseRunList(ContainerT paths){
     parseList(paths,&MTRShuttle::parseRunList);
@@ -55,22 +66,14 @@ class MTRShuttle
   void propagateAMANDA(bool weightedAverage = true);
   void saveData(std::string path = "MTRShuttle.csv");
   void loadData(std::string path = "MTRShuttle.csv");
-  void loadReplacedRPCs(std::string path = "MTRRep.dat");
-  inline void resetReplacedRPCs(){ for(auto &itRep : fReplacedRPCs){ itRep.fAlreadyReset=false; }};
   void computeAverage();
 
-#include "MTRShuttleTemplates.tcc"
-
-  void graphMaquillage(MTRPlanes plane, MTRRPCs RPC, TGraph *graph, bool isAvgGraph);
-
   private:
-
   std::vector<std::pair<int,int>> fRunList;
   std::vector<RunObject> fRunDataVect[MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
   std::vector<RunObject> fRunDataVectAvg[MTRPlanes::kNPlanes+1];
   std::vector<AMANDACurrent> fAMANDACurrentsVect[MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
   std::vector<AMANDAVoltage> fAMANDAVoltagesVect[MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
-  std::vector<ReplacedRPC> fReplacedRPCs;
 
   void createDummyRuns();
 

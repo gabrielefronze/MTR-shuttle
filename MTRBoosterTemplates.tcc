@@ -2,7 +2,8 @@
 // Created by Gabriele Gaetano Fronzé on 20/03/2018.
 //
 
-#include "MTRShuttle.h"
+#include "MTRBooster.h"
+#include "type_traits"
 
 template<typename XType, typename YType>
 TGraph *drawCorrelation(XType (RunObject::*getX)() const,
@@ -24,7 +25,24 @@ TGraph *drawCorrelation(XType (RunObject::*getX)() const,
     if( plane<MTRPlanes::kNPlanes) returnedGraph->SetNameTitle(Form("avg_%d",kPlanes[plane]),Form("Average MT%d",kPlanes[plane]));
     else returnedGraph->SetNameTitle("avg","Average");
   }
-  graphMaquillage(plane, RPC, returnedGraph, plotAverage);
+
+  returnedGraph->GetXaxis()->SetLabelSize(0.035);
+  returnedGraph->GetYaxis()->SetLabelSize(0.035);
+  if(!plotAverage){
+    returnedGraph->SetLineColor(kColors[RPC]);
+    returnedGraph->SetMarkerColor(kColors[RPC]);
+    returnedGraph->SetMarkerStyle(kMarkers[plane]);
+    returnedGraph->SetMarkerSize(0.1);
+    returnedGraph->SetLineStyle((Style_t)(1));
+    returnedGraph->SetLineWidth(1);
+  } else {
+    returnedGraph->SetLineColor(kBlack);
+    returnedGraph->SetMarkerColor(kBlack);
+    returnedGraph->SetMarkerStyle(20);
+    returnedGraph->SetMarkerSize(0.15);
+    returnedGraph->SetLineStyle((Style_t)(1));
+    returnedGraph->SetLineWidth(2);
+  }
 
   returnedGraph->GetXaxis()->SetTitle(generateLabel(getX, normalizeToAreaX).c_str());
   returnedGraph->GetYaxis()->SetTitle(generateLabel(getY, normalizeToAreaY).c_str());
@@ -49,16 +67,9 @@ TGraph *drawCorrelation(XType (RunObject::*getX)() const,
 
   int counter = 0;
 
-  auto yCumulus = (YType)0.;//(YType)4000.;
+  auto yCumulus = (YType)0.;
 
-  auto dataVector = (!plotAverage)?fRunDataVect[plane][side][RPC]:fRunDataVectAvg[(plane<MTRPlanes::kNPlanes)?plane:4];
-
-//  bool resetMT12OUTSIDE6 = true;
-//  bool isReplacedRPC = ( plane==1
-//                         && side==1
-//                         && RPC==5
-//                         && funcCmp(getY, &RunObject::getIntCharge)
-//                         && accumulate );
+  auto dataVector = (!plotAverage)?fShuttle.fRunDataVect[plane][side][RPC]:fShuttle.fRunDataVectAvg[(plane<MTRPlanes::kNPlanes)?plane:4];
 
   for( auto const &dataIt : dataVector){
 
@@ -85,12 +96,7 @@ TGraph *drawCorrelation(XType (RunObject::*getX)() const,
 
     if ( y==(YType)0 ) continue;
 
-//    if ( isReplacedRPC && resetMT12OUTSIDE6 && dataIt.getSOR()>1477958400 ){
-//      resetMT12OUTSIDE6 = false;
-//      yCumulus = (YType)0;
-//    }
-
-    for(auto &itReplaced : fReplacedRPCs){
+    for(auto &itReplaced : this->fReplacedRPCs){
       if(itReplaced.shouldReset(dataIt.getSOR(),plane,side,RPC,accumulate) && !(itReplaced.fAlreadyReset)) {
         yCumulus = (YType)0;
         itReplaced.fAlreadyReset = true;
@@ -100,7 +106,7 @@ TGraph *drawCorrelation(XType (RunObject::*getX)() const,
     returnedGraph->SetPoint(counter++,(double)x,(double)((accumulate)?(yCumulus+=y):y));
   }
 
-  resetReplacedRPCs();
+  this->resetReplacedRPCs();
 
   return returnedGraph;
 }
@@ -180,26 +186,6 @@ TMultiGraph *drawCorrelations(XType(RunObject::*getX)() const,
   }
 
   if(!(mg->GetListOfGraphs())) return nullptr;
-
-//  mg->Draw("ap");
-//
-//  if (funcCmp(getX, &RunObject::getSOR) || funcCmp(getX, &RunObject::getEOR)){
-//    //This time offset is NEEDED to correctly display data from timestamp!
-//    gStyle->SetTimeOffset(0);
-//    mg->GetXaxis()->SetTimeDisplay(1);
-//    mg->GetXaxis()->SetTimeFormat("%d-%m-%y");
-//    mg->GetXaxis()->SetLabelSize(0.02);
-//    mg->GetXaxis()->SetTitle("Date");
-//  } else mg->GetHistogram()->GetXaxis()->SetTitle(generateLabel(getX,normalizeToAreaX).c_str());
-//
-//  if (funcCmp(getY, &RunObject::getSOR) || funcCmp(getY, &RunObject::getEOR)){
-//    //This time offset is NEEDED to correctly display data from timestamp!
-//    gStyle->SetTimeOffset(0);
-//    mg->GetYaxis()->SetTimeDisplay(1);
-//    mg->GetYaxis()->SetTimeFormat("%d-%m-%y");
-//    mg->GetYaxis()->SetLabelSize(0.02);
-//    mg->GetYaxis()->SetTitle("Date");
-//  } else mg->GetHistogram()->GetYaxis()->SetTitle(generateLabel(getY,normalizeToAreaY).c_str());
 
   return mg;
 }
@@ -308,15 +294,6 @@ drawMaxMin(YType (RunObject::*getY)() const,
 
   if (minGraph) mgOut->Add(minGraph);
   if (maxGraph) mgOut->Add(maxGraph);
-
-//  mgOut->Draw("ap");
-//  mgOut->GetHistogram()->GetXaxis()->SetTimeOffset(0);
-//  mgOut->GetHistogram()->GetXaxis()->SetTimeDisplay(1);
-//  mgOut->GetHistogram()->GetXaxis()->SetTimeFormat("%d-%m-%y");
-//  mgOut->GetHistogram()->GetYaxis()->SetLabelSize(0.02);
-//
-//  mgOut->GetHistogram()->GetXaxis()->SetTitle("Date");
-//  mgOut->GetHistogram()->GetYaxis()->SetTitle(generateLabel(getY,normalizeToAreaY).c_str());
 
   return mgOut;
 }

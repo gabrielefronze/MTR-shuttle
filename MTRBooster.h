@@ -12,93 +12,102 @@
 #include "Enumerators.h"
 
 struct MTRPlotSettings{
-    double (RunObject::*funcX)() const = nullptr;
-    double (RunObject::*funcY)() const = nullptr;
+  double (RunObject::*funcX)() const = nullptr;
+  double (RunObject::*funcY)() const = nullptr;
 
-    MTRPlanes fPlane=kAll;
-    MTRSides fSide=kBoth;
-    MTRRPCs fRPC=kAllRPCs;
+  MTRPlanes fPlane=kAll;
+  MTRSides fSide=kBoth;
+  MTRRPCs fRPC=kAllRPCs;
 
-    bool fNormalize=false;
-    bool fAccumulate=false;
-    bool fPlotaverage=false;
+  bool fNormalize=false;
+  bool fAccumulate=false;
+  bool fPlotaverage=false;
 
-    bool isTrend=false;
-    bool isMinMax=false;
+  bool isTrend=false;
+  bool isMinMax=false;
 
-    MTRConditions fConditions;
+  MTRConditions fConditions;
 
-    bool fValidSettings=true;
+  bool fValidSettings=true;
 };
 
 class MTRBooster
 {
   public:
 
-    MTRBooster();
-    explicit MTRBooster(std::string inputData);
-    inline MTRShuttle* GetShuttle(){ return &fShuttle; };
-    void PrintConfig();
+  MTRBooster();
+  MTRBooster(std::string runListPath, std::string AMANDAiMonPath, std::string AMANDAvMonPath, std::string OCDBPath, bool weighted=true);
+  explicit MTRBooster(std::string inputData);
+  explicit MTRBooster(MTRShuttle shuttle);
+  inline MTRShuttle* GetShuttle(){ return &fShuttle; };
+  void PrintConfig();
+  void LoadReplacedRPCs(std::string path = "MTRRep.dat");
 
-    void Launch();
-    void Launch(size_t iSetting, TMultiGraph* buffer);
-    inline TMultiGraph* GetPlot(size_t iPlot){ return (iPlot<fPlots.size())?fPlots[iPlot]:nullptr; };
-    void AutoDraw(size_t iPlot, TVirtualPad* pad, bool drawLegend=false, Option_t* opt="alp", Option_t* legOpt="LP");
+  void Launch();
+  void Launch(size_t iSetting, TMultiGraph* buffer);
+  inline TMultiGraph* GetPlot(size_t iPlot){ return (iPlot<fPlots.size())?fPlots[iPlot]:nullptr; };
+  void AutoDraw(size_t iPlot, TVirtualPad* pad, bool drawLegend=false, Option_t* opt="alp", Option_t* legOpt="LP");
 
-    MTRBooster& SetPlane(int HR_plane);
-    MTRBooster& SetSide(std::string HR_side);
-    MTRBooster& SetRPC(int HR_RPC);
-    MTRBooster& SetX(std::string xValues);
-    MTRBooster& SetY(std::string xValues);
+  MTRBooster& SetPlane(int HR_plane);
+  MTRBooster& SetSide(std::string HR_side);
+  MTRBooster& SetRPC(int HR_RPC);
+  MTRBooster& SetX(std::string xValues);
+  MTRBooster& SetY(std::string xValues);
 
-    MTRBooster& SetTSRange(uint64_t minTS, uint64_t maxTS);
-    MTRBooster& SetMinTS(uint64_t minTS);
-    MTRBooster& SetMaxTS(uint64_t maxTS);
+  MTRBooster& SetTSRange(uint64_t minTS, uint64_t maxTS);
+  MTRBooster& SetMinTS(uint64_t minTS);
+  MTRBooster& SetMaxTS(uint64_t maxTS);
 
-    MTRBooster& SetDateRange(std::string minDay, std::string maxDay);
-    MTRBooster& SetMinDate(std::string minDay);
-    MTRBooster& SetMaxDate(std::string maxDay);
+  MTRBooster& SetDateRange(std::string minDay, std::string maxDay);
+  MTRBooster& SetMinDate(std::string minDay);
+  MTRBooster& SetMaxDate(std::string maxDay);
 
-    MTRBooster& SetRunRange(uint64_t minRun, uint64_t maxRun);
-    MTRBooster& SetMinRun(uint64_t minRun);
-    MTRBooster& SetMaxRun(uint64_t maxRun);
+  MTRBooster& SetRunRange(uint64_t minRun, uint64_t maxRun);
+  MTRBooster& SetMinRun(uint64_t minRun);
+  MTRBooster& SetMaxRun(uint64_t maxRun);
 
-    MTRBooster& OnlyHVOkRuns();
-    MTRBooster& OnlyWithBeamRuns();
-    MTRBooster& OnlyNoBeamRuns();
-    MTRBooster& OnlyDarkCurrentRuns();
-    MTRBooster& OnlyIntegratedChargeRuns();
+  MTRBooster& OnlyHVOkRuns();
+  MTRBooster& OnlyWithBeamRuns();
+  MTRBooster& OnlyNoBeamRuns();
+  MTRBooster& OnlyDarkCurrentRuns();
+  MTRBooster& OnlyIntegratedChargeRuns();
 
-    inline MTRBooster& AccumulateY(){ fCurrentPlotSetting.fAccumulate=true; return *this; }
-    inline MTRBooster& NormalizeToArea(){ fCurrentPlotSetting.fNormalize=true; return *this; }
-    inline MTRBooster& PlotAverage(){ fCurrentPlotSetting.fPlotaverage=true; return *this; }
-    inline MTRBooster& PlotMinMax(){ fCurrentPlotSetting.isMinMax=true; return *this; }
+  inline MTRBooster& AccumulateY(){ fCurrentPlotSetting.fAccumulate=true; return *this; }
+  inline MTRBooster& NormalizeToArea(){ fCurrentPlotSetting.fNormalize=true; return *this; }
+  inline MTRBooster& PlotAverage(){ fCurrentPlotSetting.fPlotaverage=true; return *this; }
+  inline MTRBooster& PlotMinMax(){ fCurrentPlotSetting.isMinMax=true; return *this; }
 
-    inline void StackStage(){
-      if( fCurrentPlotSetting.fValidSettings ){
-        fPlotSettings.emplace_back(fCurrentPlotSetting);
-        fCurrentPlotSetting=MTRPlotSettings();
-      } else std::cerr << "Cannot stack invalid plot configuration.\n";
-    }
+  inline void StackStage(){
+    if( fCurrentPlotSetting.fValidSettings ){
+      fPlotSettings.emplace_back(fCurrentPlotSetting);
+      fCurrentPlotSetting=MTRPlotSettings();
+    } else std::cerr << "Cannot stack invalid plot configuration.\n";
+  }
+
+#include "MTRBoosterTemplates.tcc"
 
   private:
-    MTRShuttle fShuttle;
-    bool fLoadedData;
-    bool fAverageComputed;
-    std::vector<MTRPlotSettings> fPlotSettings;
-    MTRPlotSettings fCurrentPlotSetting;
-    std::vector<TMultiGraph*> fPlots;
-    inline void loadAverage(){ fShuttle.computeAverage(); fAverageComputed=true; }
+  MTRShuttle fShuttle;
+  bool fLoadedData;
+  bool fAverageComputed;
+  std::vector<MTRPlotSettings> fPlotSettings;
+  MTRPlotSettings fCurrentPlotSetting;
+  std::vector<TMultiGraph*> fPlots;
+  std::vector<ReplacedRPC> fReplacedRPCs;
 
-    uint64_t getTSFromString(std::string date);
-    void setXGetterFromString(std::string func);
-    void setYGetterFromString(std::string func);
+  inline void resetReplacedRPCs(){ for(auto &itRep : fReplacedRPCs){ itRep.fAlreadyReset=false; }};
 
-    void correlationWrapper(MTRPlotSettings &setting, TMultiGraph* buffer);
-    void correlationsWrapper(MTRPlotSettings &setting, TMultiGraph* buffer);
-    void trendWrapper(MTRPlotSettings &setting, TMultiGraph* buffer);
-    void trendsWrapper(MTRPlotSettings &setting, TMultiGraph* buffer);
-    void minmaxWrapper(MTRPlotSettings &setting, TMultiGraph* buffer);
+  inline void loadAverage(){ fShuttle.computeAverage(); fAverageComputed=true; }
+
+  uint64_t getTSFromString(std::string date);
+  void setXGetterFromString(std::string func);
+  void setYGetterFromString(std::string func);
+
+  void correlationWrapper(MTRPlotSettings &setting, TMultiGraph* buffer);
+  void correlationsWrapper(MTRPlotSettings &setting, TMultiGraph* buffer);
+  void trendWrapper(MTRPlotSettings &setting, TMultiGraph* buffer);
+  void trendsWrapper(MTRPlotSettings &setting, TMultiGraph* buffer);
+  void minmaxWrapper(MTRPlotSettings &setting, TMultiGraph* buffer);
 };
 
 #endif //MTR_SHUTTLE_MTRBOOSTER_H

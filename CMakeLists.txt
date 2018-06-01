@@ -16,7 +16,7 @@ set(SOURCE_FILES
         MTRConditions.h
         Enumerators.h
         MTRShuttle.h
-        MTRShuttleTemplates.tcc
+        MTRBoosterTemplates.tcc
         MTRShuttle.cxx
         MTRBooster.h
         MTRBooster.cxx
