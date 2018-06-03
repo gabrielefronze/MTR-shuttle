@@ -68,7 +68,7 @@ class RunObject{
     return (isBefore(TSMax) && isAfter(TSMin));
   }
 
-  inline bool isValidForIntCharge() const { return (((!fIsDark || fIsDummy) && fIsHVOk)); }
+  inline bool isValidForIntCharge() const { return ((!fIsDark || fIsDummy) && fIsHVOk); }
   inline bool isValidForIDark() const { return (fIsDark && fIsHVOk); }
 
 //    template<class ...Args> constexpr bool getTrue(Args... /*arg*/) const { return true; }
