@@ -17,7 +17,7 @@ class AMANDACurrent : public AMANDAData
   inline double getITot() const { return fITot; }
   inline void setITot(double iTot) { fITot = iTot; }
 
-  inline double getIDark() const { return fIDark; }
+  inline double getIDark() const { return (fIsDarkCurrent)?fITot:fIDark; }
   inline void setIDark(double iDark) { fIDark = iDark; }
 
   inline double getINet() const {
