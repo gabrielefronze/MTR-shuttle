@@ -22,6 +22,17 @@
 #include "MTRConditions.h"
 #include "Enumerators.h"
 
+
+struct validityInterval {
+  uint64_t start;
+  uint64_t stop;
+  validityInterval(uint64_t sta, uint64_t sto)
+  {
+    start = sta;
+    stop = sto;
+  }
+};
+
 class MTRShuttle
 {
   friend class MTRBooster;
@@ -48,7 +59,7 @@ class MTRShuttle
   void parseRunList(std::string path="");
   template<class ContainerT> void parseRunList(ContainerT paths){
     parseList(paths,&MTRShuttle::parseRunList);
-  };
+  }
 
   void parseOCDB(std::string path="");
   void parseOCDBiMon(std::string path = "");
@@ -56,12 +67,18 @@ class MTRShuttle
   void parseAMANDAiMon(std::string path = "");
   template<class ContainerT> void parseAMANDAvMon(ContainerT paths){
     parseList(paths,&MTRShuttle::parseAMANDAvMon);
-  };
+  }
 
   void parseAMANDAvMon(std::string path = "");
   template<class ContainerT> void parseAMANDAiMon(ContainerT paths){
     parseList(paths,&MTRShuttle::parseAMANDAiMon);
-  };
+  }
+
+  void setAMANDAIsHVOk(int plane, int side, int RPC);
+  void setAMANDAIsDark(int plane, int side, int RPC);
+  void setAMANDAiDark(int plane, int side, int RPC);
+  void propagateAMANDAVoltage(int plane, int side, int RPC, bool weightedAverage);
+  void propagateAMANDACurrent(int plane, int side, int RPC, bool weightedAverage);
 
   void propagateAMANDA(bool weightedAverage = true);
   void saveData(std::string path = "MTRShuttle.csv");
@@ -88,6 +105,8 @@ class MTRShuttle
   };
 
   ClassDef(MTRShuttle,1);
+
+  void setAMANDAIsHVOk();
 };
 
 #endif //MTR_SHUTTLE_MTRSHUTTLE_H
