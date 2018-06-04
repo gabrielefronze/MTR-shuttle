@@ -643,7 +643,7 @@ void MTRShuttle::setAMANDAIsHVOk(int plane, int side, int RPC)
       }
       // Create a validity interval between firstTS and lastTS
       isHvOkIntervals.emplace_back(validityInterval(firstTS, lastTS));
-      printf("HVOk interval {%llu,%llu}\n",firstTS,lastTS);
+//      printf("HVOk interval {%llu,%llu}\n",firstTS,lastTS);
     }
   }
 
@@ -678,7 +678,7 @@ void MTRShuttle::setAMANDAIsDark(int plane, int side, int RPC)
   for (const auto& runObjectIt : fRunDataVect[plane][side][RPC]) {
     if (runObjectIt.isDark()) {
       isDarkIntervals.emplace_back(validityInterval(runObjectIt.getSOR(), runObjectIt.getEOR()));
-      printf("Dark interval {%llu,%llu} (run %llu)\n",runObjectIt.getSOR(), runObjectIt.getEOR(),runObjectIt.getRunNumber());
+//      printf("Dark interval {%llu,%llu} (run %llu)\n",runObjectIt.getSOR(), runObjectIt.getEOR(),runObjectIt.getRunNumber());
     }
   }
 
@@ -911,19 +911,20 @@ void MTRShuttle::computeAverage()
 
   for (int iRun = 0; iRun < (int)nOfRuns; iRun++) {
 
-    RunObject runData;
-    runData.setSOR(fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].getSOR());
-    runData.setEOR(fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].getEOR());
-    runData.setRunNumber(fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].getRunNumber());
-    runData.setfIsDark(fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].isDark());
+    auto currentRunNumber = fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].getRunNumber();
 
-    auto currentRunNumber = runData.getRunNumber();
-
-    //    printf("Current runNumber=%llu\n",currentRunNumber);
+//    printf("Current runNumber=%llu\n",currentRunNumber);
 
     for (int plane = MTRPlanes::kMT11; plane < MTRPlanes::kNPlanes; plane++) {
       auto nOfRPC = MTRSides::kNSides * MTRRPCs::kNRPCs;
       fRunDataVectAvg[plane].reserve(nOfRuns);
+
+      RunObject runData;
+      runData.setSOR(fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].getSOR());
+      runData.setEOR(fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].getEOR());
+      runData.setRunNumber(fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].getRunNumber());
+      runData.setfIsDark(fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].isDark());
+
       for (int side = kINSIDE; side < MTRSides::kNSides; side++) {
         for (int RPC = k1; RPC < MTRRPCs::kNRPCs; RPC++) {
           auto currentRun = std::find_if(
@@ -937,7 +938,7 @@ void MTRShuttle::computeAverage()
 
           if ((currentRun->getAvgHV() > kMinWorkHV)) {
             runData = runData + *currentRun;
-            //            std::cout << (*currentRun).getAvgITot() << "\n";
+//                        std::cout << (*currentRun).getAvgITot() << "\n";
           } else {
             nOfRPC--;
           }
@@ -947,7 +948,7 @@ void MTRShuttle::computeAverage()
       if (nOfRPC != 0)
         runData = runData / (double)nOfRPC;
 
-      //      printf("\nAverage current=%f\n",runData.getAvgITot());
+//            printf("\nAverage current=%f\n",runData.getAvgITot());
 
       fRunDataVectAvg[plane].emplace_back(runData);
     }
