@@ -47,12 +47,12 @@ class MTRShuttle
   }
 
   public:
-  void instance(std::string runListPath, std::string AMANDAiMonPath, std::string AMANDAvMonPath, std::string OCDBPath, bool weighted=true){
+  void instance(std::string runListPath, std::string AMANDAiMonPath, std::string AMANDAvMonPath, std::string OCDBPath, bool weighted=true, bool createFirstLast=true){
     this->parseRunList(runListPath);
     this->parseAMANDAvMon(AMANDAvMonPath);
     this->parseAMANDAiMon(AMANDAiMonPath);
     this->parseOCDB(OCDBPath);
-    this->createDummyRuns();
+    this->createDummyRuns(createFirstLast);
     this->propagateAMANDA(weighted);
   }
 
@@ -92,7 +92,7 @@ class MTRShuttle
   std::vector<AMANDACurrent> fAMANDACurrentsVect[MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
   std::vector<AMANDAVoltage> fAMANDAVoltagesVect[MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
 
-  void createDummyRuns();
+  void createDummyRuns(bool createFirstLast);
 
   inline double getM(const AMANDACurrent iStart, const AMANDACurrent iStop) {
     auto deltaI = iStop.getIDark()-iStart.getIDark();

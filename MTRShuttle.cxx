@@ -483,7 +483,7 @@ void MTRShuttle::parseAMANDAvMon(std::string path)
   std::cout << "Loaded " << linesCounter << "AMANDA voltages values" << std::endl;
 }
 
-void MTRShuttle::createDummyRuns()
+void MTRShuttle::createDummyRuns(bool createFirstLast)
 {
 
   std::cout << "Creating dummy runs...\n";
@@ -571,34 +571,36 @@ void MTRShuttle::createDummyRuns()
     runNumber++;
   }
 
-  if (firstAMANDATSGlobal < firstRunTS) {
-    for (int plane = MTRPlanes::kMT11; plane < MTRPlanes::kNPlanes; plane++) {
-      for (int side = kINSIDE; side < MTRSides::kNSides; side++) {
-        for (int RPC = k1; RPC < MTRRPCs::kNRPCs; RPC++) {
-          fRunDataVect[plane][side][RPC].emplace_back(RunObject(firstAMANDATSGlobal, firstRunTS));
-          fRunDataVect[plane][side][RPC].back().setRunNumber(0);
-          fRunDataVect[plane][side][RPC].back().setfIsDummy(true);
-          printf(
-            //            "####################################\n"
-            "Created first run %llu from %llu to %llu.\n", 0, fRunDataVect[plane][side][RPC].back().getSOR(),
-            fRunDataVect[plane][side][RPC].back().getEOR());
+  if(createFirstLast) {
+    if (firstAMANDATSGlobal < firstRunTS) {
+      for (int plane = MTRPlanes::kMT11; plane < MTRPlanes::kNPlanes; plane++) {
+        for (int side = kINSIDE; side < MTRSides::kNSides; side++) {
+          for (int RPC = k1; RPC < MTRRPCs::kNRPCs; RPC++) {
+            fRunDataVect[plane][side][RPC].emplace_back(RunObject(firstAMANDATSGlobal, firstRunTS));
+            fRunDataVect[plane][side][RPC].back().setRunNumber(0);
+            fRunDataVect[plane][side][RPC].back().setfIsDummy(true);
+            printf(
+              //            "####################################\n"
+              "Created first run %llu from %llu to %llu.\n", 0, fRunDataVect[plane][side][RPC].back().getSOR(),
+              fRunDataVect[plane][side][RPC].back().getEOR());
+          }
         }
       }
     }
-  }
 
-  if (lastRunTS < lastAMANDATSGlobal) {
-    for (int plane = MTRPlanes::kMT11; plane < MTRPlanes::kNPlanes; plane++) {
-      for (int side = kINSIDE; side < MTRSides::kNSides; side++) {
-        for (int RPC = k1; RPC < MTRRPCs::kNRPCs; RPC++) {
-          fRunDataVect[plane][side][RPC].emplace_back(RunObject(lastRunTS + 1, lastAMANDATSGlobal));
-          fRunDataVect[plane][side][RPC].back().setRunNumber(runNumber);
-          fRunDataVect[plane][side][RPC].back().setfIsDummy(true);
-          printf("Created last run %llu from %llu to %llu.\n"
-                 //            "####################################\n"
-                 ,
-                 runNumber, fRunDataVect[plane][side][RPC].back().getSOR(),
-                 fRunDataVect[plane][side][RPC].back().getEOR());
+    if (lastRunTS < lastAMANDATSGlobal) {
+      for (int plane = MTRPlanes::kMT11; plane < MTRPlanes::kNPlanes; plane++) {
+        for (int side = kINSIDE; side < MTRSides::kNSides; side++) {
+          for (int RPC = k1; RPC < MTRRPCs::kNRPCs; RPC++) {
+            fRunDataVect[plane][side][RPC].emplace_back(RunObject(lastRunTS + 1, lastAMANDATSGlobal));
+            fRunDataVect[plane][side][RPC].back().setRunNumber(runNumber);
+            fRunDataVect[plane][side][RPC].back().setfIsDummy(true);
+            printf("Created last run %llu from %llu to %llu.\n"
+              //            "####################################\n"
+              ,
+                   runNumber, fRunDataVect[plane][side][RPC].back().getSOR(),
+                   fRunDataVect[plane][side][RPC].back().getEOR());
+          }
         }
       }
     }
