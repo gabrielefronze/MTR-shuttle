@@ -571,7 +571,7 @@ void MTRShuttle::createDummyRuns(bool createFirstLast)
     runNumber++;
   }
 
-  if(createFirstLast) {
+  if (createFirstLast) {
     if (firstAMANDATSGlobal < firstRunTS) {
       for (int plane = MTRPlanes::kMT11; plane < MTRPlanes::kNPlanes; plane++) {
         for (int side = kINSIDE; side < MTRSides::kNSides; side++) {
@@ -596,8 +596,8 @@ void MTRShuttle::createDummyRuns(bool createFirstLast)
             fRunDataVect[plane][side][RPC].back().setRunNumber(runNumber);
             fRunDataVect[plane][side][RPC].back().setfIsDummy(true);
             printf("Created last run %llu from %llu to %llu.\n"
-              //            "####################################\n"
-              ,
+                   //            "####################################\n"
+                   ,
                    runNumber, fRunDataVect[plane][side][RPC].back().getSOR(),
                    fRunDataVect[plane][side][RPC].back().getEOR());
           }
@@ -645,7 +645,7 @@ void MTRShuttle::setAMANDAIsHVOk(int plane, int side, int RPC)
       }
       // Create a validity interval between firstTS and lastTS
       isHvOkIntervals.emplace_back(validityInterval(firstTS, lastTS));
-//      printf("HVOk interval {%llu,%llu}\n",firstTS,lastTS);
+      //      printf("HVOk interval {%llu,%llu}\n",firstTS,lastTS);
     }
   }
 
@@ -673,6 +673,9 @@ void MTRShuttle::setAMANDAIsDark(int plane, int side, int RPC)
 {
   printf("Setting isDark... \n");
 
+  std::sort(fAMANDACurrentsVect[plane][side][RPC].begin(), fAMANDACurrentsVect[plane][side][RPC].end(),
+            [](const AMANDACurrent& a, const AMANDACurrent& b) -> bool { return a.getTimeStamp() < b.getTimeStamp(); });
+
   // Creating a vector of validity intervals for HV
   std::vector<validityInterval> isDarkIntervals;
 
@@ -680,7 +683,8 @@ void MTRShuttle::setAMANDAIsDark(int plane, int side, int RPC)
   for (const auto& runObjectIt : fRunDataVect[plane][side][RPC]) {
     if (runObjectIt.isDark()) {
       isDarkIntervals.emplace_back(validityInterval(runObjectIt.getSOR(), runObjectIt.getEOR()));
-//      printf("Dark interval {%llu,%llu} (run %llu)\n",runObjectIt.getSOR(), runObjectIt.getEOR(),runObjectIt.getRunNumber());
+      //      printf("Dark interval {%llu,%llu} (run %llu)\n",runObjectIt.getSOR(),
+      //      runObjectIt.getEOR(),runObjectIt.getRunNumber());
     }
   }
 
@@ -698,7 +702,8 @@ void MTRShuttle::setAMANDAIsDark(int plane, int side, int RPC)
         currentIt--;
         break;
       } else {
-        currentIt->setIsDark(true);
+        if (currentIt->getITot() != 0.)
+          currentIt->setIsDark(true);
       }
     }
   }
@@ -708,30 +713,40 @@ void MTRShuttle::setAMANDAiDark(int plane, int side, int RPC)
 {
   printf("Setting iDark... \n");
 
+  std::sort(fAMANDACurrentsVect[plane][side][RPC].begin(), fAMANDACurrentsVect[plane][side][RPC].end(),
+            [](const AMANDACurrent& a, const AMANDACurrent& b) -> bool { return a.getTimeStamp() < b.getTimeStamp(); });
+
   // Iterator to point to the last dark current reading
   auto lastDarkIt = fAMANDACurrentsVect[plane][side][RPC].begin();
+
+  while (!(lastDarkIt->isDark())) {
+    lastDarkIt++;
+  }
+
   bool wasPrevDark = lastDarkIt->isDark();
+
+  std::cout << "First reading is dark? " << wasPrevDark << std::endl;
 
   // Loop over the current readings
   for (auto darkCurrentIt = fAMANDACurrentsVect[plane][side][RPC].begin() + 1;
-       darkCurrentIt != fAMANDACurrentsVect[plane][side][RPC].end(); darkCurrentIt++) {
+       darkCurrentIt < fAMANDACurrentsVect[plane][side][RPC].end(); darkCurrentIt++) {
 
-    if(darkCurrentIt->isDark()){
+    if (darkCurrentIt->isDark()) {
       // If previous reading and current one are dark, update last dark
-      if (wasPrevDark) {
+      if (wasPrevDark && !(darkCurrentIt->getIDark() == 0.)) {
         lastDarkIt = darkCurrentIt;
-      // If previous reading wasn't dark, while current one is, set dark currents from lastDark to darkCurrentIt
+        std::cout << "New dark current is: " << lastDarkIt->getIDark() << std::endl;
+        // If previous reading wasn't dark, while current one is, set dark currents from lastDark to darkCurrentIt
       } else if (!wasPrevDark) {
         // Computing the parameters for the "dumb interpolation"
-        const double m = getM(*lastDarkIt, *darkCurrentIt);
-        const double q = getQ(*lastDarkIt, *darkCurrentIt);
-        const double TS0 = lastDarkIt->getTimeStamp();
+        double m = getM(*lastDarkIt, *darkCurrentIt);
+        double q = getQ(*lastDarkIt, *darkCurrentIt);
+        double TS0 = lastDarkIt->getTimeStamp();
 
         // Assigning dark current values from interpolation to the not-dark readings
         if (lastDarkIt + 1 < darkCurrentIt - 1) {
-          std::for_each(lastDarkIt + 1, darkCurrentIt - 1, [&m, &q, &TS0](AMANDACurrent& reading) {
+          std::for_each(lastDarkIt + 1, darkCurrentIt, [&m,&q,&TS0](AMANDACurrent& reading) {
             reading.setIDark(m * (reading.getTimeStamp() - TS0) + q);
-//            printf("iTot=%f iDark=%f\n",reading.getITot(),reading.getIDark());
           });
         }
       }
@@ -739,10 +754,12 @@ void MTRShuttle::setAMANDAiDark(int plane, int side, int RPC)
 
     // Keep track of the "darkness" of the actual current reading
     wasPrevDark = darkCurrentIt->isDark();
+    if(wasPrevDark) lastDarkIt = darkCurrentIt;
   }
 }
 
-void MTRShuttle::propagateAMANDAVoltage(int plane, int side, int RPC, bool weightedAverage){
+void MTRShuttle::propagateAMANDAVoltage(int plane, int side, int RPC, bool weightedAverage)
+{
   printf("Setting voltage... \n");
 
   auto voltageIt = fAMANDAVoltagesVect[plane][side][RPC].begin();
@@ -773,7 +790,7 @@ void MTRShuttle::propagateAMANDAVoltage(int plane, int side, int RPC, bool weigh
         // If nextTS is before SOR skip
         if (nextTS < SOR)
           continue;
-          // Else the current value has to be averaged from SOR to nextTS
+        // Else the current value has to be averaged from SOR to nextTS
         else
           TS = SOR;
       }
@@ -785,7 +802,7 @@ void MTRShuttle::propagateAMANDAVoltage(int plane, int side, int RPC, bool weigh
       // Compute deltaT
       auto deltaT = nextTS - TS;
 
-      //            std::cout << "computing with deltaT=" << deltaT <<"\n";
+      //      std::cout << voltageIt->getHV() <<std::endl;
 
       // Add current value to average numerator sum
       if (weightedAverage) {
@@ -799,18 +816,23 @@ void MTRShuttle::propagateAMANDAVoltage(int plane, int side, int RPC, bool weigh
       iCounter++;
     }
 
-    std::cout << "run " << runObjectIt.getRunNumber() << " had " << iCounter << " available voltage readings.\n";
-
     // Compute average and assign values to run object
     if (weightedAverage) {
       runObjectIt.setAvgHV((totalT > 0) ? hvCumulus / totalT : runObjectIt.getAvgHV());
     } else {
       runObjectIt.setAvgHV((iCounter > 0) ? hvCumulus / (double)iCounter : runObjectIt.getAvgHV());
     }
+
+    if (runObjectIt.getAvgHV() > 8000.)
+      runObjectIt.setfIsHVOk(true);
+
+    std::cout << "run " << runObjectIt.getRunNumber() << " had " << iCounter << " available voltage readings giving "
+              << runObjectIt.getAvgHV() << ".\n";
   }
 }
 
-void MTRShuttle::propagateAMANDACurrent(int plane, int side, int RPC, bool weightedAverage){
+void MTRShuttle::propagateAMANDACurrent(int plane, int side, int RPC, bool weightedAverage)
+{
   auto currentIt = fAMANDACurrentsVect[plane][side][RPC].begin();
 
   printf("Integrating and averaging... \n");
@@ -820,6 +842,8 @@ void MTRShuttle::propagateAMANDACurrent(int plane, int side, int RPC, bool weigh
     // Load SOR and EOR values
     auto SOR = runObjectIt.getSOR();
     auto EOR = runObjectIt.getEOR();
+
+//    if(plane==kMT22 && side==kINSIDE && RPC==k3 )std::cout<<runObjectIt<<" {"<<SOR<<","<<EOR<<"}\n";
 
     double iDarkCumulus = 0.;
     double iTotCumulus = 0.;
@@ -844,7 +868,7 @@ void MTRShuttle::propagateAMANDACurrent(int plane, int side, int RPC, bool weigh
         // If nextTS is before SOR skip
         if (nextTS < SOR)
           continue;
-          // Else the current value has to be averaged from SOR to nextTS
+        // Else the current value has to be averaged from SOR to nextTS
         else
           TS = SOR;
       }
@@ -855,12 +879,15 @@ void MTRShuttle::propagateAMANDACurrent(int plane, int side, int RPC, bool weigh
 
       // Compute deltaT
       auto deltaT = nextTS - TS;
+      if(currentIt->getINet()==0.) deltaT=0.;
 
       //            std::cout << "computing with deltaT=" << deltaT <<"\n";
 
       // Integrate current is HV is at working point
-      if (currentIt->isHvOk() || !(currentIt->hasBeenFlagged()))
-        integratedCharge += currentIt->getINet() * (double)deltaT;
+      if (currentIt->isHvOk() || !(currentIt->hasBeenFlagged())) {
+        integratedCharge += currentIt->getINet() * (double) deltaT;
+//        if(plane==kMT22 && side==kINSIDE && RPC==k3 ) std::cout<<"\t"<<currentIt->getTimeStamp()<<"\t"<<currentIt->getINet()<<std::endl;
+      }
 
       // Add current value to average numerator sum
       if (weightedAverage) {
@@ -888,6 +915,8 @@ void MTRShuttle::propagateAMANDACurrent(int plane, int side, int RPC, bool weigh
       runObjectIt.setAvgITot((iCounter > 0) ? iTotCumulus / (double)iCounter : 0.);
       runObjectIt.setIntCharge(integratedCharge);
     }
+
+//    if(plane==kMT22 && side==kINSIDE && RPC==k3 ) std::cout<<runObjectIt<<"\n";
   }
 }
 
@@ -896,12 +925,12 @@ void MTRShuttle::propagateAMANDA(bool weightedAverage)
   for (int plane = MTRPlanes::kMT11; plane < MTRPlanes::kNPlanes; plane++) {
     for (int side = kINSIDE; side < MTRSides::kNSides; side++) {
       for (int RPC = k1; RPC < MTRRPCs::kNRPCs; RPC++) {
-        setAMANDAIsHVOk(plane,side,RPC);
-        setAMANDAIsDark(plane,side,RPC);
-        setAMANDAiDark(plane,side,RPC);
+        setAMANDAIsHVOk(plane, side, RPC);
+        setAMANDAIsDark(plane, side, RPC);
+        setAMANDAiDark(plane, side, RPC);
 
-        propagateAMANDAVoltage(plane,side,RPC,weightedAverage);
-        propagateAMANDACurrent(plane,side,RPC,weightedAverage);
+        propagateAMANDAVoltage(plane, side, RPC, weightedAverage);
+        propagateAMANDACurrent(plane, side, RPC, weightedAverage);
       }
     }
   }
@@ -909,50 +938,61 @@ void MTRShuttle::propagateAMANDA(bool weightedAverage)
 
 void MTRShuttle::computeAverage()
 {
+  // All data vectors should have the same runs at the moment. MT11IN1 is a generic choice.
   auto nOfRuns = fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1].size();
 
-  for (int iRun = 0; iRun < (int)nOfRuns; iRun++) {
+  RunObject runDataBuffer;
 
+  // Looping over runs
+  for (int iRun = 0; iRun < (int)nOfRuns; iRun++) {
+    // The run number is necessary to look for runs in the next RPCs
     auto currentRunNumber = fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].getRunNumber();
 
-//    printf("Current runNumber=%llu\n",currentRunNumber);
+    // Loading the constant values
+    runDataBuffer.setSOR(fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].getSOR());
+    runDataBuffer.setEOR(fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].getEOR());
+    runDataBuffer.setRunNumber(fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].getRunNumber());
+    runDataBuffer.setfIsDark(fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].isDark());
 
+    //        printf("Current runNumber=%llu\n",currentRunNumber);
+
+    // Looping over all the RPCs
     for (int plane = MTRPlanes::kMT11; plane < MTRPlanes::kNPlanes; plane++) {
-      auto nOfRPC = MTRSides::kNSides * MTRRPCs::kNRPCs;
-      fRunDataVectAvg[plane].reserve(nOfRuns);
 
-      RunObject runData;
-      runData.setSOR(fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].getSOR());
-      runData.setEOR(fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].getEOR());
-      runData.setRunNumber(fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].getRunNumber());
-      runData.setfIsDark(fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].isDark());
+      auto nOfRPC = 0.;
+      fRunDataVectAvg[plane].reserve(nOfRuns);
 
       for (int side = kINSIDE; side < MTRSides::kNSides; side++) {
         for (int RPC = k1; RPC < MTRRPCs::kNRPCs; RPC++) {
+
+          // Try to find information regarding current run
           auto currentRun = std::find_if(
             fRunDataVect[plane][side][RPC].begin(), fRunDataVect[plane][side][RPC].end(),
             [currentRunNumber](const RunObject& run) -> bool { return run.getRunNumber() == currentRunNumber; });
 
-          if (currentRun == fRunDataVect[plane][side][RPC].end()) {
-            nOfRPC--;
+          // If not found skip
+          if (currentRun == fRunDataVect[plane][side][RPC].end())
             continue;
-          }
 
+          // If the HV is ok take the run into account
           if ((currentRun->getAvgHV() > kMinWorkHV)) {
-            runData = runData + *currentRun;
-//                        std::cout << (*currentRun).getAvgITot() << "\n";
-          } else {
-            nOfRPC--;
+            runDataBuffer = runDataBuffer + *currentRun;
+            nOfRPC++;
+            //                                    std::cout << (*currentRun).getAvgITot() << "\n";
           }
         }
       }
 
       if (nOfRPC != 0)
-        runData = runData / (double)nOfRPC;
+        runDataBuffer = runDataBuffer / (double)nOfRPC;
 
-//            printf("\nAverage current=%f\n",runData.getAvgITot());
+      //                  printf("\nAverage current=%f with %f readings\n",runDataBuffer.getAvgITot(),nOfRPC);
 
-      fRunDataVectAvg[plane].emplace_back(runData);
+      if (runDataBuffer.getAvgHV() > 8000.)
+        runDataBuffer.setfIsHVOk(true);
+
+      fRunDataVectAvg[plane].emplace_back(runDataBuffer);
+      runDataBuffer.reset();
     }
 
     RunObject runDataTot;
@@ -968,6 +1008,9 @@ void MTRShuttle::computeAverage()
     }
 
     runDataTot = runDataTot / (double)kNPlanes;
+
+    if (runDataTot.getAvgHV() > 8000.)
+      runDataTot.setfIsHVOk(true);
 
     fRunDataVectAvg[4].emplace_back(runDataTot);
   }

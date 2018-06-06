@@ -105,8 +105,6 @@ class MTRShuttle
   };
 
   ClassDef(MTRShuttle,1);
-
-  void setAMANDAIsHVOk();
 };
 
 #endif //MTR_SHUTTLE_MTRSHUTTLE_H
