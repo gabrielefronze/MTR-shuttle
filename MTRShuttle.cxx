@@ -780,8 +780,10 @@ void MTRShuttle::propagateAMANDAVoltage(int plane, int side, int RPC, bool weigh
       auto TS = voltageIt->getTimeStamp();
 
       // If the timestamp is after the EOR break the loop (aka pass to the following run)
-      if (TS > EOR)
+      if (TS > EOR) {
+        voltageIt--;
         break;
+      }
 
       auto nextTS = (voltageIt + 1)->getTimeStamp();
 
@@ -858,8 +860,10 @@ void MTRShuttle::propagateAMANDACurrent(int plane, int side, int RPC, bool weigh
       auto TS = currentIt->getTimeStamp();
 
       // If the timestamp is after the EOR break the loop (aka pass to the following run)
-      if (TS > EOR)
+      if (TS > EOR) {
+        currentIt--;
         break;
+      }
 
       auto nextTS = (currentIt + 1)->getTimeStamp();
 
