@@ -836,6 +836,8 @@ void MTRShuttle::propagateAMANDACurrent(int plane, int side, int RPC, bool weigh
 
   printf("Integrating and averaging... \n");
 
+  double deltaT = 0.;
+
   for (auto& runObjectIt : fRunDataVect[plane][side][RPC]) {
 
     // Load SOR and EOR values
@@ -859,6 +861,7 @@ void MTRShuttle::propagateAMANDACurrent(int plane, int side, int RPC, bool weigh
       // If the timestamp is after the EOR break the loop (aka pass to the following run)
       if (TS > EOR) {
         if(currentIt!=fAMANDACurrentsVect[plane][side][RPC].begin()) currentIt--;
+        deltaT=1.;
         break;
       }
 
@@ -879,7 +882,7 @@ void MTRShuttle::propagateAMANDACurrent(int plane, int side, int RPC, bool weigh
         nextTS = EOR;
 
       // Compute deltaT
-      auto deltaT = nextTS - TS;
+      deltaT += nextTS - TS;
       if(currentIt->getINet()==0.) deltaT=0.;
 
 //      std::cout << currentIt->getINet() <<","<< deltaT <<","<< integratedCharge <<std::endl;
@@ -902,6 +905,8 @@ void MTRShuttle::propagateAMANDACurrent(int plane, int side, int RPC, bool weigh
       // Now deltaT should always be equal to EOR-SOR
       totalT += deltaT;
       iCounter++;
+
+      deltaT=0.;
     }
 
     // Compute average and assign values to run object
