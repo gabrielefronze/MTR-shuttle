@@ -84,7 +84,7 @@ class RunObject{
 
   friend std::ostream& operator<<(std::ostream& os, const RunObject& obj);
   friend RunObject operator+(RunObject result, const RunObject &added);
-  friend RunObject operator/(RunObject result, const RunObject &divider);
+  friend RunObject operator/(RunObject result, const double &divider);
 
   private:
   uint64_t fRunNumber;
