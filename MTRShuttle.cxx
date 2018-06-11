@@ -725,8 +725,6 @@ void MTRShuttle::setAMANDAiDark(int plane, int side, int RPC)
 
   bool wasPrevDark = lastDarkIt->isDark();
 
-  std::cout << "First reading is dark? " << wasPrevDark << std::endl;
-
   // Loop over the current readings
   for (auto darkCurrentIt = fAMANDACurrentsVect[plane][side][RPC].begin() + 1;
        darkCurrentIt < fAMANDACurrentsVect[plane][side][RPC].end(); darkCurrentIt++) {
@@ -735,7 +733,6 @@ void MTRShuttle::setAMANDAiDark(int plane, int side, int RPC)
       // If previous reading and current one are dark, update last dark
       if (wasPrevDark && !(darkCurrentIt->getIDark() == 0.)) {
         lastDarkIt = darkCurrentIt;
-        std::cout << "New dark current is: " << lastDarkIt->getIDark() << std::endl;
         // If previous reading wasn't dark, while current one is, set dark currents from lastDark to darkCurrentIt
       } else if (!wasPrevDark) {
         // Computing the parameters for the "dumb interpolation"
@@ -804,9 +801,9 @@ void MTRShuttle::propagateAMANDAVoltage(int plane, int side, int RPC, bool weigh
       // Compute deltaT
       auto deltaT = nextTS - TS;
 
-      //      std::cout << voltageIt->getHV() <<std::endl;
+//      std::cout << voltageIt->getHV() <<","<< deltaT <<","<< hvCumulus <<std::endl;
 
-      // Add current value to average numerator sum
+      // Add voltage value to average numerator sum
       if (weightedAverage) {
         hvCumulus += voltageIt->getHV() * (double)deltaT;
       } else {
@@ -828,8 +825,8 @@ void MTRShuttle::propagateAMANDAVoltage(int plane, int side, int RPC, bool weigh
     if (runObjectIt.getAvgHV() > 8000.)
       runObjectIt.setfIsHVOk(true);
 
-    std::cout << "run " << runObjectIt.getRunNumber() << " had " << iCounter << " available voltage readings giving "
-              << runObjectIt.getAvgHV() << ".\n";
+//    std::cout << "run " << runObjectIt.getRunNumber() << " had " << iCounter << " available voltage readings giving "
+//              << runObjectIt.getAvgHV() << ".\n";
   }
 }
 
@@ -885,12 +882,12 @@ void MTRShuttle::propagateAMANDACurrent(int plane, int side, int RPC, bool weigh
       auto deltaT = nextTS - TS;
       if(currentIt->getINet()==0.) deltaT=0.;
 
-      //            std::cout << "computing with deltaT=" << deltaT <<"\n";
+//      std::cout << currentIt->getINet() <<","<< deltaT <<","<< integratedCharge <<std::endl;
 
       // Integrate current is HV is at working point
       if (currentIt->isHvOk() || !(currentIt->hasBeenFlagged())) {
         integratedCharge += currentIt->getINet() * (double) deltaT;
-//        if(plane==kMT22 && side==kINSIDE && RPC==k3 ) std::cout<<"\t"<<currentIt->getTimeStamp()<<"\t"<<currentIt->getINet()<<std::endl;
+//        if(plane==kMT22 && side==kINSIDE && RPC==k3 ) std::cout<<currentIt->getTimeStamp()<<","<<currentIt->getINet()<<","<<deltaT<<","<<integratedCharge<<std::endl;
       }
 
       // Add current value to average numerator sum
@@ -907,8 +904,6 @@ void MTRShuttle::propagateAMANDACurrent(int plane, int side, int RPC, bool weigh
       iCounter++;
     }
 
-    std::cout << "run " << runObjectIt.getRunNumber() << " had " << iCounter << " available current readings.\n";
-
     // Compute average and assign values to run object
     if (weightedAverage) {
       runObjectIt.setAvgIDark((totalT > 0) ? iDarkCumulus / totalT : 0.);
@@ -920,7 +915,10 @@ void MTRShuttle::propagateAMANDACurrent(int plane, int side, int RPC, bool weigh
       runObjectIt.setIntCharge(integratedCharge);
     }
 
-//    if(plane==kMT22 && side==kINSIDE && RPC==k3 ) std::cout<<runObjectIt<<"\n";
+//    if(plane==kMT22 && side==kINSIDE && RPC==k3 ) std::cout<<"############## "<<runObjectIt<<"\n";
+
+//    std::cout << "run " << runObjectIt.getRunNumber() << " had " << iCounter << " available current readings giving "
+//              << runObjectIt.getAvgINet() << runObjectIt.getIntCharge() << ".\n";
   }
 }
 
