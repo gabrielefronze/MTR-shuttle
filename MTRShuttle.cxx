@@ -778,7 +778,7 @@ void MTRShuttle::propagateAMANDAVoltage(int plane, int side, int RPC, bool weigh
 
       // If the timestamp is after the EOR break the loop (aka pass to the following run)
       if (TS > EOR) {
-        voltageIt--;
+        if(voltageIt!=fAMANDAVoltagesVect[plane][side][RPC].begin()) voltageIt--;
         break;
       }
 
@@ -858,7 +858,7 @@ void MTRShuttle::propagateAMANDACurrent(int plane, int side, int RPC, bool weigh
 
       // If the timestamp is after the EOR break the loop (aka pass to the following run)
       if (TS > EOR) {
-        currentIt--;
+        if(currentIt!=fAMANDACurrentsVect[plane][side][RPC].begin()) currentIt--;
         break;
       }
 
@@ -1006,7 +1006,10 @@ void MTRShuttle::computeAverage()
     fRunDataVectAvg[4].reserve(nOfRuns);
 
     for (int plane = 0; plane < kNPlanes; plane++) {
-      runDataTot = runDataTot + fRunDataVectAvg[plane][iRun];
+      auto currentRun = std::find_if(
+        fRunDataVectAvg[plane].begin(), fRunDataVectAvg[plane].end(),
+        [currentRunNumber](const RunObject& run) -> bool { return run.getRunNumber() == currentRunNumber; });
+      runDataTot = runDataTot + *currentRun;
     }
 
     runDataTot = runDataTot / (double)kNPlanes;
@@ -1015,6 +1018,7 @@ void MTRShuttle::computeAverage()
       runDataTot.setfIsHVOk(true);
 
     fRunDataVectAvg[4].emplace_back(runDataTot);
+    runDataTot.reset();
   }
 }
 
