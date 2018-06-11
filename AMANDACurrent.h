@@ -21,7 +21,7 @@ class AMANDACurrent : public AMANDAData
   inline void setIDark(double iDark) { fIDark = iDark; }
 
   inline double getINet() const {
-    auto iNet = fITot  - fIDark;
+    auto iNet = fITot  - this->getIDark();
     return (iNet>0.)?iNet:0.;
   }
 
