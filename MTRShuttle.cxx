@@ -853,6 +853,8 @@ void MTRShuttle::propagateAMANDACurrent(int plane, int side, int RPC, bool weigh
 
     double integratedCharge = 0;
 
+    std::cout<<"For run "<<runObjectIt.getRunNumber()<<" between "<<SOR<<" and "<<EOR<<":"<<std::endl;
+
     // Loop over the current readings
     for (; currentIt != fAMANDACurrentsVect[plane][side][RPC].end() - 1; currentIt++) {
 
@@ -885,13 +887,13 @@ void MTRShuttle::propagateAMANDACurrent(int plane, int side, int RPC, bool weigh
       deltaT += nextTS - TS;
       if(currentIt->getINet()==0.) deltaT=0.;
 
-//      std::cout << currentIt->getINet() <<","<< deltaT <<","<< integratedCharge <<std::endl;
-
       // Integrate current is HV is at working point
       if (currentIt->isHvOk() || !(currentIt->hasBeenFlagged())) {
         integratedCharge += currentIt->getINet() * (double) deltaT;
 //        if(plane==kMT22 && side==kINSIDE && RPC==k3 ) std::cout<<currentIt->getTimeStamp()<<","<<currentIt->getINet()<<","<<deltaT<<","<<integratedCharge<<std::endl;
       }
+
+      std::cout << currentIt->getINet() <<","<< deltaT <<","<< integratedCharge <<std::endl;
 
       // Add current value to average numerator sum
       if (weightedAverage) {
@@ -922,8 +924,8 @@ void MTRShuttle::propagateAMANDACurrent(int plane, int side, int RPC, bool weigh
 
 //    if(plane==kMT22 && side==kINSIDE && RPC==k3 ) std::cout<<"############## "<<runObjectIt<<"\n";
 
-//    std::cout << "run " << runObjectIt.getRunNumber() << " had " << iCounter << " available current readings giving "
-//              << runObjectIt.getAvgINet() << runObjectIt.getIntCharge() << ".\n";
+    std::cout << "run " << runObjectIt.getRunNumber() << " had " << iCounter << " available current readings giving "
+              << runObjectIt.getAvgINet() << runObjectIt.getIntCharge() << ".\n";
   }
 }
 
@@ -961,7 +963,7 @@ void MTRShuttle::computeAverage()
     runDataBuffer.setRunNumber(fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].getRunNumber());
     runDataBuffer.setfIsDark(fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].isDark());
 
-    //        printf("Current runNumber=%llu\n",currentRunNumber);
+//            printf("Current runNumber=%llu\n",currentRunNumber);
 
     // Looping over all the RPCs
     for (int plane = MTRPlanes::kMT11; plane < MTRPlanes::kNPlanes; plane++) {
@@ -985,7 +987,7 @@ void MTRShuttle::computeAverage()
           if ((currentRun->getAvgHV() > kMinWorkHV)) {
             runDataBuffer = runDataBuffer + *currentRun;
             nOfRPC++;
-            //                                    std::cout << (*currentRun).getAvgITot() << "\n";
+//                                                std::cout << (*currentRun).getIntCharge() << "\n";
           }
         }
       }
@@ -993,7 +995,7 @@ void MTRShuttle::computeAverage()
       if (nOfRPC != 0)
         runDataBuffer = runDataBuffer / (double)nOfRPC;
 
-      //                  printf("\nAverage current=%f with %f readings\n",runDataBuffer.getAvgITot(),nOfRPC);
+//                        printf("\nAverage current=%f with %f readings\n",runDataBuffer.getIntCharge(),nOfRPC);
 
       if (runDataBuffer.getAvgHV() > 8000.)
         runDataBuffer.setfIsHVOk(true);
@@ -1015,9 +1017,11 @@ void MTRShuttle::computeAverage()
         fRunDataVectAvg[plane].begin(), fRunDataVectAvg[plane].end(),
         [currentRunNumber](const RunObject& run) -> bool { return run.getRunNumber() == currentRunNumber; });
       runDataTot = runDataTot + *currentRun;
+//      std::cout << (*currentRun).getIntCharge() << "\n";
     }
 
     runDataTot = runDataTot / (double)kNPlanes;
+//    printf("\nAverage charge=%f\n",runDataTot.getIntCharge());
 
     if (runDataTot.getAvgHV() > 8000.)
       runDataTot.setfIsHVOk(true);
