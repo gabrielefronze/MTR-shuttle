@@ -6,8 +6,8 @@
 #include "type_traits"
 
 template<typename XType, typename YType>
-TGraph *drawCorrelation(XType (RunObject::*getX)() const,
-                        YType (RunObject::*getY)() const,
+TGraph *drawCorrelation(XType (RunObject::*getX)(MTRPlanes p, MTRSides s, MTRRPCs r) const,
+                        YType (RunObject::*getY)(MTRPlanes p, MTRSides s, MTRRPCs r) const,
                         bool normalizeToAreaX=false,
                         bool normalizeToAreaY=false,
                         bool accumulate=false,
@@ -69,9 +69,9 @@ TGraph *drawCorrelation(XType (RunObject::*getX)() const,
 
   auto yCumulus = (YType)0.;
 
-  auto dataVector = (!plotAverage)?fShuttle.fRunDataVect[plane][side][RPC]:fShuttle.fRunDataVectAvg[(plane<MTRPlanes::kNPlanes)?plane:4];
+//  auto dataVector = (!plotAverage)?fShuttle.fRunDataVect[plane][side][RPC]:fShuttle.fRunDataVectAvg[(plane<MTRPlanes::kNPlanes)?plane:4];
 
-  for( auto const &dataIt : dataVector){
+  for( auto const &dataIt : fShuttle.fRunDataVect){
 
     bool shouldPlot = true;
     for (const auto &itCondition : (*conditions)()) {
@@ -79,8 +79,8 @@ TGraph *drawCorrelation(XType (RunObject::*getX)() const,
     }
     if (!shouldPlot) continue;
 
-    XType x = (dataIt.*getX)();
-    YType y = (dataIt.*getY)();
+    XType x = (dataIt.*getX)(plane,side,RPC);
+    YType y = (dataIt.*getY)(plane,side,RPC);
 
     if ( std::isnan(y) || std::isnan(x) ) continue;
 
@@ -112,8 +112,8 @@ TGraph *drawCorrelation(XType (RunObject::*getX)() const,
 }
 
 template<typename XType, typename YType, class ...Args>
-TGraph *drawCorrelation(XType (RunObject::*getX)() const,
-                                    YType (RunObject::*getY)() const,
+TGraph *drawCorrelation(XType (RunObject::*getX)(MTRPlanes p, MTRSides s, MTRRPCs r) const,
+                                    YType (RunObject::*getY)(MTRPlanes p, MTRSides s, MTRRPCs r) const,
                                     bool normalizeToAreaX,
                                     bool normalizeToAreaY,
                                     bool accumulate,
@@ -139,8 +139,8 @@ TGraph *drawCorrelation(XType (RunObject::*getX)() const,
 }
 
 template<typename XType, typename YType, typename CondType>
-TMultiGraph *drawCorrelations(XType(RunObject::*getX)() const,
-                              YType(RunObject::*getY)() const,
+TMultiGraph *drawCorrelations(XType(RunObject::*getX)(MTRPlanes p, MTRSides s, MTRRPCs r) const,
+                              YType(RunObject::*getY)(MTRPlanes p, MTRSides s, MTRRPCs r) const,
                               bool normalizeToAreaX=false,
                               bool normalizeToAreaY=false,
                               bool accumulate=false,
@@ -191,7 +191,7 @@ TMultiGraph *drawCorrelations(XType(RunObject::*getX)() const,
 }
 
 template<typename YType, typename CondType>
-TGraph *drawTrend(YType (RunObject::*getY)() const,
+TGraph *drawTrend(YType (RunObject::*getY)(MTRPlanes p, MTRSides s, MTRRPCs r) const,
                   bool normalizeToArea,
                   bool accumulate=false,
                   bool plotAverage=false,
@@ -213,7 +213,7 @@ TGraph *drawTrend(YType (RunObject::*getY)() const,
 }
 
 template<typename YType, typename CondType>
-TMultiGraph *drawTrends(YType (RunObject::*getY)() const,
+TMultiGraph *drawTrends(YType (RunObject::*getY)(MTRPlanes p, MTRSides s, MTRRPCs r) const,
                         bool normalizeToArea,
                         bool accumulate=false,
                         bool plotAverage=false,
@@ -234,7 +234,7 @@ TMultiGraph *drawTrends(YType (RunObject::*getY)() const,
 
 template<typename YType, typename CondType>
 TMultiGraph *
-drawMaxMin(YType (RunObject::*getY)() const,
+drawMaxMin(YType (RunObject::*getY)(MTRPlanes p, MTRSides s, MTRRPCs r) const,
            bool normalizeToAreaY=false,
            bool accumulate=false,
            bool plotAverage=false,

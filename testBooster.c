@@ -23,12 +23,18 @@
 #include "TLegend.h"
 #include "boost/any.hpp"
 #include "MTRConditions.h"
+#include "MTRShuttle.h"
 
 int testBooster(){
 //  MTRBooster buster("test_Diego_flat_dummy.csv");
 //  MTRBooster buster("test_Diego_flat_dummy.csv");
 //  MTRBooster buster("test_Diego_weighted_dummy.csv");
-  MTRBooster buster("testALL.csv");
+//  MTRBooster buster("testALL.csv");
+
+  MTRShuttle sciattol;
+  sciattol.instance("runListDiego.txt","Imon1018.txt","vMon1018.txt","local:///Users/Gabriele/cernbox/Dottorato/MTR2017/CDB/####/OCDB");
+
+  MTRBooster buster(sciattol);
 
   buster.LoadReplacedRPCs("testrep.txt");
 

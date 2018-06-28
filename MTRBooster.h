@@ -12,8 +12,8 @@
 #include "Enumerators.h"
 
 struct MTRPlotSettings{
-  double (RunObject::*funcX)() const = nullptr;
-  double (RunObject::*funcY)() const = nullptr;
+  double (RunObject::*funcX)(MTRPlanes p, MTRSides s, MTRRPCs r) const = nullptr;
+  double (RunObject::*funcY)(MTRPlanes p, MTRSides s, MTRRPCs r) const = nullptr;
 
   MTRPlanes fPlane=kAll;
   MTRSides fSide=kBoth;
@@ -35,9 +35,9 @@ class MTRBooster
 {
   public:
 
-  MTRBooster();
+//  MTRBooster();
   MTRBooster(std::string runListPath, std::string AMANDAiMonPath, std::string AMANDAvMonPath, std::string OCDBPath, bool weighted=true);
-  explicit MTRBooster(std::string inputData);
+//  explicit MTRBooster(std::string inputData);
   explicit MTRBooster(MTRShuttle shuttle);
   inline MTRShuttle* GetShuttle(){ return &fShuttle; };
   void PrintConfig();
@@ -96,8 +96,6 @@ class MTRBooster
   std::vector<ReplacedRPC> fReplacedRPCs;
 
   inline void resetReplacedRPCs(){ for(auto &itRep : fReplacedRPCs){ itRep.fAlreadyReset=false; }};
-
-  inline void loadAverage(){ fShuttle.computeAverage(); fAverageComputed=true; }
 
   uint64_t getTSFromString(std::string date);
   void setXGetterFromString(std::string func);

@@ -45,13 +45,7 @@ ClassImp(MTRShuttle)
 
   auto nOfRuns = fRunList.size();
 
-  for (int plane = MTRPlanes::kMT11; plane < MTRPlanes::kNPlanes; plane++) {
-    for (int side = kINSIDE; side < MTRSides::kNSides; side++) {
-      for (int RPC = k1; RPC < MTRRPCs::kNRPCs; RPC++) {
-        fRunDataVect[plane][side][RPC].reserve(nOfRuns);
-      }
-    }
-  }
+  fRunDataVect.reserve(nOfRuns);
 }
 
 void MTRShuttle::parseOCDB(std::string path)
@@ -74,7 +68,7 @@ void MTRShuttle::parseOCDB(std::string path)
 
     printf("\t\tINFO: Processing run %d\n", runIterator.first);
 
-    int RunYear = runIterator.second;
+//    int RunYear = runIterator.second;
 
     AliCDBStorage* defStorage = managerCDB->GetDefaultStorage();
     if (!defStorage)
@@ -139,7 +133,12 @@ void MTRShuttle::parseOCDB(std::string path)
       continue;
     }
 
-    RunObject runObjectBuffer[MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
+    RunObject runObjectBuffer;
+
+    runObjectBuffer.setIsDark(!isBeamPresent);
+    runObjectBuffer.setRunNumber((uint64_t)runIterator.first);
+    runObjectBuffer.setSOR(SOR);
+    runObjectBuffer.setEOR(EOR);
 
     int badHVCounter = 0;
 
@@ -182,12 +181,8 @@ void MTRShuttle::parseOCDB(std::string path)
             }
           }
 
-          runObjectBuffer[plane][side][RPC].setfIsHVOk(isHVOk);
-          runObjectBuffer[plane][side][RPC].setfIsDark(!isBeamPresent);
-          runObjectBuffer[plane][side][RPC].setRunNumber((uint64_t)runIterator.first);
-          runObjectBuffer[plane][side][RPC].setSOR(SOR);
-          runObjectBuffer[plane][side][RPC].setEOR(EOR);
-          runObjectBuffer[plane][side][RPC].setAvgHV((counterHV != 0 && isHVOk) ? avgHV / counterHV : 0.);
+          runObjectBuffer.setIsHVOk(isHVOk,(MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC);
+          runObjectBuffer.setAvgHV((counterHV != 0 && isHVOk) ? avgHV / counterHV : 0.,(MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC);
         }
       }
     }
@@ -230,7 +225,7 @@ void MTRShuttle::parseOCDB(std::string path)
       AliMUONTriggerScalers* scalersData = nullptr;
       TIter next(arrayScalers);
       while ((scalersData = static_cast<AliMUONTriggerScalers*>(next()))) {
-        int arrayScalersEntries = arrayScalers->GetEntries();
+//        int arrayScalersEntries = arrayScalers->GetEntries();
 
         for (int plane = 0; plane < kNPlanes; plane++) {
           for (int cathode = 0; cathode < kNCathodes; cathode++) {
@@ -245,7 +240,7 @@ void MTRShuttle::parseOCDB(std::string path)
                 continue;
               }
 
-              auto value = scalersData->GetLocScalStrip(cathode, plane, localBoard);
+//              auto value = scalersData->GetLocScalStrip(cathode, plane, localBoard);
 
               //              if (value > 0 && iRPC017 == 0) printf("%d %d %d %d %llu\n", plane, cathode, localBoard,
               //              iRPC09, value);
@@ -270,8 +265,8 @@ void MTRShuttle::parseOCDB(std::string path)
                 //                       elapsedTime[cathode][side][plane][RPC], values[cathode]);
               }
             }
-            runObjectBuffer[plane][side][RPC].setScalBending(values[0]);
-            runObjectBuffer[plane][side][RPC].setScalNotBending(values[1]);
+            runObjectBuffer.setScalBending((uint64_t)values[0],(MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC);
+            runObjectBuffer.setScalNotBending((uint64_t)values[1],(MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC);
           }
         }
       }
@@ -281,23 +276,11 @@ void MTRShuttle::parseOCDB(std::string path)
 
     printf("\t\tINFO: Saving run %d\n", runIterator.first);
 
-    for (int plane = MTRPlanes::kMT11; plane < MTRPlanes::kNPlanes; plane++) {
-      for (int side = kINSIDE; side < MTRSides::kNSides; side++) {
-        for (int RPC = k1; RPC < MTRRPCs::kNRPCs; RPC++) {
-          fRunDataVect[plane][side][RPC].emplace_back(runObjectBuffer[plane][side][RPC]);
-        }
-      }
-    }
+    fRunDataVect.emplace_back(runObjectBuffer);
   }
 
-  for (int plane = MTRPlanes::kMT11; plane < MTRPlanes::kNPlanes; plane++) {
-    for (int side = kINSIDE; side < MTRSides::kNSides; side++) {
-      for (int RPC = k1; RPC < MTRRPCs::kNRPCs; RPC++) {
-        std::sort(fRunDataVect[plane][side][RPC].begin(), fRunDataVect[plane][side][RPC].end(),
-                  [](const RunObject& a, const RunObject& b) -> bool { return a.getRunNumber() < b.getRunNumber(); });
-      }
-    }
-  }
+  std::sort(fRunDataVect.begin(), fRunDataVect.end(),
+            [](const RunObject& a, const RunObject& b) -> bool { return a.getRunNumber() < b.getRunNumber(); });
 }
 
 void MTRShuttle::parseOCDBiMon(std::string path)
@@ -307,7 +290,7 @@ void MTRShuttle::parseOCDBiMon(std::string path)
 
   AliCDBManager* managerCDB = AliCDBManager::Instance();
 
-  int previousRunYear = 0;
+//  int previousRunYear = 0;
   std::string CDBpath;
 
   for (const auto& runIterator : fRunList) {
@@ -527,22 +510,15 @@ void MTRShuttle::createDummyRuns(bool createFirstLast)
 
   printf("Global TS limits {%llu,%llu}\n", firstAMANDATSGlobal, lastAMANDATSGlobal);
 
-  for (int plane = MTRPlanes::kMT11; plane < MTRPlanes::kNPlanes; plane++) {
-    for (int side = kINSIDE; side < MTRSides::kNSides; side++) {
-      for (int RPC = k1; RPC < MTRRPCs::kNRPCs; RPC++) {
-        // Sorting the vector of RunData
-        std::sort(fRunDataVect[plane][side][RPC].begin(), fRunDataVect[plane][side][RPC].end(),
-                  [](const RunObject& a, const RunObject& b) -> bool { return a.getSOR() < b.getSOR(); });
-      }
-    }
-  }
+  std::sort(fRunDataVect.begin(), fRunDataVect.end(),
+            [](const RunObject& a, const RunObject& b) -> bool { return a.getSOR() < b.getSOR(); });
 
   // First run of the RunData vector
-  auto runObjectIt = fRunDataVect[MTRPlanes::kMT11][kINSIDE][k1].begin();
-  auto firstRunTS = fRunDataVect[MTRPlanes::kMT11][kINSIDE][k1].begin()->getSOR();
+  auto runObjectIt = fRunDataVect.begin();
+  auto firstRunTS = fRunDataVect.begin()->getSOR();
   // Original last run of RunData vector
-  auto runObjectEnd = fRunDataVect[MTRPlanes::kMT11][kINSIDE][k1].end();
-  auto lastRunTS = fRunDataVect[MTRPlanes::kMT11][kINSIDE][k1].back().getEOR();
+  auto runObjectEnd = fRunDataVect.end();
+  auto lastRunTS = fRunDataVect.back().getEOR();
 
   printf("Run TS limits {%llu,%llu}\n", firstRunTS, lastRunTS);
 
@@ -556,65 +532,40 @@ void MTRShuttle::createDummyRuns(bool createFirstLast)
     printf("Creating runs based on run %llu {%llu,%llu}.\n", runObjectIt->getRunNumber(), runObjectIt->getEOR() + 1,
            (runObjectIt + 1)->getSOR());
 
-    for (int plane = MTRPlanes::kMT11; plane < MTRPlanes::kNPlanes; plane++) {
-      for (int side = kINSIDE; side < MTRSides::kNSides; side++) {
-        for (int RPC = k1; RPC < MTRRPCs::kNRPCs; RPC++) {
-          if (dummySOR < dummyEOR) {
-            fRunDataVect[plane][side][RPC].emplace_back(dummySOR, dummyEOR);
-            fRunDataVect[plane][side][RPC].back().setRunNumber(runNumber);
-            fRunDataVect[plane][side][RPC].back().setfIsDummy(true);
-            printf("Created run %llu from %llu to %llu.\n", runNumber - 1, dummySOR, dummyEOR);
-          }
-        }
-      }
+    if (dummySOR < dummyEOR) {
+      fRunDataVect.emplace_back(dummySOR, dummyEOR);
+      fRunDataVect.back().setRunNumber(runNumber);
+      fRunDataVect.back().setIsDummy(true);
+      printf("Created run %llu from %llu to %llu.\n", runNumber - 1, dummySOR, dummyEOR);
     }
     runNumber++;
   }
 
   if (createFirstLast) {
     if (firstAMANDATSGlobal < firstRunTS) {
-      for (int plane = MTRPlanes::kMT11; plane < MTRPlanes::kNPlanes; plane++) {
-        for (int side = kINSIDE; side < MTRSides::kNSides; side++) {
-          for (int RPC = k1; RPC < MTRRPCs::kNRPCs; RPC++) {
-            fRunDataVect[plane][side][RPC].emplace_back(RunObject(firstAMANDATSGlobal, firstRunTS));
-            fRunDataVect[plane][side][RPC].back().setRunNumber(0);
-            fRunDataVect[plane][side][RPC].back().setfIsDummy(true);
-            printf(
-              //            "####################################\n"
-              "Created first run %llu from %llu to %llu.\n", 0, fRunDataVect[plane][side][RPC].back().getSOR(),
-              fRunDataVect[plane][side][RPC].back().getEOR());
-          }
-        }
-      }
+      fRunDataVect.emplace_back(RunObject(firstAMANDATSGlobal, firstRunTS));
+      fRunDataVect.back().setRunNumber(0);
+      fRunDataVect.back().setIsDummy(true);
+      printf(
+        //            "####################################\n"
+        "Created first run %i from %llu to %llu.\n", 0, fRunDataVect.back().getSOR(),
+        fRunDataVect.back().getEOR());
     }
 
     if (lastRunTS < lastAMANDATSGlobal) {
-      for (int plane = MTRPlanes::kMT11; plane < MTRPlanes::kNPlanes; plane++) {
-        for (int side = kINSIDE; side < MTRSides::kNSides; side++) {
-          for (int RPC = k1; RPC < MTRRPCs::kNRPCs; RPC++) {
-            fRunDataVect[plane][side][RPC].emplace_back(RunObject(lastRunTS + 1, lastAMANDATSGlobal));
-            fRunDataVect[plane][side][RPC].back().setRunNumber(runNumber);
-            fRunDataVect[plane][side][RPC].back().setfIsDummy(true);
-            printf("Created last run %llu from %llu to %llu.\n"
-                   //            "####################################\n"
-                   ,
-                   runNumber, fRunDataVect[plane][side][RPC].back().getSOR(),
-                   fRunDataVect[plane][side][RPC].back().getEOR());
-          }
-        }
-      }
+      fRunDataVect.emplace_back(RunObject(lastRunTS + 1, lastAMANDATSGlobal));
+      fRunDataVect.back().setRunNumber(runNumber);
+      fRunDataVect.back().setIsDummy(true);
+      printf("Created last run %llu from %llu to %llu.\n"
+        //            "####################################\n"
+        ,
+             runNumber, fRunDataVect.back().getSOR(),
+             fRunDataVect.back().getEOR());
     }
   }
 
-  for (int plane = MTRPlanes::kMT11; plane < MTRPlanes::kNPlanes; plane++) {
-    for (int side = kINSIDE; side < MTRSides::kNSides; side++) {
-      for (int RPC = k1; RPC < MTRRPCs::kNRPCs; RPC++) {
-        // Sorting the vector of RunData
-        std::sort(fRunDataVect[plane][side][RPC].begin(), fRunDataVect[plane][side][RPC].end(),
-                  [](const RunObject& a, const RunObject& b) -> bool { return a.getSOR() < b.getSOR(); });
-      }
-    }
-  }
+  std::sort(fRunDataVect.begin(), fRunDataVect.end(),
+            [](const RunObject& a, const RunObject& b) -> bool { return a.getSOR() < b.getSOR(); });
 }
 
 void MTRShuttle::setAMANDAIsHVOk(int plane, int side, int RPC)
@@ -623,8 +574,8 @@ void MTRShuttle::setAMANDAIsHVOk(int plane, int side, int RPC)
 
   // Creating a vector of validity intervals for HV
   std::vector<validityInterval> isHvOkIntervals;
-  uint64_t firstTS = 0ull;
-  uint64_t lastTS = 0ull;
+  uint64_t firstTS;
+  uint64_t lastTS;
 
   double HVThreshold = 8000.; // TODO: this value should not be hardcoded!
 
@@ -680,7 +631,7 @@ void MTRShuttle::setAMANDAIsDark(int plane, int side, int RPC)
   std::vector<validityInterval> isDarkIntervals;
 
   // The intervals corresponding to dark runs are delimited by SOR and EOR
-  for (const auto& runObjectIt : fRunDataVect[plane][side][RPC]) {
+  for (const auto& runObjectIt : fRunDataVect) {
     if (runObjectIt.isDark()) {
       isDarkIntervals.emplace_back(validityInterval(runObjectIt.getSOR(), runObjectIt.getEOR()));
       //      printf("Dark interval {%llu,%llu} (run %llu)\n",runObjectIt.getSOR(),
@@ -761,7 +712,7 @@ void MTRShuttle::propagateAMANDAVoltage(int plane, int side, int RPC, bool weigh
 
   auto voltageIt = fAMANDAVoltagesVect[plane][side][RPC].begin();
 
-  for (auto& runObjectIt : fRunDataVect[plane][side][RPC]) {
+  for (auto& runObjectIt : fRunDataVect) {
 
     // Load SOR and EOR values
     auto SOR = runObjectIt.getSOR();
@@ -817,13 +768,13 @@ void MTRShuttle::propagateAMANDAVoltage(int plane, int side, int RPC, bool weigh
 
     // Compute average and assign values to run object
     if (weightedAverage) {
-      runObjectIt.setAvgHV((totalT > 0) ? hvCumulus / totalT : runObjectIt.getAvgHV());
+      runObjectIt.setAvgHV((totalT > 0) ? hvCumulus / totalT : runObjectIt.getAvgHV(),(MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC);
     } else {
-      runObjectIt.setAvgHV((iCounter > 0) ? hvCumulus / (double)iCounter : runObjectIt.getAvgHV());
+      runObjectIt.setAvgHV((iCounter > 0) ? hvCumulus / (double)iCounter : runObjectIt.getAvgHV(),(MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC);
     }
 
     if (runObjectIt.getAvgHV() > 8000.)
-      runObjectIt.setfIsHVOk(true);
+      runObjectIt.setIsHVOk(true,(MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC);
 
 //    std::cout << "run " << runObjectIt.getRunNumber() << " had " << iCounter << " available voltage readings giving "
 //              << runObjectIt.getAvgHV() << ".\n";
@@ -838,7 +789,7 @@ void MTRShuttle::propagateAMANDACurrent(int plane, int side, int RPC, bool weigh
 
   double deltaT = 0.;
 
-  for (auto& runObjectIt : fRunDataVect[plane][side][RPC]) {
+  for (auto& runObjectIt : fRunDataVect) {
 
     // Load SOR and EOR values
     auto SOR = runObjectIt.getSOR();
@@ -853,7 +804,7 @@ void MTRShuttle::propagateAMANDACurrent(int plane, int side, int RPC, bool weigh
 
     double integratedCharge = 0;
 
-    std::cout<<"For run "<<runObjectIt.getRunNumber()<<" between "<<SOR<<" and "<<EOR<<":"<<std::endl;
+//    std::cout<<"For run "<<runObjectIt.getRunNumber()<<" between "<<SOR<<" and "<<EOR<<":"<<std::endl;
 
     // Loop over the current readings
     for (; currentIt != fAMANDACurrentsVect[plane][side][RPC].end() - 1; currentIt++) {
@@ -889,16 +840,16 @@ void MTRShuttle::propagateAMANDACurrent(int plane, int side, int RPC, bool weigh
 
       // Integrate current is HV is at working point
       if (currentIt->isHvOk() || !(currentIt->hasBeenFlagged())) {
-        integratedCharge += currentIt->getINet() * (double) deltaT;
+        integratedCharge += currentIt->getINet() * deltaT;
 //        if(plane==kMT22 && side==kINSIDE && RPC==k3 ) std::cout<<currentIt->getTimeStamp()<<","<<currentIt->getINet()<<","<<deltaT<<","<<integratedCharge<<std::endl;
       }
 
-      std::cout << currentIt->getINet() <<","<< deltaT <<","<< integratedCharge <<std::endl;
+//      std::cout << currentIt->getINet() <<","<< deltaT <<","<< integratedCharge <<std::endl;
 
       // Add current value to average numerator sum
       if (weightedAverage) {
-        iDarkCumulus += currentIt->getIDark() * (double)deltaT;
-        iTotCumulus += currentIt->getITot() * (double)deltaT;
+        iDarkCumulus += currentIt->getIDark() * deltaT;
+        iTotCumulus += currentIt->getITot() * deltaT;
       } else {
         iDarkCumulus += currentIt->getIDark();
         iTotCumulus += currentIt->getITot();
@@ -911,21 +862,24 @@ void MTRShuttle::propagateAMANDACurrent(int plane, int side, int RPC, bool weigh
       deltaT=0.;
     }
 
+//    std::cout << "run " << runObjectIt.getRunNumber() << " had " << iCounter << " available current readings giving "
+//              << iTotCumulus / totalT << " " << integratedCharge << ".\n";
+
     // Compute average and assign values to run object
     if (weightedAverage) {
-      runObjectIt.setAvgIDark((totalT > 0) ? iDarkCumulus / totalT : 0.);
-      runObjectIt.setAvgITot((totalT > 0) ? iTotCumulus / totalT : 0.);
-      runObjectIt.setIntCharge(integratedCharge);
+      runObjectIt.setAvgIDark((totalT > 0) ? iDarkCumulus / totalT : 0.,(MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC);
+      runObjectIt.setAvgITot((totalT > 0) ? iTotCumulus / totalT : 0.,(MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC);
+      runObjectIt.setIntCharge(integratedCharge,(MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC);
     } else {
-      runObjectIt.setAvgIDark((iCounter > 0) ? iDarkCumulus / (double)iCounter : 0.);
-      runObjectIt.setAvgITot((iCounter > 0) ? iTotCumulus / (double)iCounter : 0.);
-      runObjectIt.setIntCharge(integratedCharge);
+      runObjectIt.setAvgIDark((iCounter > 0) ? iDarkCumulus / (double)iCounter : 0.,(MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC);
+      runObjectIt.setAvgITot((iCounter > 0) ? iTotCumulus / (double)iCounter : 0.,(MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC);
+      runObjectIt.setIntCharge(integratedCharge,(MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC);
     }
 
 //    if(plane==kMT22 && side==kINSIDE && RPC==k3 ) std::cout<<"############## "<<runObjectIt<<"\n";
 
-    std::cout << "run " << runObjectIt.getRunNumber() << " had " << iCounter << " available current readings giving "
-              << runObjectIt.getAvgINet() << runObjectIt.getIntCharge() << ".\n";
+//    std::cout << "run " << runObjectIt.getRunNumber() << " had " << iCounter << " available current readings giving "
+//              << runObjectIt.getAvgINet((MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC) << runObjectIt.getIntCharge((MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC) << ".\n";
   }
 }
 
@@ -943,129 +897,133 @@ void MTRShuttle::propagateAMANDA(bool weightedAverage)
       }
     }
   }
+
+//  for(const auto &runIt : fRunDataVect){
+//    std::cout<<runIt<<std::endl;
+//  }
 }
 
-void MTRShuttle::computeAverage()
-{
-  // All data vectors should have the same runs at the moment. MT11IN1 is a generic choice.
-  auto nOfRuns = fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1].size();
+//void MTRShuttle::computeAverage()
+//{
+//  // All data vectors should have the same runs at the moment. MT11IN1 is a generic choice.
+//  auto nOfRuns = fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1].size();
+//
+//  RunObject runDataBuffer;
+//
+//  // Looping over runs
+//  for (int iRun = 0; iRun < (int)nOfRuns; iRun++) {
+//    // The run number is necessary to look for runs in the next RPCs
+//    auto currentRunNumber = fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].getRunNumber();
+//
+//    // Loading the constant values
+//    runDataBuffer.setSOR(fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].getSOR());
+//    runDataBuffer.setEOR(fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].getEOR());
+//    runDataBuffer.setRunNumber(fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].getRunNumber());
+//    runDataBuffer.setfIsDark(fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].isDark());
+//
+////            printf("Current runNumber=%llu\n",currentRunNumber);
+//
+//    // Looping over all the RPCs
+//    for (int plane = MTRPlanes::kMT11; plane < MTRPlanes::kNPlanes; plane++) {
+//
+//      auto nOfRPC = 0.;
+//      fRunDataVectAvg[plane].reserve(nOfRuns);
+//
+//      for (int side = kINSIDE; side < MTRSides::kNSides; side++) {
+//        for (int RPC = k1; RPC < MTRRPCs::kNRPCs; RPC++) {
+//
+//          // Try to find information regarding current run
+//          auto currentRun = std::find_if(
+//            fRunDataVect[plane][side][RPC].begin(), fRunDataVect[plane][side][RPC].end(),
+//            [currentRunNumber](const RunObject& run) -> bool { return run.getRunNumber() == currentRunNumber; });
+//
+//          // If not found skip
+//          if (currentRun == fRunDataVect[plane][side][RPC].end())
+//            continue;
+//
+//          // If the HV is ok take the run into account
+//          if ((currentRun->getAvgHV() > kMinWorkHV)) {
+//            runDataBuffer = runDataBuffer + *currentRun;
+//            nOfRPC++;
+////                                                std::cout << (*currentRun).getIntCharge() << "\n";
+//          }
+//        }
+//      }
+//
+//      if (nOfRPC != 0)
+//        runDataBuffer = runDataBuffer / (double)nOfRPC;
+//
+////                        printf("\nAverage current=%f with %f readings\n",runDataBuffer.getIntCharge(),nOfRPC);
+//
+//      if (runDataBuffer.getAvgHV() > 8000.)
+//        runDataBuffer.setfIsHVOk(true);
+//
+//      fRunDataVectAvg[plane].emplace_back(runDataBuffer);
+//      runDataBuffer.reset();
+//    }
+//
+//    RunObject runDataTot;
+//    runDataTot.setSOR(fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].getSOR());
+//    runDataTot.setEOR(fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].getEOR());
+//    runDataTot.setRunNumber(fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].getRunNumber());
+//    runDataTot.setfIsDark(fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].isDark());
+//
+//    fRunDataVectAvg[4].reserve(nOfRuns);
+//
+//    for (int plane = 0; plane < kNPlanes; plane++) {
+//      auto currentRun = std::find_if(
+//        fRunDataVectAvg[plane].begin(), fRunDataVectAvg[plane].end(),
+//        [currentRunNumber](const RunObject& run) -> bool { return run.getRunNumber() == currentRunNumber; });
+//      runDataTot = runDataTot + *currentRun;
+////      std::cout << (*currentRun).getIntCharge() << "\n";
+//    }
+//
+//    runDataTot = runDataTot / (double)kNPlanes;
+////    printf("\nAverage charge=%f\n",runDataTot.getIntCharge());
+//
+//    if (runDataTot.getAvgHV() > 8000.)
+//      runDataTot.setfIsHVOk(true);
+//
+//    fRunDataVectAvg[4].emplace_back(runDataTot);
+//    runDataTot.reset();
+//  }
+//}
 
-  RunObject runDataBuffer;
+//void MTRShuttle::saveData(std::string path)
+//{
+//  std::ofstream outputFile(path.c_str());
+//
+//  for (int plane = MTRPlanes::kMT11; plane < MTRPlanes::kNPlanes; plane++) {
+//    for (int side = kINSIDE; side < MTRSides::kNSides; side++) {
+//      for (int RPC = k1; RPC < MTRRPCs::kNRPCs; RPC++) {
+//        for (const auto& dataIt : fRunDataVect[plane][side][RPC]) {
+//          outputFile << plane << ";" << side << ";" << RPC << ";" << dataIt << "\n";
+//        }
+//      }
+//    }
+//  }
+//  outputFile.close();
+//}
 
-  // Looping over runs
-  for (int iRun = 0; iRun < (int)nOfRuns; iRun++) {
-    // The run number is necessary to look for runs in the next RPCs
-    auto currentRunNumber = fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].getRunNumber();
-
-    // Loading the constant values
-    runDataBuffer.setSOR(fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].getSOR());
-    runDataBuffer.setEOR(fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].getEOR());
-    runDataBuffer.setRunNumber(fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].getRunNumber());
-    runDataBuffer.setfIsDark(fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].isDark());
-
-//            printf("Current runNumber=%llu\n",currentRunNumber);
-
-    // Looping over all the RPCs
-    for (int plane = MTRPlanes::kMT11; plane < MTRPlanes::kNPlanes; plane++) {
-
-      auto nOfRPC = 0.;
-      fRunDataVectAvg[plane].reserve(nOfRuns);
-
-      for (int side = kINSIDE; side < MTRSides::kNSides; side++) {
-        for (int RPC = k1; RPC < MTRRPCs::kNRPCs; RPC++) {
-
-          // Try to find information regarding current run
-          auto currentRun = std::find_if(
-            fRunDataVect[plane][side][RPC].begin(), fRunDataVect[plane][side][RPC].end(),
-            [currentRunNumber](const RunObject& run) -> bool { return run.getRunNumber() == currentRunNumber; });
-
-          // If not found skip
-          if (currentRun == fRunDataVect[plane][side][RPC].end())
-            continue;
-
-          // If the HV is ok take the run into account
-          if ((currentRun->getAvgHV() > kMinWorkHV)) {
-            runDataBuffer = runDataBuffer + *currentRun;
-            nOfRPC++;
-//                                                std::cout << (*currentRun).getIntCharge() << "\n";
-          }
-        }
-      }
-
-      if (nOfRPC != 0)
-        runDataBuffer = runDataBuffer / (double)nOfRPC;
-
-//                        printf("\nAverage current=%f with %f readings\n",runDataBuffer.getIntCharge(),nOfRPC);
-
-      if (runDataBuffer.getAvgHV() > 8000.)
-        runDataBuffer.setfIsHVOk(true);
-
-      fRunDataVectAvg[plane].emplace_back(runDataBuffer);
-      runDataBuffer.reset();
-    }
-
-    RunObject runDataTot;
-    runDataTot.setSOR(fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].getSOR());
-    runDataTot.setEOR(fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].getEOR());
-    runDataTot.setRunNumber(fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].getRunNumber());
-    runDataTot.setfIsDark(fRunDataVect[MTRPlanes::kMT11][MTRSides::kINSIDE][MTRRPCs::k1][iRun].isDark());
-
-    fRunDataVectAvg[4].reserve(nOfRuns);
-
-    for (int plane = 0; plane < kNPlanes; plane++) {
-      auto currentRun = std::find_if(
-        fRunDataVectAvg[plane].begin(), fRunDataVectAvg[plane].end(),
-        [currentRunNumber](const RunObject& run) -> bool { return run.getRunNumber() == currentRunNumber; });
-      runDataTot = runDataTot + *currentRun;
-//      std::cout << (*currentRun).getIntCharge() << "\n";
-    }
-
-    runDataTot = runDataTot / (double)kNPlanes;
-//    printf("\nAverage charge=%f\n",runDataTot.getIntCharge());
-
-    if (runDataTot.getAvgHV() > 8000.)
-      runDataTot.setfIsHVOk(true);
-
-    fRunDataVectAvg[4].emplace_back(runDataTot);
-    runDataTot.reset();
-  }
-}
-
-void MTRShuttle::saveData(std::string path)
-{
-  std::ofstream outputFile(path.c_str());
-
-  for (int plane = MTRPlanes::kMT11; plane < MTRPlanes::kNPlanes; plane++) {
-    for (int side = kINSIDE; side < MTRSides::kNSides; side++) {
-      for (int RPC = k1; RPC < MTRRPCs::kNRPCs; RPC++) {
-        for (const auto& dataIt : fRunDataVect[plane][side][RPC]) {
-          outputFile << plane << ";" << side << ";" << RPC << ";" << dataIt << "\n";
-        }
-      }
-    }
-  }
-  outputFile.close();
-}
-
-void MTRShuttle::loadData(std::string path)
-{
-  std::string line;
-  std::ifstream fin(path);
-  int linesCounter = 0;
-  int plane, side, RPC;
-  RunObject runObjectBuffer;
-
-  if (fin.is_open()) {
-    while (!fin.eof()) {
-      getline(fin, line);
-      if (line.empty())
-        continue;
-      std::cout << "Loaded lines: " << linesCounter++ << "\r";
-      runObjectBuffer = RunObject(line, plane, side, RPC);
-      fRunDataVect[plane][side][RPC].emplace_back(runObjectBuffer);
-    }
-    std::cout << std::endl;
-    fin.close();
-  } else
-    std::cout << "Unable to open file";
-}
+//void MTRShuttle::loadData(std::string path)
+//{
+//  std::string line;
+//  std::ifstream fin(path);
+//  int linesCounter = 0;
+//  int plane, side, RPC;
+//  RunObject runObjectBuffer;
+//
+//  if (fin.is_open()) {
+//    while (!fin.eof()) {
+//      getline(fin, line);
+//      if (line.empty())
+//        continue;
+//      std::cout << "Loaded lines: " << linesCounter++ << "\r";
+//      runObjectBuffer = RunObject(line, plane, side, RPC);
+//      fRunDataVect[plane][side][RPC].emplace_back(runObjectBuffer);
+//    }
+//    std::cout << std::endl;
+//    fin.close();
+//  } else
+//    std::cout << "Unable to open file";
+//}

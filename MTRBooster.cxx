@@ -10,14 +10,14 @@
 #include "RunObject.h"
 #include <utility>
 
-MTRBooster::MTRBooster() : fLoadedData(false), fAverageComputed(false)
-{
-  std::string inputData;
-  std::cout << "No input file path provided. Please provide a valid .csv file path below:\n";
-  std::cin >> inputData;
-  fShuttle.loadData(std::move(inputData));
-  fLoadedData = true;
-}
+//MTRBooster::MTRBooster() : fLoadedData(false), fAverageComputed(false)
+//{
+//  std::string inputData;
+//  std::cout << "No input file path provided. Please provide a valid .csv file path below:\n";
+//  std::cin >> inputData;
+//  fShuttle.loadData(std::move(inputData));
+//  fLoadedData = true;
+//}
 
 MTRBooster::MTRBooster(std::string runListPath, std::string AMANDAiMonPath, std::string AMANDAvMonPath,
                        std::string OCDBPath, bool weighted)
@@ -28,11 +28,11 @@ MTRBooster::MTRBooster(std::string runListPath, std::string AMANDAiMonPath, std:
   fLoadedData = true;
 }
 
-MTRBooster::MTRBooster(std::string inputData) : fLoadedData(false), fAverageComputed(false)
-{
-  fShuttle.loadData(std::move(inputData));
-  fLoadedData = true;
-}
+//MTRBooster::MTRBooster(std::string inputData) : fLoadedData(false), fAverageComputed(false)
+//{
+//  fShuttle.loadData(std::move(inputData));
+//  fLoadedData = true;
+//}
 
 MTRBooster::MTRBooster(MTRShuttle shuttle) : fLoadedData(false), fAverageComputed(false)
 {
@@ -76,8 +76,8 @@ void MTRBooster::Launch(size_t iSetting, TMultiGraph* buffer)
       return;
     }
 
-    if (!fAverageComputed && currentSetting.fPlotaverage)
-      MTRBooster::loadAverage();
+//    if (!fAverageComputed && currentSetting.fPlotaverage)
+//      MTRBooster::loadAverage();
 
     if (currentSetting.fRPC != MTRRPCs::kAllRPCs) {
       if (currentSetting.isTrend) {
@@ -306,7 +306,7 @@ MTRBooster& MTRBooster::SetMaxRun(uint64_t maxRun)
 
 MTRBooster& MTRBooster::OnlyHVOkRuns()
 {
-  fCurrentPlotSetting.fConditions.addCondition(&RunObject::isHVOk, false);
+  fCurrentPlotSetting.fConditions.addCondition(&RunObject::isHVOk, false, this->fCurrentPlotSetting.fPlane, this->fCurrentPlotSetting.fSide, this->fCurrentPlotSetting.fRPC);
   return *this;
 }
 
@@ -324,13 +324,13 @@ MTRBooster& MTRBooster::OnlyNoBeamRuns()
 
 MTRBooster& MTRBooster::OnlyDarkCurrentRuns()
 {
-  fCurrentPlotSetting.fConditions.addCondition(&RunObject::isValidForIDark, false);
+  fCurrentPlotSetting.fConditions.addCondition(&RunObject::isValidForIDark, false, this->fCurrentPlotSetting.fPlane, this->fCurrentPlotSetting.fSide, this->fCurrentPlotSetting.fRPC);
   return *this;
 }
 
 MTRBooster& MTRBooster::OnlyIntegratedChargeRuns()
 {
-  fCurrentPlotSetting.fConditions.addCondition(&RunObject::isValidForIntCharge, false);
+  fCurrentPlotSetting.fConditions.addCondition(&RunObject::isValidForIntCharge, false, this->fCurrentPlotSetting.fPlane, this->fCurrentPlotSetting.fSide, this->fCurrentPlotSetting.fRPC);
   return *this;
 }
 

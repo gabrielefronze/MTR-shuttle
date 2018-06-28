@@ -81,14 +81,15 @@ class MTRShuttle
   void propagateAMANDACurrent(int plane, int side, int RPC, bool weightedAverage);
 
   void propagateAMANDA(bool weightedAverage = true);
-  void saveData(std::string path = "MTRShuttle.csv");
-  void loadData(std::string path = "MTRShuttle.csv");
-  void computeAverage();
+//  void saveData(std::string path = "MTRShuttle.csv");
+//  void loadData(std::string path = "MTRShuttle.csv");
+//  void computeAverage();
 
   private:
   std::vector<std::pair<int,int>> fRunList;
-  std::vector<RunObject> fRunDataVect[MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
-  std::vector<RunObject> fRunDataVectAvg[MTRPlanes::kNPlanes+1];
+  public:
+  std::vector<RunObject> fRunDataVect;
+  private:
   std::vector<AMANDACurrent> fAMANDACurrentsVect[MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
   std::vector<AMANDAVoltage> fAMANDAVoltagesVect[MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
 
