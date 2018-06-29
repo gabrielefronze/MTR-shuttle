@@ -116,7 +116,7 @@ void MTRShuttle::parseOCDB(std::string path)
       printf("\t\tERROR: TriggerDCS not found for run %d\n", runIterator.first);
       continue;
     } else {
-      printf("\t\tINFO: TriggerDCS found for run %d\n", runIterator.first);
+//      printf("\t\tINFO: TriggerDCS found for run %d\n", runIterator.first);
     }
 
     // inizializzazione dell'entry contente i valori di corrente
@@ -134,6 +134,8 @@ void MTRShuttle::parseOCDB(std::string path)
     }
 
     RunObject runObjectBuffer;
+
+//    printf("----> Run#: %llu Beam type: %s Energy:: %f\n",(uint64_t)runIterator.first,beamType.Data(),beamEnergy);
 
     runObjectBuffer.setIsDark(!isBeamPresent);
     runObjectBuffer.setRunNumber((uint64_t)runIterator.first);
@@ -172,7 +174,7 @@ void MTRShuttle::parseOCDB(std::string path)
             isHVOk &= HVcheck;
 
             if (!HVcheck) {
-              printf("HV not OK for %d %d %d %f\n", plane, side, RPC, HV);
+//              printf("HV not OK for %d %d %d %f\n", plane, side, RPC, HV);
               badHVCounter++;
               break;
             } else {
@@ -196,7 +198,7 @@ void MTRShuttle::parseOCDB(std::string path)
     //    if (!isHVOkGlobal) continue;
     if (AlienUtils::checkCDB(runIterator.first, defStorage, "MUON/Calib/TriggerScalers", false)) {
       // inizializzazone dell'entry contenente le letture degli scalers
-      printf("\t\tINFO: TriggerScaler found for run %d\n", runIterator.first);
+//      printf("\t\tINFO: TriggerScaler found for run %d\n", runIterator.first);
 
       AliCDBEntry* entryScalers = managerCDB->Get("MUON/Calib/TriggerScalers");
       if (!entryScalers)
@@ -274,7 +276,7 @@ void MTRShuttle::parseOCDB(std::string path)
       printf("\t\tERROR: TriggerScalers not found for run %d\n", runIterator.first);
     }
 
-    printf("\t\tINFO: Saving run %d\n", runIterator.first);
+//    printf("\t\tINFO: Saving run %d\n", runIterator.first);
 
     fRunDataVect.emplace_back(runObjectBuffer);
   }
@@ -466,6 +468,30 @@ void MTRShuttle::parseAMANDAvMon(std::string path)
   std::cout << "Loaded " << linesCounter << "AMANDA voltages values" << std::endl;
 }
 
+void MTRShuttle::createDummyRunsInRange(uint64_t &firstRunNumber, uint64_t SOR, uint64_t EOR){
+  if((EOR-SOR)<=kDummyRunsMaxDeltaT){
+    fRunDataVect.emplace_back(SOR, EOR);
+    fRunDataVect.back().setRunNumber(firstRunNumber++);
+    fRunDataVect.back().setIsDummy(true);
+    printf("Created run %llu from %llu to %llu.\n", firstRunNumber - 1, SOR, EOR);
+  } else {
+    auto dummySOR = SOR;
+    while((EOR-dummySOR)>kDummyRunsMaxDeltaT){
+      fRunDataVect.emplace_back(dummySOR, dummySOR+kDummyRunsMaxDeltaT);
+      fRunDataVect.back().setRunNumber(firstRunNumber++);
+      fRunDataVect.back().setIsDummy(true);
+      printf("Created run %llu from %llu to %llu.\n", firstRunNumber - 1, dummySOR, dummySOR+kDummyRunsMaxDeltaT);
+      dummySOR = dummySOR+kDummyRunsMaxDeltaT+1;
+    }
+    if((EOR-dummySOR)>0){
+      fRunDataVect.emplace_back(dummySOR, EOR);
+      fRunDataVect.back().setRunNumber(firstRunNumber++);
+      fRunDataVect.back().setIsDummy(true);
+      printf("Created run %llu from %llu to %llu.\n", firstRunNumber - 1, dummySOR, EOR);
+    }
+  }
+}
+
 void MTRShuttle::createDummyRuns(bool createFirstLast)
 {
 
@@ -522,7 +548,13 @@ void MTRShuttle::createDummyRuns(bool createFirstLast)
 
   printf("Run TS limits {%llu,%llu}\n", firstRunTS, lastRunTS);
 
-  uint64_t runNumber = 1;
+  uint64_t runNumber = 0;
+
+  if (createFirstLast) {
+    if (firstAMANDATSGlobal < firstRunTS) {
+      createDummyRunsInRange(runNumber, firstAMANDATSGlobal, firstRunTS);
+    }
+  }
 
   for (; runObjectIt < runObjectEnd - 1; runObjectIt++) {
     auto dummySOR = runObjectIt->getEOR() + 1;
@@ -533,34 +565,14 @@ void MTRShuttle::createDummyRuns(bool createFirstLast)
            (runObjectIt + 1)->getSOR());
 
     if (dummySOR < dummyEOR) {
-      fRunDataVect.emplace_back(dummySOR, dummyEOR);
-      fRunDataVect.back().setRunNumber(runNumber);
-      fRunDataVect.back().setIsDummy(true);
-      printf("Created run %llu from %llu to %llu.\n", runNumber - 1, dummySOR, dummyEOR);
+      createDummyRunsInRange(runNumber,dummySOR,dummyEOR);
     }
     runNumber++;
   }
 
   if (createFirstLast) {
-    if (firstAMANDATSGlobal < firstRunTS) {
-      fRunDataVect.emplace_back(RunObject(firstAMANDATSGlobal, firstRunTS));
-      fRunDataVect.back().setRunNumber(0);
-      fRunDataVect.back().setIsDummy(true);
-      printf(
-        //            "####################################\n"
-        "Created first run %i from %llu to %llu.\n", 0, fRunDataVect.back().getSOR(),
-        fRunDataVect.back().getEOR());
-    }
-
     if (lastRunTS < lastAMANDATSGlobal) {
-      fRunDataVect.emplace_back(RunObject(lastRunTS + 1, lastAMANDATSGlobal));
-      fRunDataVect.back().setRunNumber(runNumber);
-      fRunDataVect.back().setIsDummy(true);
-      printf("Created last run %llu from %llu to %llu.\n"
-        //            "####################################\n"
-        ,
-             runNumber, fRunDataVect.back().getSOR(),
-             fRunDataVect.back().getEOR());
+      createDummyRunsInRange(runNumber,lastRunTS, lastAMANDATSGlobal);
     }
   }
 

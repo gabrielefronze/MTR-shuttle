@@ -5,6 +5,7 @@
 #ifndef MTR_SHUTTLE_MTRSHUTTLE_H
 #define MTR_SHUTTLE_MTRSHUTTLE_H
 
+#include <utility>
 #include <vector>
 #include <string>
 #include <TGraph.h>
@@ -48,10 +49,10 @@ class MTRShuttle
 
   public:
   void instance(std::string runListPath, std::string AMANDAiMonPath, std::string AMANDAvMonPath, std::string OCDBPath, bool weighted=true, bool createFirstLast=true){
-    this->parseRunList(runListPath);
-    this->parseAMANDAvMon(AMANDAvMonPath);
-    this->parseAMANDAiMon(AMANDAiMonPath);
-    this->parseOCDB(OCDBPath);
+    this->parseRunList(std::move(runListPath));
+    this->parseAMANDAvMon(std::move(AMANDAvMonPath));
+    this->parseAMANDAiMon(std::move(AMANDAiMonPath));
+    this->parseOCDB(std::move(OCDBPath));
     this->createDummyRuns(createFirstLast);
     this->propagateAMANDA(weighted);
   }
@@ -89,10 +90,11 @@ class MTRShuttle
   std::vector<std::pair<int,int>> fRunList;
   public:
   std::vector<RunObject> fRunDataVect;
-  private:
   std::vector<AMANDACurrent> fAMANDACurrentsVect[MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
   std::vector<AMANDAVoltage> fAMANDAVoltagesVect[MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
 
+  private:
+  void createDummyRunsInRange(uint64_t &firstRunNumber, uint64_t SOR, uint64_t EOR);
   void createDummyRuns(bool createFirstLast);
 
   inline double getM(const AMANDACurrent iStart, const AMANDACurrent iStop) {

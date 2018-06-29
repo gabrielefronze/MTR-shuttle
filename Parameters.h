@@ -56,6 +56,7 @@ static const double kAreas[MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRP
 // Detector parameters
 static const double kMinWorkHV=8500.;
 static const uint64_t kFullScale=65535;
+static const uint64_t kDummyRunsMaxDeltaT = 3600*4;
 
 //Graph maquillage vectors
 static const Color_t kColors[MTRRPCs::kNRPCs] ={kBlue+2,kRed,kGreen,kBlue,kViolet+7,kMagenta,kCyan,kGray,kOrange};
