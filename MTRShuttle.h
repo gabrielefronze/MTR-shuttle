@@ -87,8 +87,10 @@ class MTRShuttle
 
   private:
   std::vector<std::pair<int,int>> fRunList;
+  public:
   std::vector<RunObject> fRunDataVect[MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
   std::vector<RunObject> fRunDataVectAvg[MTRPlanes::kNPlanes+1];
+  private:
   std::vector<AMANDACurrent> fAMANDACurrentsVect[MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
   std::vector<AMANDAVoltage> fAMANDAVoltagesVect[MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
 
