@@ -54,6 +54,59 @@ class RunObject{
     return p*(MTRSides::kNSides)*(MTRRPCs::kNRPCs)+s*(MTRRPCs::kNRPCs)+r;
   }
 
+  inline double getAvgHV(MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) const { return getValueSmart(fAvgHV,p,s,r); }
+  inline void setAvgHV(double avgHV, MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) { setValueSmart(avgHV,fAvgHV,p,s,r); }
+
+  inline double getAvgITot(MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) const { return getValueSmart(fAvgITot,p,s,r); }
+  inline void setAvgITot(double avgHV, MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) { setValueSmart(avgHV,fAvgITot,p,s,r); }
+
+  inline double getAvgIDark(MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) const { return getValueSmart(fAvgIDark,p,s,r); }
+  inline void setAvgIDark(double avgHV, MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) { setValueSmart(avgHV,fAvgIDark,p,s,r); }
+
+  inline double getAvgINet(MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) const { return getAvgITot(p,s,r)-getAvgIDark(p,s,r); }
+
+  inline double getIntCharge(MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) const { return getValueSmart(fIntCharge,p,s,r); }
+  inline void setIntCharge(double avgHV, MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) { setValueSmart(avgHV,fIntCharge,p,s,r); }
+
+  inline double getScalBending(MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) const { return getValueSmart(fScalBending,p,s,r); }
+  inline void setScalBending(uint64_t avgHV, MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) { setValueSmart(avgHV,fScalBending,p,s,r); }
+
+  inline double getScalNotBending(MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) const { return getValueSmart(fScalNotBending,p,s,r); }
+  inline void setScalNotBending(uint64_t avgHV, MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) { setValueSmart(avgHV,fScalNotBending,p,s,r); }
+
+  inline bool isHVOk(MTRPlanes p, MTRSides s, MTRRPCs r) const { return getValue(p,s,r,fIsHVOk); }
+  inline void setIsHVOk(bool avgHV, MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) { setValueSmart(avgHV,fIsHVOk,p,s,r); }
+
+  inline bool isValidForIntCharge(MTRPlanes p, MTRSides s, MTRRPCs r) const { return isHVOk(p,s,r); }
+  inline bool isValidForIDark(MTRPlanes p, MTRSides s, MTRRPCs r) const { return (fIsDark && isHVOk(p,s,r)); }
+
+  inline void reset(){
+    this->setAvgIDark(0.);
+    this->setAvgITot(0.);
+    this->setAvgHV(0.);
+    this->setIntCharge(0.);
+    this->setScalBending(0);
+    this->setScalNotBending(0);
+  }
+
+  friend std::ostream& operator<<(std::ostream& os, const RunObject& obj);
+  friend RunObject operator+(RunObject result, const RunObject &added);
+  friend RunObject operator/(RunObject result, const double &divider);
+
+  private:
+  uint64_t fRunNumber;
+  uint64_t fSOR;
+  uint64_t fEOR;
+  double fAvgHV[totRPCN];
+  double fAvgITot[totRPCN];
+  double fAvgIDark[totRPCN];
+  double fIntCharge[totRPCN];
+  uint64_t fScalBending[totRPCN];
+  uint64_t fScalNotBending[totRPCN];
+  bool fIsHVOk[totRPCN];
+  bool fIsDark;
+  bool fIsDummy;
+
   // Template getters
   template<class returnT> returnT getValue(MTRPlanes p, MTRSides s, MTRRPCs r, returnT data[totRPCN]) const { return data[index(p,s,r)]; }
   template<class returnT> returnT getValue(MTRPlanes p, MTRSides s, returnT data[totRPCN]) const {
@@ -113,60 +166,6 @@ class RunObject{
     if(r==kNRPCs) return setValue<dataT>(value,p,s,data);
     return setValue<dataT>(value,p,s,r,data);
   }
-
-
-  inline double getAvgHV(MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) const { return getValueSmart(fAvgHV,p,s,r); }
-  inline void setAvgHV(double avgHV, MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) { setValueSmart(avgHV,fAvgHV,p,s,r); }
-
-  inline double getAvgITot(MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) const { return getValueSmart(fAvgITot,p,s,r); }
-  inline void setAvgITot(double avgHV, MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) { setValueSmart(avgHV,fAvgITot,p,s,r); }
-
-  inline double getAvgIDark(MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) const { return getValueSmart(fAvgIDark,p,s,r); }
-  inline void setAvgIDark(double avgHV, MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) { setValueSmart(avgHV,fAvgIDark,p,s,r); }
-
-  inline double getAvgINet(MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) const { return getAvgITot(p,s,r)-getAvgIDark(p,s,r); }
-
-  inline double getIntCharge(MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) const { return getValueSmart(fIntCharge,p,s,r); }
-  inline void setIntCharge(double avgHV, MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) { setValueSmart(avgHV,fIntCharge,p,s,r); }
-
-  inline double getScalBending(MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) const { return getValueSmart(fScalBending,p,s,r); }
-  inline void setScalBending(uint64_t avgHV, MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) { setValueSmart(avgHV,fScalBending,p,s,r); }
-
-  inline double getScalNotBending(MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) const { return getValueSmart(fScalNotBending,p,s,r); }
-  inline void setScalNotBending(uint64_t avgHV, MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) { setValueSmart(avgHV,fScalNotBending,p,s,r); }
-
-  inline bool isHVOk(MTRPlanes p, MTRSides s, MTRRPCs r) const { return getValue(p,s,r,fIsHVOk); }
-  inline void setIsHVOk(bool avgHV, MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) { setValueSmart(avgHV,fIsHVOk,p,s,r); }
-
-  inline bool isValidForIntCharge(MTRPlanes p, MTRSides s, MTRRPCs r) const { return isHVOk(p,s,r); }
-  inline bool isValidForIDark(MTRPlanes p, MTRSides s, MTRRPCs r) const { return (fIsDark && isHVOk(p,s,r)); }
-
-  inline void reset(){
-    this->setAvgIDark(0.);
-    this->setAvgITot(0.);
-    this->setAvgHV(0.);
-    this->setIntCharge(0.);
-    this->setScalBending(0);
-    this->setScalNotBending(0);
-  }
-
-  friend std::ostream& operator<<(std::ostream& os, const RunObject& obj);
-  friend RunObject operator+(RunObject result, const RunObject &added);
-  friend RunObject operator/(RunObject result, const double &divider);
-
-  private:
-  uint64_t fRunNumber;
-  uint64_t fSOR;
-  uint64_t fEOR;
-  double fAvgHV[totRPCN];
-  double fAvgITot[totRPCN];
-  double fAvgIDark[totRPCN];
-  double fIntCharge[totRPCN];
-  uint64_t fScalBending[totRPCN];
-  uint64_t fScalNotBending[totRPCN];
-  bool fIsHVOk[totRPCN];
-  bool fIsDark;
-  bool fIsDummy;
 };
 
 inline RunObject operator+ (RunObject result, const RunObject &added){
