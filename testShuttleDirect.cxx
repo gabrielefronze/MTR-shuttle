@@ -60,16 +60,16 @@ int testShuttleDirect()
   double cumulus=0.;
   for (const auto &itRun : sciattol.fRunDataVect) {
 
-    cumulus+=itRun.getIntCharge(kMT11,kINSIDE,k1);
+    cumulus+=itRun.getIntCharge(kMT22,kINSIDE,k3);
     intChargeGr->SetPoint(iPoint,itRun.getEOR(),cumulus);
 
-    iDarkGr->SetPoint(iPoint,itRun.getEOR(),itRun.getAvgIDark(kMT11,kINSIDE,k1));
+    iDarkGr->SetPoint(iPoint,itRun.getEOR(),itRun.getAvgIDark(kMT22,kINSIDE,k3));
 
-    iTotGr->SetPoint(iPoint,itRun.getEOR(),itRun.getAvgITot(kMT11,kINSIDE,k1));
+    iTotGr->SetPoint(iPoint,itRun.getEOR(),itRun.getAvgITot(kMT22,kINSIDE,k3));
 
-    HVGr->SetPoint(iPoint,itRun.getEOR(),itRun.getAvgHV(kMT11,kINSIDE,k1));
+    HVGr->SetPoint(iPoint,itRun.getEOR(),itRun.getAvgHV(kMT22,kINSIDE,k3));
 
-    printf("%llu,%llu,%f,%f,%f,%f\n",itRun.getRunNumber(),itRun.getEOR(),cumulus,itRun.getAvgIDark(kMT11,kINSIDE,k1),itRun.getAvgITot(kMT11,kINSIDE,k1),itRun.getAvgHV(kMT11,kINSIDE,k1));
+    printf("%llu,%llu,%f,%f,%f,%f\n",itRun.getRunNumber(),itRun.getEOR(),cumulus,itRun.getAvgIDark(kMT22,kINSIDE,k3),itRun.getAvgITot(kMT22,kINSIDE,k3),itRun.getAvgHV(kMT22,kINSIDE,k3));
 
     iPoint++;
   }
