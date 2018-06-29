@@ -853,7 +853,7 @@ void MTRShuttle::propagateAMANDACurrent(int plane, int side, int RPC, bool weigh
 
     double integratedCharge = 0;
 
-    std::cout<<"For run "<<runObjectIt.getRunNumber()<<" between "<<SOR<<" and "<<EOR<<":"<<std::endl;
+//    std::cout<<"For run "<<runObjectIt.getRunNumber()<<" between "<<SOR<<" and "<<EOR<<":"<<std::endl;
 
     // Loop over the current readings
     for (; currentIt != fAMANDACurrentsVect[plane][side][RPC].end() - 1; currentIt++) {
@@ -893,7 +893,7 @@ void MTRShuttle::propagateAMANDACurrent(int plane, int side, int RPC, bool weigh
 //        if(plane==kMT22 && side==kINSIDE && RPC==k3 ) std::cout<<currentIt->getTimeStamp()<<","<<currentIt->getINet()<<","<<deltaT<<","<<integratedCharge<<std::endl;
       }
 
-      std::cout << currentIt->getINet() <<","<< deltaT <<","<< integratedCharge <<std::endl;
+//      std::cout << currentIt->getINet() <<","<< deltaT <<","<< integratedCharge <<std::endl;
 
       // Add current value to average numerator sum
       if (weightedAverage) {
