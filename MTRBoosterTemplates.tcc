@@ -266,12 +266,30 @@ drawMaxMin(YType (RunObject::*getY)(MTRPlanes p, MTRSides s, MTRRPCs r) const,
   for(int iGraph = 0; iGraph < grList->GetEntries(); iGraph++){
     auto graph = (TGraph*)(grList->At(iGraph));
 
-    if(strcmp(graph->GetName(),"1_1_6")==0) continue;
+    bool shouldSkip = false;
+
+    for(auto const& repIt :fReplacedRPCs){
+      char replacedRPC[10];
+      sprintf(replacedRPC,"%d_%d_%d",repIt.fPlane,repIt.fSide,repIt.fRPC);
+      if(strcmp(graph->GetName(),replacedRPC)==0) {
+        shouldSkip = true;
+        break;
+      }
+    }
+
+    if(shouldSkip) continue;
 
     double dummyX;
     double dummyY;
 
     graph->GetPoint(graph->GetN()-1, dummyX, dummyY);
+
+    std::string graphName = graph->GetName();
+
+    if (graphName.find("avg")!=std::string::npos){
+      if (plotAverage) mgOut->Add(graph);
+      continue;
+    }
 
     if (iGraph==0) {
       minValue = dummyY;
