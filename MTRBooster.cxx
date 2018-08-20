@@ -76,10 +76,7 @@ void MTRBooster::Launch(size_t iSetting, TMultiGraph* buffer)
       return;
     }
 
-//    if (!fAverageComputed && currentSetting.fPlotaverage)
-//      MTRBooster::loadAverage();
-
-    if (currentSetting.fRPC != MTRRPCs::kAllRPCs) {
+    if (currentSetting.fRPC != MTRRPCs::kNRPCs) {
       if (currentSetting.isTrend) {
         trendWrapper(currentSetting, buffer);
       } else {
@@ -109,11 +106,11 @@ void MTRBooster::AutoDraw(size_t iPlot, TVirtualPad* pad, bool drawLegend, Optio
     pad->cd();
 
     TString graphTitle = "";
-    if (settings.fPlane != MTRPlanes::kAll)
+    if (settings.fPlane != MTRPlanes::kNPlanes)
       graphTitle.Append(Form("MT%d ", kPlanes[settings.fPlane]));
-    if (settings.fSide != MTRSides::kBoth)
+    if (settings.fSide != MTRSides::kNSides)
       graphTitle.Append(Form("%s ", kSides[settings.fSide].c_str()));
-    if (settings.fRPC != MTRRPCs::kAllRPCs)
+    if (settings.fRPC != MTRRPCs::kNRPCs)
       graphTitle.Append(Form("%d ", settings.fRPC + 1));
 
     if (settings.isTrend || settings.isMinMax) {
@@ -201,11 +198,11 @@ MTRBooster& MTRBooster::SetPlane(int HR_plane)
       fCurrentPlotSetting.fPlane = MTRPlanes::kMT22;
       break;
     default:
-      fCurrentPlotSetting.fPlane = MTRPlanes::kAll;
+      fCurrentPlotSetting.fPlane = MTRPlanes::kNPlanes;
       break;
   }
 
-  if (fCurrentPlotSetting.fPlane == kAll) {
+  if (fCurrentPlotSetting.fPlane == kNPlanes) {
     std::cerr << "Plane ID not recognised. Plotting all planes.\n";
     std::cerr << "Recognised IDs are: {1,2,3,4} or {11,12,13,14} or {11,12,21,22}\n";
   }
@@ -224,9 +221,9 @@ MTRBooster& MTRBooster::SetSide(std::string HR_side)
   else if (HR_side.find("IN") != std::string::npos)
     fCurrentPlotSetting.fSide = MTRSides::kINSIDE;
   else
-    fCurrentPlotSetting.fSide = MTRSides::kBoth;
+    fCurrentPlotSetting.fSide = MTRSides::kNSides;
 
-  if (fCurrentPlotSetting.fSide == kBoth) {
+  if (fCurrentPlotSetting.fSide == kNSides) {
     std::cerr << "Side not recognised. Plotting all sides.\n";
     std::cerr << "Available options are: {IN,OUT}[SIDE] or {in,out}[side]\n";
   }
@@ -235,12 +232,12 @@ MTRBooster& MTRBooster::SetSide(std::string HR_side)
 
 MTRBooster& MTRBooster::SetRPC(int HR_RPC)
 {
-  if (HR_RPC <= MTRRPCs::kNRPCs && HR_RPC >= 1)
+  if (HR_RPC <= MTRRPCs::kNRPCs+1 && HR_RPC >= 1)
     fCurrentPlotSetting.fRPC = (MTRRPCs)(HR_RPC - 1);
   else
-    fCurrentPlotSetting.fRPC = kAllRPCs;
+    fCurrentPlotSetting.fRPC = kNRPCs;
 
-  if (fCurrentPlotSetting.fRPC == kAllRPCs) {
+  if (fCurrentPlotSetting.fRPC == kNRPCs) {
     std::cerr << "Wrong RPC ID. Plotting all RPCs.\n";
     std::cerr << "Recognised IDs are between 1 and 9\n";
   }

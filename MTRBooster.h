@@ -15,9 +15,9 @@ struct MTRPlotSettings{
   double (RunObject::*funcX)(MTRPlanes p, MTRSides s, MTRRPCs r) const = nullptr;
   double (RunObject::*funcY)(MTRPlanes p, MTRSides s, MTRRPCs r) const = nullptr;
 
-  MTRPlanes fPlane=kAll;
-  MTRSides fSide=kBoth;
-  MTRRPCs fRPC=kAllRPCs;
+  MTRPlanes fPlane=kNPlanes;
+  MTRSides fSide=kNSides;
+  MTRRPCs fRPC=kNRPCs;
 
   bool fNormalize=false;
   bool fAccumulate=false;

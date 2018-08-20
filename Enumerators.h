@@ -10,15 +10,13 @@ enum MTRPlanes{
     kMT12,
     kMT21,
     kMT22,
-    kNPlanes,
-    kAll
+    kNPlanes
 };
 
 enum MTRSides{
     kINSIDE,
     kOUTSIDE,
-    kNSides,
-    kBoth
+    kNSides
 };
 
 enum MTRRPCs{
@@ -31,8 +29,7 @@ enum MTRRPCs{
     k7,
     k8,
     k9,
-    kNRPCs,
-    kAllRPCs
+    kNRPCs
 };
 
 static const int kNLocalBoards=234;

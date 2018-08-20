@@ -12,9 +12,9 @@ TGraph *drawCorrelation(XType (RunObject::*getX)(MTRPlanes p, MTRSides s, MTRRPC
                         bool normalizeToAreaY=false,
                         bool accumulate=false,
                         bool plotAverage=false,
-                        MTRPlanes plane=MTRPlanes::kAll,
-                        MTRSides side=MTRSides::kBoth,
-                        MTRRPCs RPC=MTRRPCs::kAllRPCs,
+                        MTRPlanes plane=MTRPlanes::kNPlanes,
+                        MTRSides side=MTRSides::kNSides,
+                        MTRRPCs RPC=MTRRPCs::kNRPCs,
                         MTRConditions *conditions=new MTRConditions())
 {
   auto *returnedGraph = new TGraph();
@@ -145,16 +145,16 @@ TMultiGraph *drawCorrelations(XType(RunObject::*getX)(MTRPlanes p, MTRSides s, M
                               bool normalizeToAreaY=false,
                               bool accumulate=false,
                               bool plotAverage=false,
-                              MTRPlanes plane=MTRPlanes::kAll,
-                              MTRSides side=MTRSides::kBoth,
+                              MTRPlanes plane=MTRPlanes::kNPlanes,
+                              MTRSides side=MTRSides::kNSides,
                               CondType *conditions=nullptr)
 {
   auto *mg = new TMultiGraph();
 
   for (int iPlane=MTRPlanes::kMT11; iPlane<MTRPlanes::kNPlanes; iPlane++) {
-    if ( plane!=MTRPlanes::kAll && iPlane!=plane ) continue;
+    if ( plane!=MTRPlanes::kNPlanes && iPlane!=plane ) continue;
     for (int iSide =MTRSides::kINSIDE; iSide < MTRSides::kNSides; iSide++) {
-      if ( side!=MTRSides::kBoth && iSide!=side ) continue;
+      if ( side!=MTRSides::kNSides && iSide!=side ) continue;
       for (int iRPC=MTRRPCs::k1; iRPC < MTRRPCs::kNRPCs; iRPC++) {
         mg->Add(
           drawCorrelation(getX,
@@ -180,8 +180,8 @@ TMultiGraph *drawCorrelations(XType(RunObject::*getX)(MTRPlanes p, MTRSides s, M
                       accumulate,
                       plotAverage,
                       plane,
-                      MTRSides::kBoth,
-                      kAllRPCs,
+                      MTRSides::kNSides,
+                      kNRPCs,
                       conditions));
   }
 
@@ -195,9 +195,9 @@ TGraph *drawTrend(YType (RunObject::*getY)(MTRPlanes p, MTRSides s, MTRRPCs r) c
                   bool normalizeToArea,
                   bool accumulate=false,
                   bool plotAverage=false,
-                  MTRPlanes plane=MTRPlanes::kAll,
-                  MTRSides side=MTRSides::kBoth,
-                  MTRRPCs RPC=MTRRPCs::kAllRPCs,
+                  MTRPlanes plane=MTRPlanes::kNPlanes,
+                  MTRSides side=MTRSides::kNSides,
+                  MTRRPCs RPC=MTRRPCs::kNRPCs,
                   CondType *conditions=nullptr)
 {
   return drawCorrelation(&RunObject::getSOR,
@@ -217,8 +217,8 @@ TMultiGraph *drawTrends(YType (RunObject::*getY)(MTRPlanes p, MTRSides s, MTRRPC
                         bool normalizeToArea,
                         bool accumulate=false,
                         bool plotAverage=false,
-                        MTRPlanes plane=MTRPlanes::kAll,
-                        MTRSides side=MTRSides::kBoth,
+                        MTRPlanes plane=MTRPlanes::kNPlanes,
+                        MTRSides side=MTRSides::kNSides,
                         CondType *conditions=nullptr)
 {
   return drawCorrelations(&RunObject::getSOR,
@@ -238,8 +238,8 @@ drawMaxMin(YType (RunObject::*getY)(MTRPlanes p, MTRSides s, MTRRPCs r) const,
            bool normalizeToAreaY=false,
            bool accumulate=false,
            bool plotAverage=false,
-           MTRPlanes plane=MTRPlanes::kAll,
-           MTRSides side=MTRSides::kBoth,
+           MTRPlanes plane=MTRPlanes::kNPlanes,
+           MTRSides side=MTRSides::kNSides,
            CondType *conditions=nullptr)
 {
   auto mg = drawTrends(getY,normalizeToAreaY,accumulate,plotAverage,plane,side,conditions);

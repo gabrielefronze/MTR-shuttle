@@ -8,12 +8,12 @@ RunObject::RunObject(uint64_t SOR, uint64_t EOR, double avgHV, double avgITot, d
                      uint64_t scalBending, uint64_t scalNotBending, bool isDark, bool isDummy)
 : fSOR(SOR), fEOR(EOR), fIsDark(isDark), fIsDummy(isDummy)
 {
-  setAvgHV(avgHV);
-  setAvgITot(avgITot);
-  setAvgIDark(avgIDark);
-  setIntCharge(intCharge);
-  setScalBending(scalBending);
-  setScalNotBending(scalNotBending);
+  // setAvgHV(avgHV);
+  // setAvgITot(avgITot);
+  // setAvgIDark(avgIDark);
+  // setIntCharge(intCharge);
+  // setScalBending(scalBending);
+  // setScalNotBending(scalNotBending);
 }
 
 RunObject::RunObject(uint64_t SOR, uint64_t EOR, double avgHV[totRPCN], double avgITot[totRPCN],

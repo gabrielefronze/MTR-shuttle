@@ -8,6 +8,7 @@
 
 #include <stdint.h>
 #include <fstream>
+#include <iostream>
 #include "Parameters.h"
 
 const auto totRPCN = MTRPlanes::kNPlanes*MTRSides::kNSides*MTRRPCs::kNRPCs;
@@ -54,39 +55,39 @@ class RunObject{
     return p*(MTRSides::kNSides)*(MTRRPCs::kNRPCs)+s*(MTRRPCs::kNRPCs)+r;
   }
 
-  inline double getAvgHV(MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) const { return getValueSmart(fAvgHV,p,s,r); }
-  inline void setAvgHV(double avgHV, MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) { setValueSmart(avgHV,fAvgHV,p,s,r); }
+  inline double getAvgHV(MTRPlanes p, MTRSides s, MTRRPCs r) const { return getValueSmart(fAvgHV,p,s,r); }
+  inline void setAvgHV(double avgHV, MTRPlanes p, MTRSides s, MTRRPCs r) { setValueSmart(avgHV,fAvgHV,p,s,r); }
 
-  inline double getAvgITot(MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) const { return getValueSmart(fAvgITot,p,s,r); }
-  inline void setAvgITot(double avgHV, MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) { setValueSmart(avgHV,fAvgITot,p,s,r); }
+  inline double getAvgITot(MTRPlanes p, MTRSides s, MTRRPCs r) const { return getValueSmart(fAvgITot,p,s,r); }
+  inline void setAvgITot(double avgHV, MTRPlanes p, MTRSides s, MTRRPCs r) { setValueSmart(avgHV,fAvgITot,p,s,r); }
 
-  inline double getAvgIDark(MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) const { return getValueSmart(fAvgIDark,p,s,r); }
-  inline void setAvgIDark(double avgHV, MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) { setValueSmart(avgHV,fAvgIDark,p,s,r); }
+  inline double getAvgIDark(MTRPlanes p, MTRSides s, MTRRPCs r) const { return getValueSmart(fAvgIDark,p,s,r); }
+  inline void setAvgIDark(double avgHV, MTRPlanes p, MTRSides s, MTRRPCs r) { setValueSmart(avgHV,fAvgIDark,p,s,r); }
 
-  inline double getAvgINet(MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) const { return getAvgITot(p,s,r)-getAvgIDark(p,s,r); }
+  inline double getAvgINet(MTRPlanes p, MTRSides s, MTRRPCs r) const { return getAvgITot(p,s,r)-getAvgIDark(p,s,r); }
 
-  inline double getIntCharge(MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) const { return getValueSmart(fIntCharge,p,s,r); }
-  inline void setIntCharge(double avgHV, MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) { setValueSmart(avgHV,fIntCharge,p,s,r); }
+  inline double getIntCharge(MTRPlanes p, MTRSides s, MTRRPCs r) const { return getValueSmart(fIntCharge,p,s,r); }
+  inline void setIntCharge(double avgHV, MTRPlanes p, MTRSides s, MTRRPCs r) { setValueSmart(avgHV,fIntCharge,p,s,r); }
 
-  inline double getScalBending(MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) const { return getValueSmart(fScalBending,p,s,r); }
-  inline void setScalBending(uint64_t avgHV, MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) { setValueSmart(avgHV,fScalBending,p,s,r); }
+  inline double getScalBending(MTRPlanes p, MTRSides s, MTRRPCs r) const { return getValueSmart(fScalBending,p,s,r); }
+  inline void setScalBending(uint64_t avgHV, MTRPlanes p, MTRSides s, MTRRPCs r) { setValueSmart(avgHV,fScalBending,p,s,r); }
 
-  inline double getScalNotBending(MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) const { return getValueSmart(fScalNotBending,p,s,r); }
-  inline void setScalNotBending(uint64_t avgHV, MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) { setValueSmart(avgHV,fScalNotBending,p,s,r); }
+  inline double getScalNotBending(MTRPlanes p, MTRSides s, MTRRPCs r) const { return getValueSmart(fScalNotBending,p,s,r); }
+  inline void setScalNotBending(uint64_t avgHV, MTRPlanes p, MTRSides s, MTRRPCs r) { setValueSmart(avgHV,fScalNotBending,p,s,r); }
 
   inline bool isHVOk(MTRPlanes p, MTRSides s, MTRRPCs r) const { return getValue(p,s,r,fIsHVOk); }
-  inline void setIsHVOk(bool avgHV, MTRPlanes p=kNPlanes, MTRSides s=kNSides, MTRRPCs r=kNRPCs) { setValueSmart(avgHV,fIsHVOk,p,s,r); }
+  inline void setIsHVOk(bool avgHV, MTRPlanes p, MTRSides s, MTRRPCs r) { setValueSmart(avgHV,fIsHVOk,p,s,r); }
 
   inline bool isValidForIntCharge(MTRPlanes p, MTRSides s, MTRRPCs r) const { return isHVOk(p,s,r); }
   inline bool isValidForIDark(MTRPlanes p, MTRSides s, MTRRPCs r) const { return (fIsDark && isHVOk(p,s,r)); }
 
   inline void reset(){
-    this->setAvgIDark(0.);
-    this->setAvgITot(0.);
-    this->setAvgHV(0.);
-    this->setIntCharge(0.);
-    this->setScalBending(0);
-    this->setScalNotBending(0);
+    this->setAvgIDark(0.,kNPlanes,kNSides,kNRPCs);
+    this->setAvgITot(0.,kNPlanes,kNSides,kNRPCs);
+    this->setAvgHV(0.,kNPlanes,kNSides,kNRPCs);
+    this->setIntCharge(0.,kNPlanes,kNSides,kNRPCs);
+    this->setScalBending(0,kNPlanes,kNSides,kNRPCs);
+    this->setScalNotBending(0,kNPlanes,kNSides,kNRPCs);
   }
 
   friend std::ostream& operator<<(std::ostream& os, const RunObject& obj);
@@ -108,15 +109,18 @@ class RunObject{
   bool fIsDummy;
 
   // Template getters
-  template<class returnT> returnT getValue(MTRPlanes p, MTRSides s, MTRRPCs r, returnT data[totRPCN]) const { return data[index(p,s,r)]; }
+  template<class returnT> returnT getValue(MTRPlanes p, MTRSides s, MTRRPCs r, returnT data[totRPCN]) const { 
+    return data[index(p,s,r)];
+    }
   template<class returnT> returnT getValue(MTRPlanes p, MTRSides s, returnT data[totRPCN]) const {
     auto cumulus = (returnT)0;
     uint8_t counter = 0;
     for (int iRPC = 0; iRPC < MTRRPCs::kNRPCs; ++iRPC) {
-      cumulus+=getValue(p,s,(MTRRPCs)iRPC,data);
-      counter++;
+      auto value = getValue(p,s,(MTRRPCs)iRPC,data);
+      cumulus += value;
+      counter += (int)(value>(returnT)0);
     }
-    return (returnT)((double)cumulus/(double)counter);
+    return (returnT)(((counter!=0)?(double)cumulus/(double)counter:0));
   }
   template<class returnT> returnT getValue(MTRPlanes p, returnT data[totRPCN]) const {
     auto cumulus = (returnT)0;
@@ -125,7 +129,7 @@ class RunObject{
       cumulus+=getValue(p,(MTRSides)iSide,data);
       counter++;
     }
-    return (returnT)((double)cumulus/(double)counter);
+    return (returnT)(((counter!=0)?(double)cumulus/(double)counter:0));
   }
   template<class returnT> returnT getValue(returnT data[totRPCN]) const {
     auto cumulus = (returnT)0;
@@ -134,7 +138,7 @@ class RunObject{
       cumulus+=getValue((MTRPlanes)iPlane,data);
       counter++;
     }
-    return (returnT)((double)cumulus/(double)counter);
+    return (returnT)(((counter!=0)?(double)cumulus/(double)counter:0));
   }
   template<class returnT> returnT getValueSmart(returnT data[totRPCN], MTRPlanes p, MTRSides s, MTRRPCs r) const {
     if(p==kNPlanes) return getValue<returnT>(data);
@@ -194,32 +198,32 @@ inline RunObject operator/ (RunObject result, const double &divider){
         auto p = (MTRPlanes) iPlane;
         auto s = (MTRSides) iSide;
         auto r = (MTRRPCs) iRPC;
-        result.setAvgIDark(result.getAvgIDark(p,s,r) / divider);
-        result.setAvgITot(result.getAvgITot(p,s,r) / divider);
-        result.setAvgHV(result.getAvgHV(p,s,r) / divider);
-        result.setIntCharge(result.getIntCharge(p,s,r) / divider);
-        result.setScalBending((uint64_t)(result.getScalBending(p,s,r) / divider));
-        result.setScalNotBending((uint64_t)(result.getScalNotBending(p,s,r) / divider));
+        result.setAvgIDark(result.getAvgIDark(p,s,r) / divider,p,s,r);
+        result.setAvgITot(result.getAvgITot(p,s,r) / divider,p,s,r);
+        result.setAvgHV(result.getAvgHV(p,s,r) / divider,p,s,r);
+        result.setIntCharge(result.getIntCharge(p,s,r) / divider,p,s,r);
+        result.setScalBending((uint64_t)(result.getScalBending(p,s,r) / divider),p,s,r);
+        result.setScalNotBending((uint64_t)(result.getScalNotBending(p,s,r) / divider),p,s,r);
       }
     }
   }
   return result;
 }
 
-std::ostream& operator<<(std::ostream& os, const RunObject& obj){
-  return os << obj.getRunNumber() << ";"
-            << obj.getSOR() << ";"
-            << obj.getEOR() << ";"
-            << (int) obj.isDark() << ";"
-            << (int) obj.isDummy() << ";"
-            << obj.getAvgHV() << ";"
-//            << (int) obj.isHVOk() << ";"
-            << obj.getAvgITot() << ";"
-            << obj.getAvgIDark() << ";"
-            << obj.getIntCharge() << ";"
-            << obj.getScalBending() << ";"
-            << obj.getScalNotBending();
-}
+// std::ostream& operator<<(std::ostream& os, const RunObject& obj){
+//   return os << obj.getRunNumber() << ";"
+//             << obj.getSOR() << ";"
+//             << obj.getEOR() << ";"
+//             << (int) obj.isDark() << ";"
+//             << (int) obj.isDummy() << ";"
+//             << obj.getAvgHV() << ";"
+// //            << (int) obj.isHVOk() << ";"
+//             << obj.getAvgITot() << ";"
+//             << obj.getAvgIDark() << ";"
+//             << obj.getIntCharge() << ";"
+//             << obj.getScalBending() << ";"
+//             << obj.getScalNotBending();
+// }
 
 template<typename Type> inline bool funcCmp(Type(RunObject::*getX)(MTRPlanes px, MTRSides sx, MTRRPCs rx) const, Type(RunObject::*getY)(MTRPlanes py, MTRSides sy, MTRRPCs ry) const){
   return (getX == getY);

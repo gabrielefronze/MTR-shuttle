@@ -552,7 +552,7 @@ void MTRShuttle::createDummyRuns(bool createFirstLast)
 
   if (createFirstLast) {
     if (firstAMANDATSGlobal < firstRunTS) {
-      createDummyRunsInRange(runNumber, firstAMANDATSGlobal, firstRunTS);
+      createDummyRunsInRange(runNumber, firstAMANDATSGlobal, firstRunTS-1);
     }
   }
 
@@ -572,7 +572,7 @@ void MTRShuttle::createDummyRuns(bool createFirstLast)
 
   if (createFirstLast) {
     if (lastRunTS < lastAMANDATSGlobal) {
-      createDummyRunsInRange(runNumber,lastRunTS, lastAMANDATSGlobal);
+      createDummyRunsInRange(runNumber,lastRunTS+1, lastAMANDATSGlobal);
     }
   }
 
@@ -780,12 +780,12 @@ void MTRShuttle::propagateAMANDAVoltage(int plane, int side, int RPC, bool weigh
 
     // Compute average and assign values to run object
     if (weightedAverage) {
-      runObjectIt.setAvgHV((totalT > 0) ? hvCumulus / totalT : runObjectIt.getAvgHV(),(MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC);
+      runObjectIt.setAvgHV((totalT > 0) ? hvCumulus / totalT : runObjectIt.getAvgHV((MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC),(MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC);
     } else {
-      runObjectIt.setAvgHV((iCounter > 0) ? hvCumulus / (double)iCounter : runObjectIt.getAvgHV(),(MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC);
+      runObjectIt.setAvgHV((iCounter > 0) ? hvCumulus / (double)iCounter : runObjectIt.getAvgHV((MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC),(MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC);
     }
 
-    if (runObjectIt.getAvgHV() > 8000.)
+    if (runObjectIt.getAvgHV((MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC) > 8000.)
       runObjectIt.setIsHVOk(true,(MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC);
 
 //    std::cout << "run " << runObjectIt.getRunNumber() << " had " << iCounter << " available voltage readings giving "
