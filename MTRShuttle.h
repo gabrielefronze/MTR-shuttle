@@ -48,7 +48,8 @@ class MTRShuttle
   }
 
   public:
-  void instance(std::string runListPath, std::string AMANDAiMonPath, std::string AMANDAvMonPath, std::string OCDBPath, bool weighted=true, bool createFirstLast=true){
+  template<typename RLT, typename iMonT, typename vMonT>
+  void instance(RLT runListPath, iMonT AMANDAiMonPath, vMonT AMANDAvMonPath, std::string OCDBPath, bool weighted=true, bool createFirstLast=true){
     this->parseRunList(std::move(runListPath));
     this->parseAMANDAvMon(std::move(AMANDAvMonPath));
     this->parseAMANDAiMon(std::move(AMANDAiMonPath));
@@ -58,7 +59,8 @@ class MTRShuttle
   }
 
   void parseRunList(std::string path="");
-  template<class ContainerT> void parseRunList(ContainerT paths){
+  template<class ContainerT> 
+  typename std::enable_if<!(std::is_same<ContainerT,std::string>::value && std::is_same<typename ContainerT::value_type,std::string>::value),void>::type parseRunList(ContainerT paths){
     parseList(paths,&MTRShuttle::parseRunList);
   }
 
@@ -66,12 +68,14 @@ class MTRShuttle
   void parseOCDBiMon(std::string path = "");
 
   void parseAMANDAiMon(std::string path = "");
-  template<class ContainerT> void parseAMANDAvMon(ContainerT paths){
+  template<class ContainerT> 
+  typename std::enable_if<!(std::is_same<ContainerT,std::string>::value && std::is_same<typename ContainerT::value_type,std::string>::value),void>::type parseAMANDAvMon(ContainerT paths){
     parseList(paths,&MTRShuttle::parseAMANDAvMon);
   }
 
   void parseAMANDAvMon(std::string path = "");
-  template<class ContainerT> void parseAMANDAiMon(ContainerT paths){
+  template<class ContainerT> 
+  typename std::enable_if<!(std::is_same<ContainerT,std::string>::value && std::is_same<typename ContainerT::value_type,std::string>::value),void>::type parseAMANDAiMon(ContainerT paths){
     parseList(paths,&MTRShuttle::parseAMANDAiMon);
   }
 
