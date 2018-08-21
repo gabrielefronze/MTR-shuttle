@@ -77,11 +77,12 @@ class MTRBooster
   inline MTRBooster& PlotAverage(){ fCurrentPlotSetting.fPlotaverage=true; return *this; }
   inline MTRBooster& PlotMinMax(){ fCurrentPlotSetting.isMinMax=true; return *this; }
 
-  inline void StackStage(){
+  inline size_t StackStage(){
     if( fCurrentPlotSetting.fValidSettings ){
-      fPlotSettings.emplace_back(fCurrentPlotSetting);
+      fPlotSettings.emplace_back(std::move(fCurrentPlotSetting));
       fCurrentPlotSetting=MTRPlotSettings();
     } else std::cerr << "Cannot stack invalid plot configuration.\n";
+    return fPlotSettings.size()-1;
   }
 
 #include "MTRBoosterTemplates.tcc"
