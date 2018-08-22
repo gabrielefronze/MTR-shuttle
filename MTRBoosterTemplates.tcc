@@ -77,7 +77,7 @@ TGraph *drawCorrelation(XType (RunObject::*getX)(MTRPlanes p, MTRSides s, MTRRPC
     for (const auto &itCondition : conditions->fConditions) {
       shouldPlot &= itCondition(&dataIt);
     }
-//    if (!shouldPlot) continue;
+   if (!shouldPlot) continue;
 
     XType x = (dataIt.*getX)(plane,side,RPC);
     YType y = (dataIt.*getY)(plane,side,RPC);
