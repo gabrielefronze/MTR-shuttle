@@ -14,14 +14,12 @@ class MTRConditions
     typedef std::vector<cond_type> cond_vector;
 
   public:
-    cond_vector& operator()(){ return fConditions; }
     cond_type* operator[](size_t i){ return &(fConditions[i]); }
     size_t size(){ return fConditions.size(); }
     template<class ...Args> void addCondition(bool (RunObject::*condition)(Args...) const, bool negate, Args... args){
       fConditions.emplace_back([=](RunObject const * rObj) -> bool { return (rObj->*condition)(args...) == !negate; });
     }
-
-  private:
+    
     cond_vector fConditions;
 };
 

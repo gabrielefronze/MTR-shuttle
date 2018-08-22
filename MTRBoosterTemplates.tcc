@@ -74,7 +74,7 @@ TGraph *drawCorrelation(XType (RunObject::*getX)(MTRPlanes p, MTRSides s, MTRRPC
   for( auto const &dataIt : fShuttle.fRunDataVect){
 
     bool shouldPlot = true;
-    for (const auto &itCondition : (*conditions)()) {
+    for (const auto &itCondition : conditions->fConditions) {
       shouldPlot &= itCondition(&dataIt);
     }
 //    if (!shouldPlot) continue;
