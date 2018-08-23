@@ -247,16 +247,6 @@ drawMaxMin(YType (RunObject::*getY)(MTRPlanes p, MTRSides s, MTRRPCs r) const,
 
   auto *mgOut = new TMultiGraph();
 
-  if(plotAverage){
-    if( plane<MTRPlanes::kNPlanes ) {
-      auto avgGraph = (TGraph *) grList->FindObject(Form("avg_%d", kPlanes[plane]));
-      if (avgGraph) mgOut->Add(avgGraph);
-    } else {
-      auto avgGraph = (TGraph *) grList->FindObject("avg");
-      if (avgGraph) mgOut->Add(avgGraph);
-    }
-  }
-
   TGraph *minGraph = nullptr;
   TGraph *maxGraph = nullptr;
 
