@@ -327,7 +327,7 @@ MTRBooster& MTRBooster::OnlyDarkCurrentRuns()
 
 MTRBooster& MTRBooster::OnlyIntegratedChargeRuns()
 {
-  fCurrentPlotSetting.fConditions.addCondition(&RunObject::isValidForIntCharge, false, this->fCurrentPlotSetting.fPlane, this->fCurrentPlotSetting.fSide, this->fCurrentPlotSetting.fRPC);
+  fCurrentPlotSetting.fConditions.addCondition(&RunObject::isValidForIntCharge, false);
   return *this;
 }
 

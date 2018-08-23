@@ -78,7 +78,7 @@ class RunObject{
   inline bool isHVOk(MTRPlanes p, MTRSides s, MTRRPCs r) const { return getValue(p,s,r,fIsHVOk); }
   inline void setIsHVOk(bool avgHV, MTRPlanes p, MTRSides s, MTRRPCs r) { setValueSmart(avgHV,fIsHVOk,p,s,r); }
 
-  inline bool isValidForIntCharge(MTRPlanes p, MTRSides s, MTRRPCs r) const { return isHVOk(p,s,r); }
+  inline bool isValidForIntCharge() const { return !fIsDark; }
   inline bool isValidForIDark(MTRPlanes p, MTRSides s, MTRRPCs r) const { return (fIsDark && isHVOk(p,s,r)); }
 
   inline void reset(){
