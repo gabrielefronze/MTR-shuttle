@@ -253,49 +253,104 @@ drawMaxMin(YType (RunObject::*getY)(MTRPlanes p, MTRSides s, MTRRPCs r) const,
   double minValue=1e+19;
   double maxValue=0.;
 
-  for(int iGraph = 0; iGraph < grList->GetEntries(); iGraph++){
-    auto graph = (TGraph*)(grList->At(iGraph));
+  if(accumulate){
+    for(int iGraph = 0; iGraph < grList->GetEntries(); iGraph++){
+      auto graph = (TGraph*)(grList->At(iGraph));
 
-    bool shouldSkip = false;
+      bool shouldSkip = false;
 
-    for(auto const& repIt :fReplacedRPCs){
-      char replacedRPC[10];
-      sprintf(replacedRPC,"%d_%d_%d",repIt.fPlane,repIt.fSide,repIt.fRPC);
-      if(strcmp(graph->GetName(),replacedRPC)==0) {
-        shouldSkip = true;
-        break;
+      for(auto const& repIt :fReplacedRPCs){
+        char replacedRPC[10];
+        sprintf(replacedRPC,"%d_%d_%d",repIt.fPlane,repIt.fSide,repIt.fRPC);
+        if(strcmp(graph->GetName(),replacedRPC)==0) {
+          shouldSkip = true;
+          break;
+        }
       }
-    }
 
-    if(shouldSkip) continue;
+      if(shouldSkip) continue;
 
-    double dummyX;
-    double dummyY;
+      std::string graphName = graph->GetName();
 
-    graph->GetPoint(graph->GetN()-1, dummyX, dummyY);
+      if (graphName.find("avg")!=std::string::npos){
+        if (plotAverage) mgOut->Add(graph);
+        continue;
+      }
 
-    std::string graphName = graph->GetName();
+      double dummyX;
+      double dummyY;
 
-    if (graphName.find("avg")!=std::string::npos){
-      if (plotAverage) mgOut->Add(graph);
-      continue;
-    }
+      graph->GetPoint(graph->GetN()-1, dummyX, dummyY);
 
-    if (iGraph==0) {
-      minValue = dummyY;
-      minGraph = graph;
-
-      maxValue = dummyY;
-      maxGraph = graph;
-    } else {
-      if ( dummyY < minValue ){
+      if (iGraph==0) {
         minValue = dummyY;
         minGraph = graph;
-      }
 
-      if ( dummyY > maxValue ){
         maxValue = dummyY;
         maxGraph = graph;
+      } else {
+        if ( dummyY < minValue ){
+          minValue = dummyY;
+          minGraph = graph;
+        }
+
+        if ( dummyY > maxValue ){
+          maxValue = dummyY;
+          maxGraph = graph;
+        }
+      }
+    }
+  } else {
+    for(int iGraph = 0; iGraph < grList->GetEntries(); iGraph++){
+      auto graph = (TGraph*)(grList->At(iGraph));
+      
+      double dummyX;
+      double dummyY;
+      double cumulusY = 0.;
+
+      bool shouldSkip = false;
+
+      for(auto const& repIt :fReplacedRPCs){
+        char replacedRPC[10];
+        sprintf(replacedRPC,"%d_%d_%d",repIt.fPlane,repIt.fSide,repIt.fRPC);
+        if(strcmp(graph->GetName(),replacedRPC)==0) {
+          shouldSkip = true;
+          break;
+        }
+      }
+
+      if(shouldSkip) continue;
+
+      std::string graphName = graph->GetName();
+
+      if (graphName.find("avg")!=std::string::npos){
+        if (plotAverage) mgOut->Add(graph);
+        continue;
+      }
+
+      for(int iPoint = 1; iPoint < graph->GetN(); iPoint++){
+        graph->GetPoint(iPoint, dummyX, dummyY);
+        cumulusY+=dummyY;
+      }
+
+      cumulusY/=graph->GetN()-2;
+
+      if (iGraph==0) {
+        minValue = cumulusY;
+        minGraph = graph;
+
+        maxValue = cumulusY;
+        maxGraph = graph;
+      } else {
+        if ( cumulusY < minValue ){
+          minValue = cumulusY;
+          minGraph = graph;
+        }
+
+        if ( cumulusY > maxValue ){
+          maxValue = cumulusY;
+          maxGraph = graph;
+        }
       }
     }
   }
