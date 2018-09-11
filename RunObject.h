@@ -225,15 +225,9 @@ inline RunObject operator/ (RunObject result, const double &divider){
 //             << obj.getScalNotBending();
 // }
 
-template<typename Type> inline bool funcCmp(Type(RunObject::*getX)(MTRPlanes px, MTRSides sx, MTRRPCs rx) const, Type(RunObject::*getY)(MTRPlanes py, MTRSides sy, MTRRPCs ry) const){
+template<typename Type> inline bool funcCmp(Type(RunObject::*getX)(MTRPlanes /*px*/, MTRSides /*sx*/, MTRRPCs /*rx*/) const, Type(RunObject::*getY)(MTRPlanes /*py*/, MTRSides /*sy*/, MTRRPCs /*ry*/) const){
   return (getX == getY);
 };
-
-//template<typename Type, typename... ArgsX, typename... ArgsY>
-//inline typename std::enable_if<!(std::is_same<ArgsX,ArgsY>::value),bool>::type
-//funcCmp(Type(RunObject::*getX)(ArgsX ...argsX) const, Type(RunObject::*getY)(ArgsY ...argsY) const){
-//  return false;
-//};
 
 template<typename XType, typename YType>
 inline typename std::enable_if<!(std::is_same<XType,YType>::value),bool>::type
