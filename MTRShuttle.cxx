@@ -229,21 +229,37 @@ void MTRShuttle::parseOCDB(std::string path)
       while ((scalersData = static_cast<AliMUONTriggerScalers*>(next()))) {
 //        int arrayScalersEntries = arrayScalers->GetEntries();
 
-        for (int plane = 0; plane < kNPlanes; plane++) {
-          for (int cathode = 0; cathode < kNCathodes; cathode++) {
-            for (int localBoard = 0; localBoard < kNLocalBoards; localBoard++) {
+        for (int plane = MTRPlanes::kMT11; plane < MTRPlanes::kNPlanes; plane++) {
+          for (int side = kINSIDE; side < MTRSides::kNSides; side++) {
+            for (int RPC = k1; RPC < MTRRPCs::kNRPCs; RPC++) {
+              for (int cathode = 0; cathode < kNCathodes; cathode++) {
+                bool isInOverflow = false;
+                for (int localBoard = 0; localBoard < kNLocalBoards; localBoard++) {
+                  int iRPC017 = (ddlStore->GetDEfromLocalBoard(localBoard + 1, plane + 10)) % 100;
+                  int iRPC09 = kRPCIndexes[iRPC017] - 1;
+                  int iSide = kRPCSides[iRPC017];
 
-              int iRPC017 = (ddlStore->GetDEfromLocalBoard(localBoard + 1, plane + 10)) % 100;
-              int iRPC09 = kRPCIndexes[iRPC017] - 1;
-              int iSide = kRPCSides[iRPC017];
+                  if ( iRPC09 != RPC || iSide != side ) continue;
 
-              // se in overflow passo alla LB successiva
-              if (scalersData->GetLocScalStripOver(cathode, plane, localBoard) > 0) {
-                continue;
+                  // se in overflow passo alla LB successiva
+                  if (scalersData->GetLocScalStripOver(cathode, plane, localBoard) > 0) {
+                    isInOverflow = true;
+                    continue;
+                  }
+
+                  scalers[cathode][iSide][plane][iRPC09] += scalersData->GetLocScalStrip(cathode, plane, localBoard);
+                  elapsedTime[cathode][iSide][plane][iRPC09] += scalersData->GetDeltaT();
+
+                  printf("%d,%s,%d,%d,%d,%llu,%u\n",kPlanes[plane],kSides[iSide].c_str(),iRPC09+1,localBoard+1,cathode,scalersData->GetLocScalStrip(cathode, plane, localBoard),scalersData->GetDeltaT());
+                }
+
+                if (isInOverflow) {
+                  scalers[0][side][plane][RPC] = 0;
+                  scalers[1][side][plane][RPC] = 0;
+                  elapsedTime[0][side][plane][RPC] = 0;
+                  elapsedTime[1][side][plane][RPC] = 0;
+                }
               }
-
-              scalers[cathode][iSide][plane][iRPC09] += scalersData->GetLocScalStrip(cathode, plane, localBoard);
-              elapsedTime[cathode][iSide][plane][iRPC09] += scalersData->GetDeltaT();
             }
           }
         }
@@ -256,7 +272,7 @@ void MTRShuttle::parseOCDB(std::string path)
             for (int cathode = 0; cathode < kNCathodes; cathode++) {
               if (elapsedTime[cathode][side][plane][RPC] > 0) {
                 values[cathode] = (double)scalers[cathode][side][plane][RPC] / (double)elapsedTime[cathode][side][plane][RPC];
-              }
+              } else values[cathode] = 0;
             }
             runObjectBuffer.setScalBending((uint64_t)values[0],(MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC);
             runObjectBuffer.setScalNotBending((uint64_t)values[1],(MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC);
