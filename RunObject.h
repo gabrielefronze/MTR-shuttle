@@ -246,7 +246,7 @@ template<typename Type> inline bool isTimestamp(Type(RunObject::*getter)(MTRPlan
 }
 
 template<typename Type> inline bool isCurrent(Type(RunObject::*getter)(MTRPlanes p, MTRSides s, MTRRPCs r) const){
-  return (funcCmp(getter, &RunObject::getAvgIDark) || funcCmp(getter, &RunObject::getAvgITot));
+  return (funcCmp(getter, &RunObject::getAvgIDark) || funcCmp(getter, &RunObject::getAvgINet) || funcCmp(getter, &RunObject::getAvgITot));
 }
 
 template<typename Type> inline bool isScaler(Type(RunObject::*getter)(MTRPlanes p, MTRSides s, MTRRPCs r) const){
