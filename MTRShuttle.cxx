@@ -242,11 +242,6 @@ void MTRShuttle::parseOCDB(std::string path)
                 continue;
               }
 
-//              auto value = scalersData->GetLocScalStrip(cathode, plane, localBoard);
-
-              //              if (value > 0 && iRPC017 == 0) printf("%d %d %d %d %llu\n", plane, cathode, localBoard,
-              //              iRPC09, value);
-
               scalers[cathode][iSide][plane][iRPC09] += scalersData->GetLocScalStrip(cathode, plane, localBoard);
               elapsedTime[cathode][iSide][plane][iRPC09] += scalersData->GetDeltaT();
             }
@@ -260,11 +255,7 @@ void MTRShuttle::parseOCDB(std::string path)
             double values[2] = { 0., 0. };
             for (int cathode = 0; cathode < kNCathodes; cathode++) {
               if (elapsedTime[cathode][side][plane][RPC] > 0) {
-                values[cathode] =
-                  (double)scalers[cathode][side][plane][RPC] / (double)elapsedTime[cathode][side][plane][RPC];
-                //                printf("%d %d %d %llu %llu %f\n", plane, side, RPC,
-                //                scalers[cathode][side][plane][RPC],
-                //                       elapsedTime[cathode][side][plane][RPC], values[cathode]);
+                values[cathode] = (double)scalers[cathode][side][plane][RPC] / (double)elapsedTime[cathode][side][plane][RPC];
               }
             }
             runObjectBuffer.setScalBending((uint64_t)values[0],(MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC);
