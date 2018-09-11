@@ -274,6 +274,17 @@ void MTRShuttle::parseOCDB(std::string path)
       }
     } else {
       printf("\t\tERROR: TriggerScalers not found for run %d\n", runIterator.first);
+
+      for (int plane = MTRPlanes::kMT11; plane < MTRPlanes::kNPlanes; plane++) {
+        for (int side = kINSIDE; side < MTRSides::kNSides; side++) {
+          for (int RPC = k1; RPC < MTRRPCs::kNRPCs; RPC++) {
+            for (int cathode = 0; cathode < kNCathodes; cathode++) {
+              runObjectBuffer.setScalBending((uint64_t)0,(MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC);
+              runObjectBuffer.setScalNotBending((uint64_t)0,(MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC);
+            }
+          }
+        }
+      }
     }
 
 //    printf("\t\tINFO: Saving run %d\n", runIterator.first);
