@@ -194,11 +194,7 @@ void MTRShuttle::parseOCDB(std::string path)
       continue;
     }
 
-    // Skipping runs with HV under lower limits
-    //    if (!isHVOkGlobal) continue;
     if (AlienUtils::checkCDB(runIterator.first, defStorage, "MUON/Calib/TriggerScalers", false)) {
-      // inizializzazone dell'entry contenente le letture degli scalers
-//      printf("\t\tINFO: TriggerScaler found for run %d\n", runIterator.first);
 
       AliCDBEntry* entryScalers = managerCDB->Get("MUON/Calib/TriggerScalers");
       if (!entryScalers)
@@ -209,73 +205,94 @@ void MTRShuttle::parseOCDB(std::string path)
       if (!arrayScalers)
         continue;
 
-      uint64_t elapsedTime[kNCathodes][MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
-      uint64_t scalers[kNCathodes][MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
+      // Arrays to:
+      // 1- keep track of RPC with at least one LB in overflow
+      // 2- sum all the rates of the LB belonging to a given RPC
+      // 3- number of LBs belonging to a given RPC
+      // 4- keep the sum of the elapsed time for a given LB
+      // 5- keep the sum of the scalers for a given LB
+      bool isInOverflow[kNCathodes][MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
+      double rates[kNCathodes][MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
+      uint16_t nRates[kNCathodes][MTRPlanes::kNPlanes][MTRSides::kNSides][MTRRPCs::kNRPCs];
+      uint64_t elapsedTime[kNCathodes][MTRPlanes::kNPlanes][kNLocalBoards];
+      uint64_t scalers[kNCathodes][MTRPlanes::kNPlanes][kNLocalBoards];
 
+      // Initializing all the arrays to 0 (false)
       for (int plane = MTRPlanes::kMT11; plane < MTRPlanes::kNPlanes; plane++) {
-        for (int side = kINSIDE; side < MTRSides::kNSides; side++) {
-          for (int RPC = k1; RPC < MTRRPCs::kNRPCs; RPC++) {
-            for (int cathode = 0; cathode < kNCathodes; cathode++) {
-              scalers[cathode][side][plane][RPC] = 0;
-              elapsedTime[cathode][side][plane][RPC] = 0;
+        for (int cathode = 0; cathode < kNCathodes; cathode++) {
+          for (int side = kINSIDE; side < MTRSides::kNSides; side++) {
+            for (int RPC = k1; RPC < MTRRPCs::kNRPCs; RPC++) {
+              isInOverflow[cathode][plane][side][RPC] = false;
+              rates[cathode][plane][side][RPC] = 0.;
+              nRates[cathode][plane][side][RPC] = 0;
             }
+          }
+          for (int localBoard = 0; localBoard < kNLocalBoards; localBoard++) {
+            elapsedTime[cathode][plane][localBoard] = 0;
+            scalers[cathode][plane][localBoard] = 0;
           }
         }
       }
 
-      // loop sulle entries, sui piani, i catodi (bending e non bending) e le Local Boards (234 per piano)
+      // Parse the AliMUONTriggerScalers array entries one by one
       AliMUONTriggerScalers* scalersData = nullptr;
       TIter next(arrayScalers);
       while ((scalersData = static_cast<AliMUONTriggerScalers*>(next()))) {
-//        int arrayScalersEntries = arrayScalers->GetEntries();
-
+        // Loop over the contained data LB-wise
         for (int plane = MTRPlanes::kMT11; plane < MTRPlanes::kNPlanes; plane++) {
-          for (int side = kINSIDE; side < MTRSides::kNSides; side++) {
-            for (int RPC = k1; RPC < MTRRPCs::kNRPCs; RPC++) {
-              for (int cathode = 0; cathode < kNCathodes; cathode++) {
-                bool isInOverflow = false;
-                for (int localBoard = 0; localBoard < kNLocalBoards; localBoard++) {
-                  int iRPC017 = (ddlStore->GetDEfromLocalBoard(localBoard + 1, plane + 10)) % 100;
-                  int iRPC09 = kRPCIndexes[iRPC017] - 1;
-                  int iSide = kRPCSides[iRPC017];
-
-                  if ( iRPC09 != RPC || iSide != side ) continue;
-
-                  // se in overflow passo alla LB successiva
-                  if (scalersData->GetLocScalStripOver(cathode, plane, localBoard) > 0) {
-                    isInOverflow = true;
-                    continue;
-                  }
-
-                  scalers[cathode][iSide][plane][iRPC09] += scalersData->GetLocScalStrip(cathode, plane, localBoard);
-                  elapsedTime[cathode][iSide][plane][iRPC09] += scalersData->GetDeltaT();
-
-                  printf("%d,%s,%d,%d,%d,%llu,%u\n",kPlanes[plane],kSides[iSide].c_str(),iRPC09+1,localBoard+1,cathode,scalersData->GetLocScalStrip(cathode, plane, localBoard),scalersData->GetDeltaT());
-                }
-
-                if (isInOverflow) {
-                  scalers[0][side][plane][RPC] = 0;
-                  scalers[1][side][plane][RPC] = 0;
-                  elapsedTime[0][side][plane][RPC] = 0;
-                  elapsedTime[1][side][plane][RPC] = 0;
-                }
-              }
+          for (int cathode = 0; cathode < kNCathodes; cathode++) {
+            for (int localBoard = 0; localBoard < kNLocalBoards; localBoard++) {
+              // Get the corresponding RPC
+              int iRPC017 = (ddlStore->GetDEfromLocalBoard(localBoard + 1, plane + 10)) % 100;
+              int iRPC09 = kRPCIndexes[iRPC017] - 1;
+              int iSide = kRPCSides[iRPC017];
+              // Check if LB is in overflow
+              auto isLBInOverflow = (scalersData->GetLocScalStripOver(cathode, plane, localBoard) > 0);
+              // Set the corresponding RPC to overflow
+              isInOverflow[cathode][plane][iSide][iRPC09] |= isLBInOverflow;
+              // Skip the current LB (from now on)
+              if (isInOverflow[cathode][plane][iSide][iRPC09]) continue;
+              // If not in overflow accumulate scalers and rates
+              elapsedTime[cathode][plane][localBoard] += scalersData->GetDeltaT();
+              scalers[cathode][plane][localBoard] += scalersData->GetLocScalStrip(cathode, plane, localBoard);
             }
           }
         }
       }
 
+      // Loop over the computed sums LB-wise
+      for (int plane = MTRPlanes::kMT11; plane < MTRPlanes::kNPlanes; plane++) {
+        for (int cathode = 0; cathode < kNCathodes; cathode++) {
+          for (int localBoard = 0; localBoard < kNLocalBoards; localBoard++) {
+            // Get the corresponding RPC
+            int iRPC017 = (ddlStore->GetDEfromLocalBoard(localBoard + 1, plane + 10)) % 100;
+            int iRPC09 = kRPCIndexes[iRPC017] - 1;
+            int iSide = kRPCSides[iRPC017];
+            // Count the number of LBs per RPC
+            nRates[cathode][plane][iSide][iRPC09]++;
+            // If elapsed time is >0 compute the rate as ratio of total scalers and total time, else set it to 0
+            if(elapsedTime[cathode][plane][localBoard]>0){
+              rates[cathode][plane][iSide][iRPC09]+=scalers[cathode][plane][localBoard]/elapsedTime[cathode][plane][localBoard];
+            } else rates[cathode][plane][iSide][iRPC09]=0;
+          }
+        }
+      }
+
+      // Loop over the computed sums RPC-wise
       for (int plane = MTRPlanes::kMT11; plane < MTRPlanes::kNPlanes; plane++) {
         for (int side = kINSIDE; side < MTRSides::kNSides; side++) {
           for (int RPC = k1; RPC < MTRRPCs::kNRPCs; RPC++) {
-            double values[2] = { 0., 0. };
             for (int cathode = 0; cathode < kNCathodes; cathode++) {
-              if (elapsedTime[cathode][side][plane][RPC] > 0) {
-                values[cathode] = (double)scalers[cathode][side][plane][RPC] / (double)elapsedTime[cathode][side][plane][RPC];
-              } else values[cathode] = 0;
+              // If RPC was in overflow set scalers to 0, else compute the average rate of the belonging LBs
+              if (isInOverflow[cathode][plane][side][RPC]){
+                runObjectBuffer.setScalBending((uint64_t)0,(MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC);
+                runObjectBuffer.setScalNotBending((uint64_t)0,(MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC);
+              } else {
+                // The factor 2 comes from the fact than bending and not bending rates are read alternatively
+                runObjectBuffer.setScalBending((uint64_t)(rates[0][plane][side][RPC])*2,(MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC);
+                runObjectBuffer.setScalNotBending((uint64_t)(rates[1][plane][side][RPC])*2,(MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC);
+              }
             }
-            runObjectBuffer.setScalBending((uint64_t)values[0],(MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC);
-            runObjectBuffer.setScalNotBending((uint64_t)values[1],(MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC);
           }
         }
       }
@@ -290,6 +307,17 @@ void MTRShuttle::parseOCDB(std::string path)
               runObjectBuffer.setScalNotBending((uint64_t)0,(MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC);
             }
           }
+        }
+      }
+    }
+
+    for (int plane = MTRPlanes::kMT11; plane < MTRPlanes::kNPlanes; plane++) {
+      for (int side = kINSIDE; side < MTRSides::kNSides; side++) {
+        for (int RPC = k1; RPC < MTRRPCs::kNRPCs; RPC++) {
+          printf("%d %d %d: %f %f\n",plane,side,RPC,
+            runObjectBuffer.getScalBending((MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC),
+            runObjectBuffer.getScalNotBending((MTRPlanes)plane,(MTRSides)side,(MTRRPCs)RPC)
+          );
         }
       }
     }
