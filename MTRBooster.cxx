@@ -76,6 +76,11 @@ void MTRBooster::Launch(size_t iSetting, TMultiGraph* buffer)
       return;
     }
 
+    if ( isScaler(currentSetting.funcX) || isScaler(currentSetting.funcY)) {
+      // Scalers are correctly defined only after 2014 (aka RUN2), hence avoid plotting them before that timestamp
+      currentSetting.fConditions.addCondition(&RunObject::isAfter, false, kTS2014);
+    }
+
     if (currentSetting.fRPC != MTRRPCs::kNRPCs) {
       if (currentSetting.isTrend) {
         trendWrapper(currentSetting, buffer);

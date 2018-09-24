@@ -96,6 +96,8 @@ class MTRBooster
   std::vector<TMultiGraph*> fPlots;
   std::vector<ReplacedRPC> fReplacedRPCs;
 
+  const uint64_t kTS2014 = 1388534400;
+
   inline void resetReplacedRPCs(){ for(auto &itRep : fReplacedRPCs){ itRep.fAlreadyReset=false; }};
 
   uint64_t getTSFromString(std::string date);
