@@ -28,7 +28,7 @@
 int testShuttleDirect()
 {
   MTRShuttle sciattol;
-  sciattol.instance("runListDiego.txt", "Imon1018.txt", "vMon1018.txt",
+  sciattol.instance("/Users/Gabriele/cernbox/Dottorato/MTR2017/runsCOSMIC1018.txt", "Imon1018.txt", "vMon1018.txt",
                     "local:///Users/Gabriele/cernbox/Dottorato/MTR2017/CDB/####/OCDB");
 
   auto *intChargeGr = new TGraph();
@@ -74,13 +74,22 @@ int testShuttleDirect()
     iPoint++;
   }
 
-  auto mg = new TMultiGraph();
-  mg->Add(intChargeGr);
-  mg->Add(iDarkGr);
-  mg->Add(iTotGr);
-  mg->Add(HVGr);
+  // auto mg = new TMultiGraph();
+  // mg->Add(intChargeGr);
+  // mg->Add(iDarkGr);
+  // mg->Add(iTotGr);
+  // mg->Add(HVGr);
 
-  mg->Draw("alp");
+  TCanvas *c = new TCanvas("canv","canv");
+  c->Divide(2,2);
+  c->cd(1);
+  intChargeGr->Draw("alp");
+  c->cd(2);
+  iDarkGr->Draw("alp");
+  c->cd(3);
+  iTotGr->Draw("alp");
+  c->cd(4);
+  HVGr->Draw("alp");
 
   return 0;
 }
