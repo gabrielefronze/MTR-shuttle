@@ -745,7 +745,12 @@ void MTRShuttle::setAMANDAiDark(int plane, int side, int RPC)
       // If previous reading and current one are dark, update last dark
       if (wasPrevDark && !(darkCurrentIt->getIDark() == 0.)) {
         lastDarkIt = darkCurrentIt;
-        // If previous reading wasn't dark, while current one is, set dark currents from lastDark to darkCurrentIt
+      // If the current reading is the last one, but is not a dark current reading, use flat propagation of the last dark current value
+      } else if(darkCurrentIt == fAMANDACurrentsVect[plane][side][RPC].end()-1) {
+        std::for_each(lastDarkIt + 1, darkCurrentIt, [&m,&q,&TS0](AMANDACurrent& reading) {
+          reading.setIDark(lastDarkIt.getIDark());
+        });
+      // If previous reading wasn't dark, while current one is, set dark currents from lastDark to darkCurrentIt
       } else if (!wasPrevDark) {
         // Computing the parameters for the "dumb interpolation"
         double m = getM(*lastDarkIt, *darkCurrentIt);
