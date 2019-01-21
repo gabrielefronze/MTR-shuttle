@@ -439,8 +439,14 @@ void MTRBooster::LoadReplacedRPCs(std::string path)
 void MTRBooster::correlationWrapper(MTRPlotSettings& setting, TMultiGraph* buffer)
 {
   buffer->Add(this->drawCorrelation(setting.funcX, setting.funcY, setting.fNormalize, setting.fNormalize,
-                                    setting.fAccumulate, setting.fPlotaverage, setting.fPlane, setting.fSide,
+                                    setting.fAccumulate, false, setting.fPlane, setting.fSide,
                                     setting.fRPC, &(setting.fConditions)));
+
+  if(setting.fPlotaverage){
+    buffer->Add(this->drawCorrelation(setting.funcX, setting.funcY, setting.fNormalize, setting.fNormalize,
+                                    setting.fAccumulate, true, setting.fPlane, setting.fSide,
+                                    setting.fRPC, &(setting.fConditions)));
+  }
 }
 
 void MTRBooster::correlationsWrapper(MTRPlotSettings& setting, TMultiGraph* buffer)
@@ -453,8 +459,13 @@ void MTRBooster::correlationsWrapper(MTRPlotSettings& setting, TMultiGraph* buff
 
 void MTRBooster::trendWrapper(MTRPlotSettings& setting, TMultiGraph* buffer)
 {
-  buffer->Add(this->drawTrend(setting.funcY, setting.fNormalize, setting.fAccumulate, setting.fPlotaverage,
+  buffer->Add(this->drawTrend(setting.funcY, setting.fNormalize, setting.fAccumulate, false,
                               setting.fPlane, setting.fSide, setting.fRPC, &(setting.fConditions)));
+
+  if(setting.fPlotaverage){
+    buffer->Add(this->drawTrend(setting.funcY, setting.fNormalize, setting.fAccumulate, true,
+                              setting.fPlane, setting.fSide, setting.fRPC, &(setting.fConditions)));
+  }
 }
 
 void MTRBooster::trendsWrapper(MTRPlotSettings& setting, TMultiGraph* buffer)
