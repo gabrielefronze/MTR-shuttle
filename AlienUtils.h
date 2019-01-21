@@ -18,7 +18,8 @@ namespace AlienUtils
                                 {2014,200001,208364},
                                 {2015,208365,247170},
                                 {2016,247171,267254},
-                                {2017,267255,282900}};
+                                {2017,267255,282900},
+                                {2018,282900,9999999}};
 
     static bool checkAlienToken() {
       std::string checkTokenBashCommand = R"(if [[ "`alien-token-info | grep "still valid" `" != "" ]]; then echo "1"; else echo "0"; fi)";
