@@ -602,13 +602,16 @@ void MTRShuttle::createDummyRuns(bool createFirstLast)
     }
   }
 
-  for (; runObjectIt < runObjectEnd - 1; runObjectIt++) {
-    auto dummySOR = runObjectIt->getEOR() + 1;
-    auto dummyEOR = (runObjectIt + 1)->getSOR() - 1;
+  size_t iRun = 0;
+  size_t lastRun = fRunDataVect.size()-1;
 
-    std::cout << runObjectIt->getRunNumber() << std::endl;
-    printf("Creating runs based on run %llu {%llu,%llu}.\n", runObjectIt->getRunNumber(), runObjectIt->getEOR() + 1,
-           (runObjectIt + 1)->getSOR());
+  for (; iRun < lastRun - 1; ++iRun) {
+    auto dummySOR = fRunDataVect[iRun].getEOR() + 1;
+    auto dummyEOR = fRunDataVect[iRun+1]->getSOR() - 1;
+
+    std::cout << fRunDataVect[iRun].getRunNumber() << std::endl;
+    printf("Creating runs based on run %llu {%llu,%llu}.\n", fRunDataVect[iRun].getRunNumber(), fRunDataVect[iRun].getEOR() + 1,
+           fRunDataVect[iRun+1]->getSOR());
 
     if (dummySOR < dummyEOR) {
       createDummyRunsInRange(runNumber,dummySOR,dummyEOR);
