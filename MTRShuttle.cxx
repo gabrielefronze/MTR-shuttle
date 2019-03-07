@@ -607,11 +607,11 @@ void MTRShuttle::createDummyRuns(bool createFirstLast)
 
   for (; iRun < lastRun - 1; ++iRun) {
     auto dummySOR = fRunDataVect[iRun].getEOR() + 1;
-    auto dummyEOR = fRunDataVect[iRun+1]->getSOR() - 1;
+    auto dummyEOR = fRunDataVect[iRun+1].getSOR() - 1;
 
     std::cout << fRunDataVect[iRun].getRunNumber() << std::endl;
     printf("Creating runs based on run %llu {%llu,%llu}.\n", fRunDataVect[iRun].getRunNumber(), fRunDataVect[iRun].getEOR() + 1,
-           fRunDataVect[iRun+1]->getSOR());
+           fRunDataVect[iRun+1].getSOR());
 
     if (dummySOR < dummyEOR) {
       createDummyRunsInRange(runNumber,dummySOR,dummyEOR);
@@ -747,8 +747,8 @@ void MTRShuttle::setAMANDAiDark(int plane, int side, int RPC)
         lastDarkIt = darkCurrentIt;
       // If the current reading is the last one, but is not a dark current reading, use flat propagation of the last dark current value
       } else if(darkCurrentIt == fAMANDACurrentsVect[plane][side][RPC].end()-1) {
-        std::for_each(lastDarkIt + 1, darkCurrentIt, [&m,&q,&TS0](AMANDACurrent& reading) {
-          reading.setIDark(lastDarkIt.getIDark());
+        std::for_each(lastDarkIt + 1, darkCurrentIt, [iDark = lastDarkIt->getIDark()](AMANDACurrent& reading) {
+          reading.setIDark(iDark);
         });
       // If previous reading wasn't dark, while current one is, set dark currents from lastDark to darkCurrentIt
       } else if (!wasPrevDark) {
