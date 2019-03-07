@@ -75,7 +75,7 @@ class RunObject{
   inline double getScalNotBending(MTRPlanes p, MTRSides s, MTRRPCs r) const { return getValueSmart(fScalNotBending,p,s,r); }
   inline void setScalNotBending(uint64_t avgHV, MTRPlanes p, MTRSides s, MTRRPCs r) { setValueSmart(avgHV,fScalNotBending,p,s,r); }
 
-  inline bool isHVOk(MTRPlanes p, MTRSides s, MTRRPCs r) const { return setValueSmart(p,s,r,fIsHVOk); }
+  inline bool isHVOk(MTRPlanes p, MTRSides s, MTRRPCs r) const { return getValueSmart(p,s,r,fIsHVOk); }
   inline void setIsHVOk(bool avgHV, MTRPlanes p, MTRSides s, MTRRPCs r) { setValueSmart(avgHV,fIsHVOk,p,s,r); }
 
   inline bool isValidForIntCharge() const { return !fIsDark; }
